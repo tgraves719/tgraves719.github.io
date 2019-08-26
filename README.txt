@@ -1,4 +1,3 @@
-images courtesy of Unsplash, a collection of CC0 (public domain) images.
 
 
 
