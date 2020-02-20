@@ -3690,6 +3690,20 @@ input, select, textarea {
 				box-shadow: inset 0 -1px 0 0 #454858, 0 1px 0 0 #454858;
 			
 			}
+.wrapper.style4 .inner {
+				display: -moz-flex;
+				display: -webkit-flex;
+				display: -ms-flex;
+				display: flex;
+				-moz-align-items: center;
+				-webkit-align-items: center;
+				-ms-align-items: center;
+				align-items: center;
+				-moz-flex-direction: row;
+				-webkit-flex-direction: row;
+				-ms-flex-direction: row;
+				flex-direction: row;
+			}
 .wrapper.style4 .image {
 				border-radius: 100%;
 				margin: 0 3em 2em 0;
@@ -3698,7 +3712,8 @@ input, select, textarea {
 				-ms-flex: 1;
 			}
 
-				.wrapper.spotlight .image img {
+				
+.wrapper.spotlight .image img {
 					border-radius: 100%;
 					width: 100%;
 				}
