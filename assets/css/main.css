@@ -100,7 +100,7 @@ input, select, textarea {
 
 	body {
 		background-color: #2e3141;
-		background-image: linear-gradient(to top, rgba(20, 20, 20, 0.5), rgba(46, 49, 65, 0.8)), url("../../images/bg.jpg");
+		background-image: linear-gradient(to top, rgba(46, 49, 65, 0.8), rgba(46, 49, 65, 0.8)), url("../../images/bg.jpg");
 		background-size: auto, cover;
 		background-attachment: fixed, fixed;
 		background-position: center, center;
@@ -2205,7 +2205,7 @@ input, select, textarea {
 		input[type="tel"]:focus,
 		select:focus,
 		textarea:focus {
-			border-color: #000000;
+			border-color: #5b6ba6;
 		}
 
 	select {
@@ -2220,7 +2220,7 @@ input, select, textarea {
 
 		select option {
 			color: #ffffff;
-			background: #4C4C4C;
+			background: #2e3141;
 		}
 
 		select:focus::-ms-value {
@@ -2308,7 +2308,7 @@ input, select, textarea {
 
 		input[type="checkbox"]:focus + label:before,
 		input[type="radio"]:focus + label:before {
-			border-color: #71737C;
+			border-color: #4c5c96;
 		}
 
 	input[type="checkbox"] + label:before {
@@ -2713,7 +2713,7 @@ input, select, textarea {
 				}
 
 				ul.pagination li > .page.active {
-					background-color: #0F0F0F;
+					background-color: #4c5c96;
 				}
 
 			ul.pagination li:first-child {
@@ -2890,7 +2890,7 @@ input, select, textarea {
 			input[type="button"].primary:hover,
 			button.primary:hover,
 			.button.primary:hover {
-				background-color: #585A60;
+				background-color: #53639e;
 			}
 
 			input[type="submit"].primary:active,
@@ -2898,7 +2898,7 @@ input, select, textarea {
 			input[type="button"].primary:active,
 			button.primary:active,
 			.button.primary:active {
-				background-color: #808285;
+				background-color: #45558d;
 			}
 
 			input[type="submit"].primary.icon:before,
@@ -2906,7 +2906,7 @@ input, select, textarea {
 			input[type="button"].primary.icon:before,
 			button.primary.icon:before,
 			.button.primary.icon:before {
-				color: #BCC2D7;
+				color: #7985b0;
 			}
 
 		input[type="submit"].fit,
@@ -3244,7 +3244,7 @@ input, select, textarea {
 			-ms-transition: opacity 0.35s ease, -ms-transform 0.35s ease;
 			transition: opacity 0.35s ease, transform 0.35s ease;
 			-webkit-overflow-scrolling: touch;
-			background: #000000;
+			background: #4c5c96;
 			border-radius: 5px;
 			display: block;
 			max-width: 100%;
@@ -3300,7 +3300,7 @@ input, select, textarea {
 				}
 
 					#menu .links li a:hover {
-						background: #c7ccdc;
+						background: #45558d;
 					}
 
 		@media screen and (max-width: 736px) {
@@ -3428,8 +3428,8 @@ input, select, textarea {
 
 			#banner {
 				padding: 7em 0 8.25em 0 ;
-				background-color: #abacb3;
-				background-image: linear-gradient(to top, rgba(20, 20, 20, 0.5), rgba(20, 20, 20, 0.5)), url("../../images/bg.jpg");
+				background-color: #2e3141;
+				background-image: linear-gradient(to top, rgba(46, 49, 65, 0.8), rgba(46, 49, 65, 0.8)), url("../../images/bg.jpg");
 				background-size: auto, cover;
 				background-position: center, center;
 				margin-bottom: -6.5em;
@@ -3688,35 +3688,8 @@ input, select, textarea {
 
 			.wrapper.style4:after {
 				box-shadow: inset 0 -1px 0 0 #454858, 0 1px 0 0 #454858;
-			
-			}
-.wrapper.style4 .inner {
-				display: -moz-flex;
-				display: -webkit-flex;
-				display: -ms-flex;
-				display: flex;
-				-moz-align-items: center;
-				-webkit-align-items: center;
-				-ms-align-items: center;
-				align-items: center;
-				-moz-flex-direction: row;
-				-webkit-flex-direction: row;
-				-ms-flex-direction: row;
-				flex-direction: row;
-			}
-.wrapper.style4 .image {
-				border-radius: 100%;
-				margin: 0 3em 2em 0;
-				width: 22em;
-				overflow: hidden;
-				-ms-flex: 1;
 			}
 
-				
-.wrapper.spotlight .image img {
-					border-radius: 100%;
-					width: 100%;
-				}
 		.wrapper.style5 {
 			background-color: #4d5060;
 		}
@@ -3750,7 +3723,7 @@ input, select, textarea {
 			}
 
 		.wrapper.spotlight {
-			background-color: #000000;
+			background-color: #4c5c96;
 		}
 
 			.wrapper.spotlight:before, .wrapper.spotlight:after {
@@ -3758,11 +3731,11 @@ input, select, textarea {
 			}
 
 			.wrapper.spotlight:before {
-				box-shadow: inset 0 -1px 0 0 #000000, 0 1px 0 0 #000000;
+				box-shadow: inset 0 -1px 0 0 #4c5c96, 0 1px 0 0 #4c5c96;
 			}
 
 			.wrapper.spotlight:after {
-				box-shadow: inset 0 -1px 0 0 #000000, 0 1px 0 0 #000000;
+				box-shadow: inset 0 -1px 0 0 #4c5c96, 0 1px 0 0 #4c5c96;
 			}
 
 			.wrapper.spotlight .inner {
@@ -3811,7 +3784,7 @@ input, select, textarea {
 			}
 
 			.wrapper.spotlight.style2 {
-				background-color: #191919;
+				background-color: #45558d;
 			}
 
 				.wrapper.spotlight.style2:before, .wrapper.spotlight.style2:after {
@@ -3819,15 +3792,15 @@ input, select, textarea {
 				}
 
 				.wrapper.spotlight.style2:before {
-					box-shadow: inset 0 -1px 0 0 #191919, 0 1px 0 0 #191919;
+					box-shadow: inset 0 -1px 0 0 #45558d, 0 1px 0 0 #45558d;
 				}
 
 				.wrapper.spotlight.style2:after {
-					box-shadow: inset 0 -1px 0 0 #191919, 0 1px 0 0 #191919;
+					box-shadow: inset 0 -1px 0 0 #45558d, 0 1px 0 0 #45558d;
 				}
 
 			.wrapper.spotlight.style3 {
-				background-color: #464646;
+				background-color: #3f4e85;
 			}
 
 				.wrapper.spotlight.style3:before, .wrapper.spotlight.style3:after {
@@ -3835,15 +3808,15 @@ input, select, textarea {
 				}
 
 				.wrapper.spotlight.style3:before {
-					box-shadow: inset 0 -1px 0 0 #464646, 0 1px 0 0 #464646;
+					box-shadow: inset 0 -1px 0 0 #3f4e85, 0 1px 0 0 #3f4e85;
 				}
 
 				.wrapper.spotlight.style3:after {
-					box-shadow: inset 0 -1px 0 0 #464646, 0 1px 0 0 #464646;
+					box-shadow: inset 0 -1px 0 0 #3f4e85, 0 1px 0 0 #3f4e85;
 				}
 
 			.wrapper.spotlight.style4 {
-				background-color: #4C4C4C;
+				background-color: #39477c;
 			}
 
 				.wrapper.spotlight.style4:before, .wrapper.spotlight.style4:after {
@@ -3851,15 +3824,15 @@ input, select, textarea {
 				}
 
 				.wrapper.spotlight.style4:before {
-					box-shadow: inset 0 -1px 0 0 #4C4C4C, 0 1px 0 0 #4C4C4C;
+					box-shadow: inset 0 -1px 0 0 #39477c, 0 1px 0 0 #39477c;
 				}
 
 				.wrapper.spotlight.style4:after {
-					box-shadow: inset 0 -1px 0 0 #4C4C4C, 0 1px 0 0 #4C4C4C;
+					box-shadow: inset 0 -1px 0 0 #39477c, 0 1px 0 0 #39477c;
 				}
 
 			.wrapper.spotlight.style5 {
-				background-color: #666666;
+				background-color: #324072;
 			}
 
 				.wrapper.spotlight.style5:before, .wrapper.spotlight.style5:after {
@@ -3867,15 +3840,15 @@ input, select, textarea {
 				}
 
 				.wrapper.spotlight.style5:before {
-					box-shadow: inset 0 -1px 0 0 #666666, 0 1px 0 0 #666666;
+					box-shadow: inset 0 -1px 0 0 #324072, 0 1px 0 0 #324072;
 				}
 
 				.wrapper.spotlight.style5:after {
-					box-shadow: inset 0 -1px 0 0 #666666, 0 1px 0 0 #666666;
+					box-shadow: inset 0 -1px 0 0 #324072, 0 1px 0 0 #324072;
 				}
 
 			.wrapper.spotlight.style6 {
-				background-color: #7F7F7F;
+				background-color: #2d3a69;
 			}
 
 				.wrapper.spotlight.style6:before, .wrapper.spotlight.style6:after {
@@ -3883,11 +3856,11 @@ input, select, textarea {
 				}
 
 				.wrapper.spotlight.style6:before {
-					box-shadow: inset 0 -1px 0 0 #7F7F7F, 0 1px 0 0 #7F7F7F;
+					box-shadow: inset 0 -1px 0 0 #2d3a69, 0 1px 0 0 #2d3a69;
 				}
 
 				.wrapper.spotlight.style6:after {
-					box-shadow: inset 0 -1px 0 0 #7F7F7F, 0 1px 0 0 #7F7F7F;
+					box-shadow: inset 0 -1px 0 0 #2d3a69, 0 1px 0 0 #2d3a69;
 				}
 
 		@media screen and (max-width: 980px) {
