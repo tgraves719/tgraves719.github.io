@@ -100,6 +100,50 @@ layout: base.njk
     backLink.replaceWith(backLink.cloneNode(true));
     const newBackLink = document.getElementById('back-link');
     
+    // Re-initialize InteractiveEffects for all elements 
+    if (window.InteractiveEffects) {
+      // Force re-scan of all interactive elements
+      InteractiveEffects.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+      
+      // Initialize the new back button element
+      InteractiveEffects.rainbowElements.forEach(el => {
+        if (!el._physics && el.classList.contains('interactive-rainbow')) {
+          const rect = el.getBoundingClientRect();
+          Object.assign(el.dataset, {
+            angle: '0',
+            x: rect.width / 2,
+            y: rect.height / 2,
+            targetX: rect.width / 2,
+            targetY: rect.height / 2,
+            velocityX: '0',
+            velocityY: '0'
+          });
+
+          // Set initial CSS custom properties
+          el.style.setProperty('--x', `${rect.width / 2}px`);
+          el.style.setProperty('--y', `${rect.height / 2}px`);
+          const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+          el.style.setProperty('--angle', `${initialAngle}deg`);
+
+          // Initialize physics object
+          el._physics = {
+            angle: initialAngle,
+            x: rect.width / 2,
+            y: rect.height / 2,
+            targetX: rect.width / 2,
+            targetY: rect.height / 2,
+            velocityX: 0,
+            velocityY: 0
+          };
+
+          // Add mouse event listeners
+          el.addEventListener('mouseenter', (e) => InteractiveEffects.onMouseEnter(e));
+          el.addEventListener('mouseleave', (e) => InteractiveEffects.onMouseLeave(e));
+          el.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
+        }
+      });
+    }
+    
     // Make the back link use smooth page transitions
     newBackLink.addEventListener('click', function(e) {
       e.preventDefault();

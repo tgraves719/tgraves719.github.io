@@ -70,12 +70,41 @@
       opacity: 0.9;
     }
 
+    /* Make button.interactive-rainbow elements always glow like in reference */
+    button.interactive-rainbow::before { 
+      opacity: 0.6; 
+    }
+    button.interactive-rainbow:hover::before { 
+      opacity: 0.9; 
+    }
+
+    /* Special styling for Reality Engine button - always glowing with interactivity */
+    #reality-engine-btn {
+      --angle: 45deg;
+      --x: 50%;
+      --y: 50%;
+    }
+    #reality-engine-btn::before {
+      opacity: 0.9 !important;
+    }
+    #reality-engine-btn:hover::before {
+      opacity: 1.0 !important;
+    }
+
     /* When sound is enabled - dimmer rainbow buttons */
     body.sound-is-on .interactive-rainbow:hover::before {
       opacity: 0.15;
     }
     body.sound-is-on .nav-link.active.interactive-rainbow::before {
       opacity: 0.25;
+    }
+    
+    /* Reality Engine button with sound on - still glows but dimmer */
+    body.sound-is-on #reality-engine-btn::before {
+      opacity: 0.2 !important;
+    }
+    body.sound-is-on #reality-engine-btn:hover::before {
+      opacity: 0.4 !important;
     }
 
     /* Loading Animation Styles */
@@ -480,7 +509,6 @@
       generateChunk(chunkX, chunkY, chunkZ) {
         const key = `${chunkX},${chunkY},${chunkZ}`;
         if (this.worldGrid.has(key)) {
-          console.log('🔄 Chunk already exists:', key);
           return;
         }
 
@@ -569,12 +597,6 @@
       animate() {
         requestAnimationFrame(() => this.animate());
 
-        // Log every 60 frames (roughly every second)
-        if (!this.frameCount) this.frameCount = 0;
-        this.frameCount++;
-        if (this.frameCount % 60 === 0) {
-          console.log('🎬 Animation frame', this.frameCount, '- chunks:', this.worldGrid.size, 'spheres visible:', Array.from(this.worldGrid.values()).flat().length);
-        }
 
         // Process visual queue from melody system
         while (AppState.visualQueue.length > 0) {
@@ -866,6 +888,14 @@
         gyroEnabled: false,
 
         init() {
+          // If already initialized, just scan for new elements
+          if (this.initialized) {
+            console.log('🔄 InteractiveEffects re-scanning for new elements...');
+            this.addNewElements();
+            return;
+          }
+          this.initialized = true;
+          
           this.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
 
           // Initialize each rainbow element with physics data
@@ -884,7 +914,20 @@
             // Set initial CSS custom properties
             el.style.setProperty('--x', `${rect.width / 2}px`);
             el.style.setProperty('--y', `${rect.height / 2}px`);
-            el.style.setProperty('--angle', '0deg');
+            // Reality Engine button starts with visible rotation
+            const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+            el.style.setProperty('--angle', `${initialAngle}deg`);
+
+            // Initialize physics object immediately for better responsiveness
+            el._physics = {
+              angle: initialAngle,
+              x: rect.width / 2,
+              y: rect.height / 2,
+              targetX: rect.width / 2,
+              targetY: rect.height / 2,
+              velocityX: 0,
+              velocityY: 0
+            };
 
             // Add mouse event listeners
             el.addEventListener('mouseenter', (e) => this.onMouseEnter(e));
@@ -938,6 +981,58 @@
           if (el._physics) {
             el._physics.targetX = el._cachedRect.width / 2;
             el._physics.targetY = el._cachedRect.height / 2;
+          }
+        },
+
+        addNewElements() {
+          // Find all interactive-rainbow elements
+          const allElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+          
+          // Filter to only new elements (those not in rainbowElements array)
+          const newElements = allElements.filter(el => !this.rainbowElements.includes(el));
+          
+          if (newElements.length > 0) {
+            console.log(`✨ Found ${newElements.length} new interactive elements`);
+            
+            // Initialize new elements
+            newElements.forEach(el => {
+              const rect = el.getBoundingClientRect();
+              Object.assign(el.dataset, {
+                angle: '0',
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: '0',
+                velocityY: '0'
+              });
+
+              // Set initial CSS custom properties
+              el.style.setProperty('--x', `${rect.width / 2}px`);
+              el.style.setProperty('--y', `${rect.height / 2}px`);
+              // Reality Engine button starts with visible rotation
+              const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+              el.style.setProperty('--angle', `${initialAngle}deg`);
+
+              // Initialize physics object immediately for better responsiveness
+              el._physics = {
+                angle: initialAngle,
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: 0,
+                velocityY: 0
+              };
+
+              // Add mouse event listeners
+              el.addEventListener('mouseenter', (e) => this.onMouseEnter(e));
+              el.addEventListener('mouseleave', (e) => this.onMouseLeave(e));
+              el.addEventListener('mousemove', (e) => this.onMouseMove(e));
+            });
+            
+            // Add new elements to the array
+            this.rainbowElements.push(...newElements);
           }
         },
 
@@ -1486,6 +1581,45 @@
             const newRealityEngineBtn = realityEngineBtn.cloneNode(true);
             realityEngineBtn.parentNode.replaceChild(newRealityEngineBtn, realityEngineBtn);
 
+            // Let InteractiveEffects handle this button with its normal initialization
+            if (window.InteractiveEffects) {
+              // Simply re-run init to pick up the new element
+              InteractiveEffects.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+              
+              // Find and re-initialize just this button
+              const rect = newRealityEngineBtn.getBoundingClientRect();
+              Object.assign(newRealityEngineBtn.dataset, {
+                angle: '0',
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: '0',
+                velocityY: '0'
+              });
+
+              // Set initial CSS custom properties - reality engine starts at 45 degrees
+              newRealityEngineBtn.style.setProperty('--x', `${rect.width / 2}px`);
+              newRealityEngineBtn.style.setProperty('--y', `${rect.height / 2}px`);
+              newRealityEngineBtn.style.setProperty('--angle', '45deg');
+
+              // Initialize physics object
+              newRealityEngineBtn._physics = {
+                angle: 45, // Reality Engine button starts with visible rotation
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: 0,
+                velocityY: 0
+              };
+
+              // Re-add event listeners
+              newRealityEngineBtn.addEventListener('mouseenter', (e) => InteractiveEffects.onMouseEnter(e));
+              newRealityEngineBtn.addEventListener('mouseleave', (e) => InteractiveEffects.onMouseLeave(e));
+              newRealityEngineBtn.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
+            }
+
             newRealityEngineBtn.addEventListener('click', async (e) => {
               e.preventDefault();
               e.stopPropagation(); // Prevent event bubbling that could trigger sound
@@ -1638,6 +1772,30 @@
           if (devlogBtn) {
             devlogBtn.replaceWith(devlogBtn.cloneNode(true));
             const newDevlogBtn = document.getElementById('toggle-devlog-btn');
+            
+            // Re-initialize InteractiveEffects for cloned button
+            if (window.InteractiveEffects) {
+              InteractiveEffects.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+              InteractiveEffects.rainbowElements.forEach(el => {
+                if (!el._physics && el.classList.contains('interactive-rainbow')) {
+                  const rect = el.getBoundingClientRect();
+                  Object.assign(el.dataset, {
+                    angle: '0', x: rect.width / 2, y: rect.height / 2,
+                    targetX: rect.width / 2, targetY: rect.height / 2, velocityX: '0', velocityY: '0'
+                  });
+                  el.style.setProperty('--x', `${rect.width / 2}px`);
+                  el.style.setProperty('--y', `${rect.height / 2}px`);
+                  const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+                  el.style.setProperty('--angle', `${initialAngle}deg`);
+                  el._physics = { angle: initialAngle, x: rect.width / 2, y: rect.height / 2, 
+                    targetX: rect.width / 2, targetY: rect.height / 2, velocityX: 0, velocityY: 0 };
+                  el.addEventListener('mouseenter', (e) => InteractiveEffects.onMouseEnter(e));
+                  el.addEventListener('mouseleave', (e) => InteractiveEffects.onMouseLeave(e));
+                  el.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
+                }
+              });
+            }
+            
             newDevlogBtn.addEventListener('click', () => {
               const isHidden = devlogSection.classList.contains('hidden');
               devlogSection.classList.toggle('hidden');
@@ -1653,6 +1811,30 @@
           if (collaboratorsBtn) {
             collaboratorsBtn.replaceWith(collaboratorsBtn.cloneNode(true));
             const newCollaboratorsBtn = document.getElementById('toggle-collaborators-btn');
+            
+            // Re-initialize InteractiveEffects for cloned button
+            if (window.InteractiveEffects) {
+              InteractiveEffects.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+              InteractiveEffects.rainbowElements.forEach(el => {
+                if (!el._physics && el.classList.contains('interactive-rainbow')) {
+                  const rect = el.getBoundingClientRect();
+                  Object.assign(el.dataset, {
+                    angle: '0', x: rect.width / 2, y: rect.height / 2,
+                    targetX: rect.width / 2, targetY: rect.height / 2, velocityX: '0', velocityY: '0'
+                  });
+                  el.style.setProperty('--x', `${rect.width / 2}px`);
+                  el.style.setProperty('--y', `${rect.height / 2}px`);
+                  const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+                  el.style.setProperty('--angle', `${initialAngle}deg`);
+                  el._physics = { angle: initialAngle, x: rect.width / 2, y: rect.height / 2, 
+                    targetX: rect.width / 2, targetY: rect.height / 2, velocityX: 0, velocityY: 0 };
+                  el.addEventListener('mouseenter', (e) => InteractiveEffects.onMouseEnter(e));
+                  el.addEventListener('mouseleave', (e) => InteractiveEffects.onMouseLeave(e));
+                  el.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
+                }
+              });
+            }
+            
             newCollaboratorsBtn.addEventListener('click', () => {
               const isHidden = collaboratorsSection.classList.contains('hidden');
               collaboratorsSection.classList.toggle('hidden');
@@ -1766,6 +1948,45 @@
       console.log('✨ Initializing Interactive Effects...');
       InteractiveEffects.init();
       InteractiveEffects.setupDeviceOrientation();
+      
+      // InteractiveEffects will be updated by ThreeDBackground animation loop for optimal performance
+      console.log('🚀 InteractiveEffects will use shared animation loop (ThreeDBackground.animate)...');
+      if (window.InteractiveEffects && typeof InteractiveEffects.updateElements === 'function') {
+        // Force initial update to kick-start all elements
+        console.log('🎬 Forcing initial InteractiveEffects update...');
+        InteractiveEffects.updateElements();
+        console.log('✅ InteractiveEffects will be updated by shared animation loop');
+        
+        // Double check Reality Engine button specifically
+        setTimeout(() => {
+          const realityBtn = document.getElementById('reality-engine-btn');
+          if (realityBtn) {
+            console.log('🌈 Reality Engine button found:', realityBtn);
+            console.log('🔍 Physics object:', realityBtn._physics);
+            console.log('🎨 Current --angle:', realityBtn.style.getPropertyValue('--angle'));
+            
+            // If physics object is missing, create it manually
+            if (!realityBtn._physics) {
+              console.log('⚡ Creating missing physics object for Reality Engine button');
+              const rect = realityBtn.getBoundingClientRect();
+              realityBtn._physics = {
+                angle: 45,
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: 0,
+                velocityY: 0
+              };
+            }
+            
+            // Force a manual angle update
+            realityBtn._physics.angle = 45; // Start with a visible angle
+            realityBtn.style.setProperty('--angle', '45deg');
+            console.log('🔄 Manually set Reality Engine angle to 45deg');
+          }
+        }, 100);
+      }
 
       console.log('⚙️ Initializing page-specific scripts...');
       PageTransition.initializePageSpecificScripts();
@@ -1834,6 +2055,17 @@
           }
         }, 100);
       }
+
+      // Final animation verification
+      console.log('🔥 Final animation check...');
+      setTimeout(() => {
+        if (ThreeDBackground && typeof ThreeDBackground.animate === 'function') {
+          console.log('✅ ThreeDBackground animation is running');
+        } else {
+          console.warn('⚠️ ThreeDBackground animation may not be running');
+        }
+        console.log('✅ All animations should be running');
+      }, 200);
     });
   </script>
 
