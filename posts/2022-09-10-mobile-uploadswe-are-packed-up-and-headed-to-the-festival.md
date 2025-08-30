@@ -10,5 +10,3 @@ tags:
 ---
 
 We are packed up and headed to the festival!
-
-![Image](images/480778747_1183621756819765_3112620102943742103_n_559793182535962.jpg)
