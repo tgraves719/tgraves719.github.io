@@ -1454,7 +1454,7 @@
             image: "images/pic04.jpg",
             videoId: "",
             tags: ["post","Portraits of Change","Essay","Jazz Theory","Improvisation","Miles Davis","Creativity"],
-            content: "<p><em>Portraits of Change</em> chose to feature jazz music, among other genres, because the music is new every time you listen to it. Often times, you have to study and appreciate the intricate harmonic movements in jazz to &quot;get it&quot; or feel it. I was interested in different ways of representing these subtle aspects of jazz. Essentially, to create a real-time visual captioning of the harmony.</p>\n<p>Our approach to visualizing music was simple. We let the music carry the weight of the work, and the change of effects on stage. If we played classical music, we would know precisely what the outcome should look like. This is useful in many situations. With jazz improvisation however, this ensures a new, emergent, experience every time.</p>\n<p>I was primarily inspired by Miles Davis approach to jazz, and innovation. The way he approached his horn like a laboratory, always trying new sounds, new forms, deeply inspired me. How he approached Bitches Brew is how I tried to embody creativity throughout the project. This is in diametric congruence with Coltrane's philosophies, that also deeply influenced my music theory and analytical application of geometry to music. I also utilized music set theory from Shoenberg extensively in my audio visualizations.</p>\n"
+            content: "<p><strong><strong>Portraits of Change</strong></strong> chose to feature jazz music, among other genres, because the music is new every time you listen to it. Often times, you have to study and appreciate the intricate harmonic movements in jazz to &quot;get it&quot; or feel it. I was interested in different ways of representing these subtle aspects of jazz. Essentially, to create a real-time visual captioning of the harmony.</p>\n<p>Our approach to visualizing music was simple. We let the music carry the weight of the work, and the change of effects on stage. If we played classical music, we would know precisely what the outcome should look like. This is useful in many situations. With jazz improvisation however, this ensures a new, emergent, experience every time.</p>\n<p>I was primarily inspired by Miles Davis approach to jazz, and innovation. The way he approached his horn like a laboratory, always trying new sounds, new forms, deeply inspired me. How he approached Bitches Brew is how I tried to embody creativity throughout the project. This is in diametric congruence with Coltrane's philosophies, that also deeply influenced my music theory and analytical application of geometry to music. I also utilized music set theory from Shoenberg extensively in my audio visualizations.</p>\n"
           },{
             title: "Portraits Blog: Headed to the festival",
             date: "September 9, 2022",
@@ -1755,7 +1755,7 @@
                   </div>
                   <h3 class="text-xl font-bold text-white mb-2 group-hover:text-gray-300 transition-colors">${post.title}</h3>
                   <p class="text-gray-500 text-sm mb-4">${post.date}</p>
-                  <a href="${post.url}" class="inline-block sound-interactive interactive-rainbow px-4 py-2 font-semibold text-sm uppercase tracking-wider rounded-lg transition-colors" onclick="console.log('📝 Storing navigation history from blog:', window.location.href, document.title); sessionStorage.setItem('last-page-url', window.location.href); sessionStorage.setItem('last-page-title', document.title);">Read More</a>
+                  <a href="${post.url}" class="inline-block sound-interactive interactive-rainbow px-4 py-2 font-semibold text-sm uppercase tracking-wider rounded-lg transition-colors">Read More</a>
                 </div>
               </article>
             `;
@@ -2130,25 +2130,9 @@
                   e.preventDefault();
                   console.log('🎯 Devlog card clicked:', devlogId, 'URL:', targetUrl);
 
-                  // Store the current page URL for back navigation
-                  const currentUrl = window.location.href;
-                  const currentTitle = document.title;
-                  console.log('📝 Storing navigation history from portraits:', currentUrl, currentTitle);
-                  sessionStorage.setItem('last-page-url', currentUrl);
-                  sessionStorage.setItem('last-page-title', currentTitle);
-
-                  // Verify it was stored
-                  console.log('✅ Verification - stored URL:', sessionStorage.getItem('last-page-url'));
-                  console.log('✅ Verification - stored title:', sessionStorage.getItem('last-page-title'));
-
-                  // Use page transition if available, otherwise fall back to direct navigation
-                  if (typeof PageTransition !== 'undefined' && PageTransition.navigateToPage) {
-                    console.log('✨ Using PageTransition.navigateToPage');
-                    PageTransition.navigateToPage(targetUrl);
-                  } else {
-                    console.log('⚠️ PageTransition not available, using direct navigation');
-                    window.location.href = targetUrl;
-                  }
+                  // Use normal navigation to preserve browser history
+                  console.log('🎯 Navigating to devlog post:', targetUrl);
+                  window.location.href = targetUrl;
                 });
               });
 

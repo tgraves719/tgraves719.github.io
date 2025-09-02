@@ -1510,7 +1510,7 @@
                   </div>
                   <h3 class="text-xl font-bold text-white mb-2 group-hover:text-gray-300 transition-colors">${post.title}</h3>
                   <p class="text-gray-500 text-sm mb-4">${post.date}</p>
-                  <a href="${post.url}" class="inline-block sound-interactive interactive-rainbow px-4 py-2 font-semibold text-sm uppercase tracking-wider rounded-lg transition-colors" onclick="console.log('📝 Storing navigation history from blog:', window.location.href, document.title); sessionStorage.setItem('last-page-url', window.location.href); sessionStorage.setItem('last-page-title', document.title);">Read More</a>
+                  <a href="${post.url}" class="inline-block sound-interactive interactive-rainbow px-4 py-2 font-semibold text-sm uppercase tracking-wider rounded-lg transition-colors">Read More</a>
                 </div>
               </article>
             `;
@@ -1885,25 +1885,9 @@
                   e.preventDefault();
                   console.log('🎯 Devlog card clicked:', devlogId, 'URL:', targetUrl);
 
-                  // Store the current page URL for back navigation
-                  const currentUrl = window.location.href;
-                  const currentTitle = document.title;
-                  console.log('📝 Storing navigation history from portraits:', currentUrl, currentTitle);
-                  sessionStorage.setItem('last-page-url', currentUrl);
-                  sessionStorage.setItem('last-page-title', currentTitle);
-
-                  // Verify it was stored
-                  console.log('✅ Verification - stored URL:', sessionStorage.getItem('last-page-url'));
-                  console.log('✅ Verification - stored title:', sessionStorage.getItem('last-page-title'));
-
-                  // Use page transition if available, otherwise fall back to direct navigation
-                  if (typeof PageTransition !== 'undefined' && PageTransition.navigateToPage) {
-                    console.log('✨ Using PageTransition.navigateToPage');
-                    PageTransition.navigateToPage(targetUrl);
-                  } else {
-                    console.log('⚠️ PageTransition not available, using direct navigation');
-                    window.location.href = targetUrl;
-                  }
+                  // Use normal navigation to preserve browser history
+                  console.log('🎯 Navigating to devlog post:', targetUrl);
+                  window.location.href = targetUrl;
                 });
               });
 

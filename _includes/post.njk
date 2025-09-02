@@ -27,67 +27,19 @@ layout: base.njk
 </section>
 
 <script>
-  // Navigation history-based back button with retry mechanism
+  // Simple back button that works exactly like browser back button
   function setupBackButton() {
     const backLink = document.getElementById('back-link');
     if (!backLink) return;
     
-    // Get stored navigation history
-    const lastPageUrl = sessionStorage.getItem('last-page-url');
-    const lastPageTitle = sessionStorage.getItem('last-page-title') || 'Previous Page';
+    // Remove the href to prevent default link behavior
+    backLink.removeAttribute('href');
+    backLink.style.cursor = 'pointer';
     
-    console.log('🔍 Navigation history - Last URL:', lastPageUrl);
-    console.log('🔍 Navigation history - Last Title:', lastPageTitle);
-    console.log('🔍 Document referrer:', document.referrer);
-    console.log('🔍 Current URL:', window.location.href);
+    // Set generic back text
+    backLink.textContent = '← Back';
     
-    // Debug: show ALL session storage keys
-    console.log('🔍 All session storage keys:');
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      console.log(`  ${key}: ${sessionStorage.getItem(key)}`);
-    }
-    
-    if (lastPageUrl) {
-      // Use the stored URL - this is like browser back button behavior
-      backLink.href = lastPageUrl;
-      
-      // Set appropriate back button text based on the URL
-      if (lastPageUrl.includes('/work/portraits-of-change/')) {
-        backLink.textContent = '← Back to Portraits of Change';
-      } else if (lastPageUrl.includes('/blog/')) {
-        backLink.textContent = '← Back to Blog';
-      } else {
-        // Extract a readable name from the URL or title
-        backLink.textContent = '← Back';
-      }
-      
-      console.log('✅ Back button set to:', backLink.href, 'with text:', backLink.textContent);
-    } else {
-      // Fallback: try to use referrer if available
-      const referrer = document.referrer;
-      if (referrer && referrer !== window.location.href) {
-        if (referrer.includes('/work/portraits-of-change/')) {
-          backLink.href = '/work/portraits-of-change/';
-          backLink.textContent = '← Back to Portraits of Change';
-          console.log('✅ Back button set using referrer: Portraits');
-        } else if (referrer.includes('/blog/')) {
-          backLink.href = '/blog/';
-          backLink.textContent = '← Back to Blog';
-          console.log('✅ Back button set using referrer: Blog');
-        } else {
-          // Default fallback
-          backLink.href = '/blog/';
-          backLink.textContent = '← Back to Blog';
-          console.log('⚠️ Using default blog fallback');
-        }
-      } else {
-        // Ultimate fallback to blog if no history available
-        backLink.href = '/blog/';
-        backLink.textContent = '← Back to Blog';
-        console.log('⚠️ No navigation history or referrer found, defaulting to blog');
-      }
-    }
+    console.log('✅ Back button configured to use browser history');
   }
   
   // Run immediately and also on DOMContentLoaded
@@ -147,13 +99,20 @@ layout: base.njk
       });
     }
     
-    // Make the back link use smooth page transitions
+    // Make the back link use browser history (like back button)
     newBackLink.addEventListener('click', function(e) {
       e.preventDefault();
-      if (typeof PageTransition !== 'undefined') {
-        PageTransition.navigateToPage(this.href);
+      
+      // Check if there's history to go back to
+      if (window.history.length > 1) {
+        window.history.back();
       } else {
-        window.location.href = this.href;
+        // Fallback if no history (e.g., direct link to post)
+        if (typeof PageTransition !== 'undefined') {
+          PageTransition.navigateToPage('/blog/');
+        } else {
+          window.location.href = '/blog/';
+        }
       }
     });
   }
