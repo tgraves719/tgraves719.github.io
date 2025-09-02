@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "Demo: Game Dev Meetup AR Performance"
+title: "Game Dev Meetup MR Performance"
 project: "portraits-of-change"
 contentType: "demo"
 date: 2022-09-10

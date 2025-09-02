@@ -8,9 +8,7 @@ videoId: "HlHTue853-E"
 tags:
   - Portraits of Change
   - Performance
-  - Mixed Reality
   - Video
-  - Photo
 
 image: "https://img.youtube.com/vi/HlHTue853-E/maxresdefault.jpg"
 ---

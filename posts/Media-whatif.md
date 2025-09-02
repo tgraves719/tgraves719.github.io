@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "Media: What If Festival 2022 on FOX21 News"
+title: "Portraits of Change on FOX21 News"
 project: "portraits-of-change"
 contentType: "media"
 date: 2022-09-09

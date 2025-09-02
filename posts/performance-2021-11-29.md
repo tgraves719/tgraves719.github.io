@@ -2,14 +2,13 @@
 layout: post.njk
 title: "Brass Quintet in Mixed Reality"
 project: "portraits-of-change"
-contentType: "devlog"
+contentType: "performance"
 date: 2021-11-29
 videoId: "uwoQDt-eHTY"
 tags:
   - Portraits of Change
   - Performance
   - Video
-  - Photo
 
 image: "https://img.youtube.com/vi/uwoQDt-eHTY/maxresdefault.jpg"
 ---
