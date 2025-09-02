@@ -17,17 +17,9 @@ layout: base.njk
     {% elif image %}
     <img src="/{{ image }}" alt="{{ title }}" class="w-full h-auto rounded-xl mb-12 shadow-lg">
     {% endif %}
-    <div class="prose prose-invert prose-lg max-w-none text-gray-300" style="--tw-prose-body: theme('colors.gray.300');">
+    <div class="prose prose-invert prose-lg max-w-none text-gray-300">
       {{ content | safe }}
     </div>
-    <style>
-      .prose p + p {
-        margin-top: 1.5em;
-      }
-      .prose p {
-        margin-bottom: 1em;
-      }
-    </style>
   </div>
 </section>
 

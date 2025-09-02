@@ -8,10 +8,8 @@ tags:
   - Creativity
 ---
 
-**Jazz** drew me in as a pedagogy to study and an artform to appreciate because it is never the same twice. Each performance creates structures that vanish as soon as they appear, held together by emotional harmonic movements that often require deep listening to fully grasp. With *Portraits of Change*, I wanted to explore whether those fleeting harmonic subtleties could be made more visible, something like real-time captions for music.
+Portraits of Change chose to feature jazz music, among other genres, because the music is new every time you listen to it. Often times, you have to study and appreciate the intricate harmonic movements in jazz to "get it" or feel it. I was interested in different ways of representing these subtle aspects of jazz. Essentially, to create a real-time visual captioning of the harmony. 
 
+Our approach to visualizing music was simple. We let the music carry the weight of the work, and the change of effects on stage. If we played classical music, we would know precisely what the outcome should look like. This is useful in many situations. With jazz improvisation however, this ensures a new, emergent, experience every time. 
 
-Our approach was straightforward. We let the music carry the weight and let the visuals respond. With classical repertoire every note is predetermined, so the outcome of the visualization would also be fixed. That can be useful in certain contexts. But with jazz improvisation, the unpredictability ensures the visuals are emergent, producing a genuinely new experience every time.
-
-
-My inspirations came from different poles of 20th-century music. Miles Davis treated his horn like a laboratory, always testing new sounds and forms. Coltrane's rigor and his geometric approach to harmony offered a different model of exploration. And Schoenberg's twelve-tone set theory gave me tools for thinking about pitch and structure mathematically. What united these influences wasn't a singular framework or the discovery of "deeper truths" of music or perception, but the recognition that music can be studied, re-framed, and experimented with through different lenses.
+I was primarily inspired by Miles Davis approach to jazz, and innovation. The way he approached his horn like a laboratory, always trying new sounds, new forms, deeply inspired me. How he approached Bitches Brew is how I tried to embody creativity throughout the project. This is in diametric congruence with Coltrane's philosophies, that also deeply influenced my music theory and analytical application of geometry to music. I also utilized music set theory from Shoenberg extensively in my audio visualizations.

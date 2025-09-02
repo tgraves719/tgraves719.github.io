@@ -17,3 +17,9 @@ Portraits of Change is a mixed-reality jazz show. Learn more at https://portrait
 <div class="text-center my-8">
   <video controls class="max-w-4xl w-full rounded-lg shadow-lg" src="/images/AQO4PCTNzOokNq7Oww2dXz4A0AWN6FrcDfEk3n8xur0n9ooZwCVbq6UR256t_Rq0h9Jsode_od3YTHqG4jWSyW_682455242538027.mp4"></video>
 </div>
+
+## Related Links
+
+- [https://portraitsofchange.org/](https://portraitsofchange.org/)
+
+- [https://youtu.be/RUBBKnUVU-s](https://youtu.be/RUBBKnUVU-s)
