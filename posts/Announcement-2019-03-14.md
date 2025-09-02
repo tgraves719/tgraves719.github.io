@@ -8,6 +8,7 @@ image: "images/54514638_551769265332490_4740775542591062016_n_551769261999157.jp
 tags:
   - Portraits of Change
   - Announcement
+  - Photo
 ---
 
 Exciting things are happening in Southern Colorado. More to be announced soon!

@@ -6,7 +6,10 @@ module.exports = function(eleventyConfig) {
   // Helper filter to format dates in a human readable way
   eleventyConfig.addFilter("postDate", (dateObj) => {
     const date = new Date(dateObj);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    // Add the timezone offset to ensure the date displays correctly regardless of timezone
+    const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+    const correctedDate = new Date(utc);
+    return correctedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   });
 
   // Create a custom collection that filters out automatic 'post' tags

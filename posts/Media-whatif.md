@@ -9,6 +9,7 @@ videoSrc: "/images/What IF Festival 2023 FOX21 News Colorado.mp4"
 tags:
   - Portraits of Change
   - Media
+  - Video
 ---
 Got to help out the What If Festival promote the event by bringing my project to the local news station and talk about it for a couple of minutes. Was so much fun!!! Remember to join us in Colorado Springs for the What If... Festival of Innovation and Imagination 2022!
 

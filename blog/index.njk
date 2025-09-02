@@ -3,9 +3,14 @@ layout: base.njk
 title: Blog
 ---
 <section class="py-16">
-  <h1 class="text-3xl tracking-tight mb-12 uppercase font-bold text-white" style="letter-spacing: 0.1em;">From the Blog</h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
-    {% for post in collections.post | reverse %}
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
+    <h1 class="text-3xl tracking-tight uppercase font-bold text-white" style="letter-spacing: 0.1em;">From the Blog</h1>
+    <button id="sortButton" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg transition-all" title="Sort posts by date">
+      <span id="sortArrow">↓</span>
+    </button>
+  </div>
+  <div id="blogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
+    {% for post in collections.post %}
       <a href="{{ post.url }}" class="static-rainbow bg-[var(--color-bg-card)] rounded-xl flex flex-col transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-900/10">
         {% if post.data.videoId %}
         <div class="m-3 overflow-hidden rounded-xl aspect-video">

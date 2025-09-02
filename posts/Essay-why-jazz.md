@@ -4,10 +4,10 @@ title: "Why Jazz? A History of Innovation"
 project: "portraits-of-change"
 contentType: "essay"
 date: 2019-03-15
-image: "images/pic04.jpg"
 tags:
   - Portraits of Change
   - Essay
+  - Photo
 ---
 You may be wondering what all the fuss is about. Is it "elevator music"? Is it for pretentious cocktail parties? After learning its history, you decide.
 

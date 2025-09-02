@@ -1713,6 +1713,9 @@
 
           // Initialize Reality Engine button if we're on the home page
           this.initRealityEngineButton();
+          
+          // Initialize blog sort button
+          this.initBlogSortButton();
         },
 
         initRealityEngineButton() {
@@ -2026,6 +2029,59 @@
               }
             });
           }
+        },
+
+        initBlogSortButton() {
+          const sortButton = document.getElementById('sortButton');
+          const sortArrow = document.getElementById('sortArrow');
+          const blogGrid = document.getElementById('blogGrid');
+          
+          if (!sortButton || !sortArrow || !blogGrid) return;
+          
+          // Remove any existing event listeners to prevent duplicates
+          const newSortButton = sortButton.cloneNode(true);
+          sortButton.parentNode.replaceChild(newSortButton, sortButton);
+          
+          // Get the new references after replacement
+          const freshSortButton = document.getElementById('sortButton');
+          const freshSortArrow = document.getElementById('sortArrow');
+          
+          let currentlyNewest = true; // Posts start newest first
+          freshSortArrow.textContent = '↓'; // Show current state
+          
+          freshSortButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Get all posts
+            const posts = Array.from(blogGrid.children);
+            
+            // Sort them
+            posts.sort((a, b) => {
+              const dateTextA = a.querySelector('p.text-sm.text-gray-500')?.textContent.trim();
+              const dateTextB = b.querySelector('p.text-sm.text-gray-500')?.textContent.trim();
+              
+              if (!dateTextA || !dateTextB) return 0;
+              
+              const dateA = new Date(dateTextA);
+              const dateB = new Date(dateTextB);
+              
+              if (currentlyNewest) {
+                // Currently newest, switch to oldest
+                return dateA - dateB; // oldest first
+              } else {
+                // Currently oldest, switch to newest
+                return dateB - dateA; // newest first
+              }
+            });
+            
+            // Clear grid and add sorted posts
+            blogGrid.innerHTML = '';
+            posts.forEach(post => blogGrid.appendChild(post));
+            
+            // Toggle state and update arrow
+            currentlyNewest = !currentlyNewest;
+            freshSortArrow.textContent = currentlyNewest ? '↓' : '↑';
+          });
         },
 
         animateCameraForPage(pageId) {

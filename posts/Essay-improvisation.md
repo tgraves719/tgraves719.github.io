@@ -8,6 +8,7 @@ image: "images/pic04.jpg"
 tags:
   - Portraits of Change
   - Essay
+  - Photo
 ---
 
 *Portraits of Change* chooses to feature jazz music, among other genres, because the music is new every time you listen to it. Often times, you have to study and appreciate the intricate harmonic movements in jazz to "get it" or feel it. I am interested in different ways of representing these subtle aspects of jazz. Essentially, to create a real-time visual captioning of the harmony. 
