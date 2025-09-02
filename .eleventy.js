@@ -9,6 +9,19 @@ module.exports = function(eleventyConfig) {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   });
 
+  // Create a custom collection that filters out automatic 'post' tags
+  eleventyConfig.addCollection("post", function(collectionApi) {
+    return collectionApi.getFilteredByGlob("posts/*.md").map(post => {
+      // Remove the automatic 'post' tag if it exists
+      if (post.data.tags && post.data.tags.includes('post')) {
+        post.data.tags = post.data.tags.filter(tag => tag !== 'post');
+      }
+      return post;
+    }).sort((a, b) => {
+      return b.date - a.date; // Sort by date descending (newest first)
+    });
+  });
+
   return {
     dir: {
       input: ".",
