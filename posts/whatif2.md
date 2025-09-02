@@ -1,19 +1,21 @@
 ---
 layout: post.njk
-title: "Why Jazz? A History of Innovation"
-date: 2019-03-15
-image: "images/pic04.jpg"
+title: "Media: What If Festival 2022 on FOX21 News"
+project: "portraits-of-change"
+contentType: "media"
+date: 2022-09-09
+# thumbnail: "images/thumbs/fox21-news-thumb.jpg" # TODO: Add when thumbnail is created
+videoSrc: "/images/What IF Festival 2023 FOX21 News Colorado.mp4"
 tags:
-  - Music
-  - History
-  - Philosophy
+  - Portraits of Change
+  - Media
+  - FOX21 News
+  - What If Festival
+  - Interview
 ---
-You may be wondering what all the fuss is about. Is it "elevator music"? Is it for pretentious cocktail parties? After learning its history, you decide.
+Got to help out the What If Festival promote the event by bringing my project to the local news station and talk about it for a couple of minutes. Was so much fun!!! Remember to join us in Colorado Springs for the What If... Festival of Innovation and Imagination 2022!
 
-Jazz sits at the center of Portraits of Change. What evolved between a confrontation in culture led to a syncretism of art. As technology continues to develop in both the music world and in other fields, there arises a need to continue Jazz's cultural heritage in new, dynamic ways.
 
-Portraits of Change initially started as a recital focused on music innovation. I wanted to highlight past innovative works within jazz, and try to paint a "portrait" of the composer through their own music. A portrait can be defined as a painting, drawing, photo, or visual representation of a person usually depicting only the face or head and shoulders. A more abstract definition is a representation or impression of someone. That is exactly what we set out with our audiovisual environments, to paint with sound and light an impression of the mood and likeness of the composer.
-
-> "If a Jazz musician plays someone else's song, he has a responsibility to make a distinct & original statement."
-
-I hope that by adding a visual component to the music, it makes it more accessible to untrained ears and more enjoyable and immersive for everyone. I hope to spark joy and interest in these wonderful musicians throughout time that have inspired me and to foster more listeners to their music through this medium of mixed reality and music.
+<div class="text-center my-8">
+  <video controls class="max-w-4xl w-full rounded-lg shadow-lg" src="/images/What IF Festival 2023 FOX21 News Colorado.mp4"></video>
+</div>

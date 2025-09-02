@@ -34,7 +34,7 @@
       position: relative;
       z-index: 1;
       overflow: hidden;
-      border: 3px solid transparent;
+      border: 4px solid transparent;
       color: white;
     }
     .interactive-rainbow::before {
@@ -62,7 +62,7 @@
       background: var(--color-bg-card);
       border-radius: inherit;
     }
-    /* Default state (muted) - bright rainbow buttons */
+    /* Default state (sound OFF) - rainbow only on hover */
     .interactive-rainbow:hover::before {
       opacity: 0.8;
     }
@@ -70,12 +70,19 @@
       opacity: 0.9;
     }
 
-    /* Make button.interactive-rainbow elements always glow like in reference */
-    button.interactive-rainbow::before { 
-      opacity: 0.6; 
-    }
+    /* Button elements - no rainbow by default, only on hover */
     button.interactive-rainbow:hover::before { 
       opacity: 0.9; 
+    }
+
+    /* Special case: toggled portrait buttons stay on */
+    #toggle-devlog-btn.toggled::before,
+    #toggle-collaborators-btn.toggled::before {
+      opacity: 0.6;
+    }
+    #toggle-devlog-btn.toggled:hover::before,
+    #toggle-collaborators-btn.toggled:hover::before {
+      opacity: 0.9;
     }
 
     /* Special styling for Reality Engine button - always glowing with interactivity */
@@ -91,21 +98,159 @@
       opacity: 1.0 !important;
     }
 
-    /* When sound is enabled - dimmer rainbow buttons */
+    /* When sound is enabled - dim/faded rainbow buttons */
     body.sound-is-on .interactive-rainbow:hover::before {
       opacity: 0.15;
     }
     body.sound-is-on .nav-link.active.interactive-rainbow::before {
       opacity: 0.25;
     }
-    
-    /* Reality Engine button with sound on - still glows but dimmer */
+    body.sound-is-on button.interactive-rainbow:hover::before { 
+      opacity: 0.2; 
+    }
+
+    /* Sound enabled: toggled portrait buttons stay dimly visible */
+    body.sound-is-on #toggle-devlog-btn.toggled::before,
+    body.sound-is-on #toggle-collaborators-btn.toggled::before {
+      opacity: 0.1;
+    }
+    body.sound-is-on #toggle-devlog-btn.toggled:hover::before,
+    body.sound-is-on #toggle-collaborators-btn.toggled:hover::before {
+      opacity: 0.2;
+    }
     body.sound-is-on #reality-engine-btn::before {
       opacity: 0.2 !important;
     }
     body.sound-is-on #reality-engine-btn:hover::before {
       opacity: 0.4 !important;
     }
+
+    /* Static rainbow borders for cards - no cursor following */
+    .static-rainbow {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      border: 3px solid transparent;
+      color: white;
+    }
+    .static-rainbow::before {
+      content: '';
+      position: absolute;
+      z-index: -2;
+      left: 50%;
+      top: 50%;
+      width: 400%;
+      padding-bottom: 400%;
+      background: conic-gradient(
+        from 0deg,
+        #ff2a2a, #ff8000, #ffff00, #40ff00,
+        #00ffff, #0080ff, #8000ff, #ff00ff, #ff2a2a
+      );
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      animation: rainbow-rotate 3s linear infinite;
+    }
+    .static-rainbow::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset: 3px;
+      background: var(--color-bg-card);
+      border-radius: inherit;
+    }
+    .static-rainbow:hover::before {
+      opacity: 0.8;
+    }
+
+    /* When sound is enabled - dim static rainbow cards too */
+    body.sound-is-on .static-rainbow:hover::before {
+      opacity: 0.15;
+    }
+
+    /* Prose styles for markdown content */
+    .prose {
+      color: var(--tw-prose-body);
+      max-width: 65ch;
+    }
+    .prose p {
+      margin-top: 1.25em;
+      margin-bottom: 1.25em;
+      line-height: 1.75;
+    }
+    .prose blockquote {
+      font-style: italic;
+      border-left: 4px solid var(--color-border);
+      padding-left: 1em;
+      margin: 1.6em 0;
+      color: #d1d5db;
+    }
+    .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+      color: white;
+      font-weight: 700;
+      margin-top: 2em;
+      margin-bottom: 1em;
+      line-height: 1.25;
+    }
+    .prose h1 { font-size: 2.25em; }
+    .prose h2 { font-size: 1.875em; }
+    .prose h3 { font-size: 1.5em; }
+    .prose h4 { font-size: 1.25em; }
+    .prose strong {
+      color: white;
+      font-weight: 600;
+    }
+    .prose em {
+      font-style: italic;
+    }
+    .prose ul, .prose ol {
+      margin: 1.25em 0;
+      padding-left: 1.625em;
+    }
+    .prose li {
+      margin: 0.5em 0;
+    }
+    .prose a {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+    .prose a:hover {
+      color: #93c5fd;
+    }
+    .prose code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.125em 0.25em;
+      border-radius: 0.25em;
+      font-size: 0.875em;
+    }
+    .prose pre {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 1em;
+      border-radius: 0.5em;
+      overflow-x: auto;
+      margin: 1.5em 0;
+    }
+    .prose pre code {
+      background: none;
+      padding: 0;
+    }
+    
+    /* Fast fade transitions for portrait sections */
+    #devlog-section, #collaborators-section, #core-concepts-section {
+      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+      opacity: 1;
+      visibility: visible;
+    }
+    #devlog-section.hidden, #collaborators-section.hidden, #core-concepts-section.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    
+    @keyframes rainbow-rotate {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
 
     /* Loading Animation Styles */
     #loading-overlay {
@@ -1713,6 +1858,7 @@
           const collaboratorsBtn = document.getElementById('toggle-collaborators-btn');
           const devlogSection = document.getElementById('devlog-section');
           const collaboratorsSection = document.getElementById('collaborators-section');
+          const coreConceptsSection = document.getElementById('core-concepts-section');
           const devlogGrid = document.getElementById('devlog-grid');
 
           // Populate devlog grid if it exists
@@ -1797,13 +1943,38 @@
             }
             
             newDevlogBtn.addEventListener('click', () => {
-              const isHidden = devlogSection.classList.contains('hidden');
-              devlogSection.classList.toggle('hidden');
-              newDevlogBtn.textContent = isHidden ? 'Hide Development Log' : 'View Development Log';
-
-              if (!isHidden && collaboratorsSection && !collaboratorsSection.classList.contains('hidden')) {
-                collaboratorsSection.classList.add('hidden');
-                if (collaboratorsBtn) collaboratorsBtn.textContent = 'View Collaborators';
+              const isCurrentlyHidden = devlogSection.classList.contains('hidden');
+              
+              if (isCurrentlyHidden) {
+                // Showing devlog - hide collaborators and core concepts
+                devlogSection.classList.remove('hidden');
+                newDevlogBtn.textContent = 'Hide Development Log';
+                newDevlogBtn.classList.add('toggled');
+                
+                // Always hide collaborators when showing devlog
+                if (collaboratorsSection) {
+                  collaboratorsSection.classList.add('hidden');
+                  const collabBtn = document.getElementById('toggle-collaborators-btn');
+                  if (collabBtn) {
+                    collabBtn.textContent = 'View Collaborators';
+                    collabBtn.classList.remove('toggled');
+                  }
+                }
+                
+                // Hide core concepts
+                if (coreConceptsSection) {
+                  coreConceptsSection.classList.add('hidden');
+                }
+              } else {
+                // Hiding devlog - show core concepts
+                devlogSection.classList.add('hidden');
+                newDevlogBtn.textContent = 'View Development Log';
+                newDevlogBtn.classList.remove('toggled');
+                
+                // Show core concepts
+                if (coreConceptsSection) {
+                  coreConceptsSection.classList.remove('hidden');
+                }
               }
             });
           }
@@ -1836,13 +2007,38 @@
             }
             
             newCollaboratorsBtn.addEventListener('click', () => {
-              const isHidden = collaboratorsSection.classList.contains('hidden');
-              collaboratorsSection.classList.toggle('hidden');
-              newCollaboratorsBtn.textContent = isHidden ? 'Hide Collaborators' : 'View Collaborators';
-
-              if (!isHidden && devlogSection && !devlogSection.classList.contains('hidden')) {
-                devlogSection.classList.add('hidden');
-                if (devlogBtn) document.getElementById('toggle-devlog-btn').textContent = 'View Development Log';
+              const isCurrentlyHidden = collaboratorsSection.classList.contains('hidden');
+              
+              if (isCurrentlyHidden) {
+                // Showing collaborators - hide devlog and core concepts
+                collaboratorsSection.classList.remove('hidden');
+                newCollaboratorsBtn.textContent = 'Hide Collaborators';
+                newCollaboratorsBtn.classList.add('toggled');
+                
+                // Always hide devlog when showing collaborators
+                if (devlogSection) {
+                  devlogSection.classList.add('hidden');
+                  const devlogBtn = document.getElementById('toggle-devlog-btn');
+                  if (devlogBtn) {
+                    devlogBtn.textContent = 'View Development Log';
+                    devlogBtn.classList.remove('toggled');
+                  }
+                }
+                
+                // Hide core concepts
+                if (coreConceptsSection) {
+                  coreConceptsSection.classList.add('hidden');
+                }
+              } else {
+                // Hiding collaborators - show core concepts
+                collaboratorsSection.classList.add('hidden');
+                newCollaboratorsBtn.textContent = 'View Collaborators';
+                newCollaboratorsBtn.classList.remove('toggled');
+                
+                // Show core concepts
+                if (coreConceptsSection) {
+                  coreConceptsSection.classList.remove('hidden');
+                }
               }
             });
           }

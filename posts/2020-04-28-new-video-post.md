@@ -1,14 +1,17 @@
 ---
 layout: post.njk
-title: "Digital sheet music"
+title: "Update: Digital Sheet Music Integration"
+project: "musicstand"
+contentType: "update"
 date: 2020-04-28
+# thumbnail: "images/thumbs/digital-sheet-music-thumb.jpg" # TODO: Add when thumbnail is created
+videoSrc: "/images/AQO4PCTNzOokNq7Oww2dXz4A0AWN6FrcDfEk3n8xur0n9ooZwCVbq6UR256t_Rq0h9Jsode_od3YTHqG4jWSyW_682455242538027.mp4"
 tags:
-  - Facebook
-  - Music
-  - Technology
-  - Event
-  - Portraits of Change
-  - Video
+  - Music Stand
+  - Update
+  - Digital Sheet Music
+  - Hand Tracking
+  - AR/VR
   - Development
 ---
 

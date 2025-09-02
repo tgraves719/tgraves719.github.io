@@ -4,22 +4,52 @@ title: Blog
 ---
 <section class="py-16">
   <h1 class="text-3xl tracking-tight mb-12 uppercase font-bold text-white" style="letter-spacing: 0.1em;">From the Blog</h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
     {% for post in collections.post | reverse %}
-      <a href="{{ post.url }}" class="interactive-rainbow bg-[var(--color-bg-card)] rounded-xl overflow-hidden flex flex-col transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:shadow-purple-900/10">
+      <a href="{{ post.url }}" class="static-rainbow bg-[var(--color-bg-card)] rounded-xl flex flex-col transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-900/10">
         {% if post.data.videoId %}
-        <img src="https://img.youtube.com/vi/{{ post.data.videoId }}/hqdefault.jpg" alt="{{ post.data.title }}" class="w-full h-56 object-cover">
+        <div class="m-3 overflow-hidden rounded-xl aspect-video">
+          <img src="https://img.youtube.com/vi/{{ post.data.videoId }}/hqdefault.jpg" alt="{{ post.data.title }}" class="w-full h-full object-cover">
+        </div>
+        {% elif post.data.thumbnail %}
+        <div class="m-3 overflow-hidden rounded-xl aspect-video">
+          <img src="/{{ post.data.thumbnail }}" alt="{{ post.data.title }}" class="w-full h-full object-cover">
+        </div>
         {% elif post.data.image %}
-        <img src="/{{ post.data.image }}" alt="{{ post.data.title }}" class="w-full h-56 object-cover">
+        <div class="m-3 overflow-hidden rounded-xl aspect-video">
+          <img src="/{{ post.data.image }}" alt="{{ post.data.title }}" class="w-full h-full object-cover">
+        </div>
+        {% else %}
+        <div class="m-3 rounded-xl aspect-video bg-gradient-to-br from-purple-900/20 to-blue-900/20 flex items-center justify-center">
+          <div class="text-center">
+            <div class="text-4xl mb-2">
+              {% if post.data.contentType == "essay" %}📝
+              {% elif post.data.contentType == "demo" %}🎬
+              {% elif post.data.contentType == "devlog" %}📱
+              {% elif post.data.contentType == "media" %}📺
+              {% elif post.data.contentType == "announcement" %}📢
+              {% elif post.data.contentType == "milestone" %}🎯
+              {% elif post.data.contentType == "update" %}📊
+              {% else %}📄
+              {% endif %}
+            </div>
+            <p class="text-sm text-gray-400 uppercase tracking-wider">{{ post.data.contentType or "Article" }}</p>
+          </div>
+        </div>
         {% endif %}
         <div class="p-6 flex-grow flex flex-col">
           {% if post.data.date %}
           <p class="text-sm text-gray-500 mb-2">{{ post.data.date | postDate }}</p>
           {% endif %}
-          <h3 class="text-xl font-bold text-white mb-2 uppercase tracking-wide">{{ post.data.title }}</h3>
+          <h3 class="text-lg font-semibold text-white mb-2 uppercase tracking-wide line-clamp-2">{{ post.data.title }}</h3>
           <div class="mt-auto">
+            {% if post.data.project %}
+            <span class="inline-block text-xs font-medium mr-1 px-2 py-0.5 rounded-full text-white {% if post.data.project == 'portraits-of-change' %}bg-purple-600{% elif post.data.project == 'conductvr' %}bg-blue-600{% elif post.data.project == 'musicbox' %}bg-green-600{% elif post.data.project == 'musicstand' %}bg-orange-600{% else %}bg-gray-600{% endif %}">{{ post.data.project | replace('-', ' ') | title }}</span>
+            {% endif %}
             {% for tag in post.data.tags %}
-            <span class="inline-block bg-[var(--color-secondary)] text-xs font-medium mr-2 px-2.5 py-1 rounded-full">{{ tag }}</span>
+            {% if tag != 'Portraits of Change' and tag != 'ConductVR' and tag != 'Music Box' and tag != 'Music Stand' %}
+            <span class="inline-block bg-[var(--color-secondary)] text-xs font-medium mr-1 px-2 py-0.5 rounded-full">{{ tag }}</span>
+            {% endif %}
             {% endfor %}
           </div>
         </div>

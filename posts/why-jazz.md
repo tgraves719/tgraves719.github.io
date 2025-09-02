@@ -1,12 +1,16 @@
 ---
 layout: post.njk
-title: "Why Jazz? A History of Innovation"
+title: "Essay: Why Jazz? A History of Innovation"
+project: "portraits-of-change"
+contentType: "essay"
 date: 2019-03-15
 image: "images/pic04.jpg"
 tags:
-  - Music
-  - History
+  - Portraits of Change
+  - Essay
+  - Jazz History
   - Philosophy
+  - Innovation
 ---
 You may be wondering what all the fuss is about. Is it "elevator music"? Is it for pretentious cocktail parties? After learning its history, you decide.
 

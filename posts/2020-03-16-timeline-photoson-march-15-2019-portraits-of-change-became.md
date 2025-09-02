@@ -1,15 +1,15 @@
 ---
 layout: post.njk
-title: "Portraits of Change Enters Beta"
+title: "Milestone: Beta Release Anniversary"
+project: "portraits-of-change"
+contentType: "milestone"
 date: 2020-03-16
 image: "images/90345627_804304316745649_2555671339742527488_n_804304310078983.jpg"
 tags:
-  - Facebook
-  - Music
-  - Technology
-  - Event
   - Portraits of Change
-  - Photo
+  - Milestone
+  - Beta Release
+  - Anniversary
   - Development
 ---
 

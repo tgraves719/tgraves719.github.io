@@ -1,11 +1,14 @@
 ---
 layout: post.njk
-title: "The Band"
+title: "Announcement: The Band"
+project: "portraits-of-change"
+contentType: "announcement"
 date: 2019-03-14
 image: "images/54514638_551769265332490_4740775542591062016_n_551769261999157.jpg"
 tags:
-  - Facebook
-  - Technology
+  - Portraits of Change
+  - Band
+  - Announcement
   - Photo
 ---
 
