@@ -3,7 +3,6 @@ layout: base.njk
 ---
 <section class="py-16">
   <div class="max-w-4xl mx-auto">
-    <a href="/blog/" id="back-link" class="interactive-rainbow inline-block mb-8 px-3 py-2 rounded-md">&larr; Back</a>
     <div class="text-center mb-8">
       {% if date %}
       <p class="text-sm text-gray-500 mb-2">{{ date | postDate }}</p>
@@ -20,71 +19,27 @@ layout: base.njk
     <div class="prose prose-invert prose-lg max-w-none text-gray-300">
       {{ content | safe }}
     </div>
+    
+    <div class="mt-16 mb-8">
+      <a href="/blog/" id="back-link" class="interactive-rainbow inline-block px-6 py-3 rounded-md font-semibold uppercase tracking-wider">&larr; Back</a>
+    </div>
   </div>
 </section>
 
 <script>
-  // Navigation history-based back button with retry mechanism
+  // Simple back button that works exactly like browser back button
   function setupBackButton() {
     const backLink = document.getElementById('back-link');
     if (!backLink) return;
     
-    // Get stored navigation history
-    const lastPageUrl = sessionStorage.getItem('last-page-url');
-    const lastPageTitle = sessionStorage.getItem('last-page-title') || 'Previous Page';
+    // Remove the href to prevent default link behavior
+    backLink.removeAttribute('href');
+    backLink.style.cursor = 'pointer';
     
-    console.log('🔍 Navigation history - Last URL:', lastPageUrl);
-    console.log('🔍 Navigation history - Last Title:', lastPageTitle);
-    console.log('🔍 Document referrer:', document.referrer);
-    console.log('🔍 Current URL:', window.location.href);
+    // Set generic back text
+    backLink.textContent = '← Back';
     
-    // Debug: show ALL session storage keys
-    console.log('🔍 All session storage keys:');
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      console.log(`  ${key}: ${sessionStorage.getItem(key)}`);
-    }
-    
-    if (lastPageUrl) {
-      // Use the stored URL - this is like browser back button behavior
-      backLink.href = lastPageUrl;
-      
-      // Set appropriate back button text based on the URL
-      if (lastPageUrl.includes('/work/portraits-of-change/')) {
-        backLink.textContent = '← Back to Portraits of Change';
-      } else if (lastPageUrl.includes('/blog/')) {
-        backLink.textContent = '← Back to Blog';
-      } else {
-        // Extract a readable name from the URL or title
-        backLink.textContent = '← Back';
-      }
-      
-      console.log('✅ Back button set to:', backLink.href, 'with text:', backLink.textContent);
-    } else {
-      // Fallback: try to use referrer if available
-      const referrer = document.referrer;
-      if (referrer && referrer !== window.location.href) {
-        if (referrer.includes('/work/portraits-of-change/')) {
-          backLink.href = '/work/portraits-of-change/';
-          backLink.textContent = '← Back to Portraits of Change';
-          console.log('✅ Back button set using referrer: Portraits');
-        } else if (referrer.includes('/blog/')) {
-          backLink.href = '/blog/';
-          backLink.textContent = '← Back to Blog';
-          console.log('✅ Back button set using referrer: Blog');
-        } else {
-          // Default fallback
-          backLink.href = '/blog/';
-          backLink.textContent = '← Back to Blog';
-          console.log('⚠️ Using default blog fallback');
-        }
-      } else {
-        // Ultimate fallback to blog if no history available
-        backLink.href = '/blog/';
-        backLink.textContent = '← Back to Blog';
-        console.log('⚠️ No navigation history or referrer found, defaulting to blog');
-      }
-    }
+    console.log('✅ Back button configured to use browser history');
   }
   
   // Run immediately and also on DOMContentLoaded
@@ -100,13 +55,64 @@ layout: base.njk
     backLink.replaceWith(backLink.cloneNode(true));
     const newBackLink = document.getElementById('back-link');
     
-    // Make the back link use smooth page transitions
+    // Re-initialize InteractiveEffects for all elements 
+    if (window.InteractiveEffects) {
+      // Force re-scan of all interactive elements
+      InteractiveEffects.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+      
+      // Initialize the new back button element
+      InteractiveEffects.rainbowElements.forEach(el => {
+        if (!el._physics && el.classList.contains('interactive-rainbow')) {
+          const rect = el.getBoundingClientRect();
+          Object.assign(el.dataset, {
+            angle: '0',
+            x: rect.width / 2,
+            y: rect.height / 2,
+            targetX: rect.width / 2,
+            targetY: rect.height / 2,
+            velocityX: '0',
+            velocityY: '0'
+          });
+
+          // Set initial CSS custom properties
+          el.style.setProperty('--x', `${rect.width / 2}px`);
+          el.style.setProperty('--y', `${rect.height / 2}px`);
+          const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+          el.style.setProperty('--angle', `${initialAngle}deg`);
+
+          // Initialize physics object
+          el._physics = {
+            angle: initialAngle,
+            x: rect.width / 2,
+            y: rect.height / 2,
+            targetX: rect.width / 2,
+            targetY: rect.height / 2,
+            velocityX: 0,
+            velocityY: 0
+          };
+
+          // Add mouse event listeners
+          el.addEventListener('mouseenter', (e) => InteractiveEffects.onMouseEnter(e));
+          el.addEventListener('mouseleave', (e) => InteractiveEffects.onMouseLeave(e));
+          el.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
+        }
+      });
+    }
+    
+    // Make the back link use browser history (like back button)
     newBackLink.addEventListener('click', function(e) {
       e.preventDefault();
-      if (typeof PageTransition !== 'undefined') {
-        PageTransition.navigateToPage(this.href);
+      
+      // Check if there's history to go back to
+      if (window.history.length > 1) {
+        window.history.back();
       } else {
-        window.location.href = this.href;
+        // Fallback if no history (e.g., direct link to post)
+        if (typeof PageTransition !== 'undefined') {
+          PageTransition.navigateToPage('/blog/');
+        } else {
+          window.location.href = '/blog/';
+        }
       }
     });
   }

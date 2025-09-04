@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Art of Improvisation - Thomas Graves</title>
+  <!-- Tailwind and fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-secondary: #334155;
+      --color-border: #27272A;
+      --color-bg-card: #18181B;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0A0A0A;
+      color: #E0E0E0;
+    }
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10;
+    }
+    .interactive-rainbow {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      border: 4px solid transparent;
+      color: white;
+    }
+    .interactive-rainbow::before {
+      content: '';
+      position: absolute;
+      z-index: -2;
+      left: var(--x, 50%);
+      top: var(--y, 50%);
+      width: 250%;
+      padding-bottom: 250%;
+      transform: translate(-50%, -50%);
+      background: conic-gradient(
+        from var(--angle, 0deg),
+        #ff2a2a, #ff8000, #ffff00, #40ff00,
+        #00ffff, #0080ff, #8000ff, #ff00ff, #ff2a2a
+      );
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .interactive-rainbow::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset: 3px;
+      background: var(--color-bg-card);
+      border-radius: inherit;
+    }
+    /* Default state (sound OFF) - rainbow only on hover */
+    .interactive-rainbow:hover::before {
+      opacity: 0.8;
+    }
+    .nav-link.active.interactive-rainbow::before {
+      opacity: 0.9;
+    }
+
+    /* Button elements - no rainbow by default, only on hover */
+    button.interactive-rainbow:hover::before { 
+      opacity: 0.9; 
+    }
+
+    /* Special case: toggled portrait buttons stay on */
+    #toggle-devlog-btn.toggled::before,
+    #toggle-collaborators-btn.toggled::before {
+      opacity: 0.6;
+    }
+    #toggle-devlog-btn.toggled:hover::before,
+    #toggle-collaborators-btn.toggled:hover::before {
+      opacity: 0.9;
+    }
+
+    /* Special styling for Reality Engine button - always glowing with interactivity */
+    #reality-engine-btn {
+      --angle: 45deg;
+      --x: 50%;
+      --y: 50%;
+    }
+    #reality-engine-btn::before {
+      opacity: 0.9 !important;
+    }
+    #reality-engine-btn:hover::before {
+      opacity: 1.0 !important;
+    }
+
+    /* When sound is enabled - dim/faded rainbow buttons */
+    body.sound-is-on .interactive-rainbow:hover::before {
+      opacity: 0.15;
+    }
+    body.sound-is-on .nav-link.active.interactive-rainbow::before {
+      opacity: 0.25;
+    }
+    body.sound-is-on button.interactive-rainbow:hover::before { 
+      opacity: 0.2; 
+    }
+
+    /* Sound enabled: toggled portrait buttons stay dimly visible */
+    body.sound-is-on #toggle-devlog-btn.toggled::before,
+    body.sound-is-on #toggle-collaborators-btn.toggled::before {
+      opacity: 0.1;
+    }
+    body.sound-is-on #toggle-devlog-btn.toggled:hover::before,
+    body.sound-is-on #toggle-collaborators-btn.toggled:hover::before {
+      opacity: 0.2;
+    }
+    body.sound-is-on #reality-engine-btn::before {
+      opacity: 0.2 !important;
+    }
+    body.sound-is-on #reality-engine-btn:hover::before {
+      opacity: 0.4 !important;
+    }
+
+    /* Static rainbow borders for cards - no cursor following */
+    .static-rainbow {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      border: 3px solid transparent;
+      color: white;
+    }
+    .static-rainbow::before {
+      content: '';
+      position: absolute;
+      z-index: -2;
+      left: 50%;
+      top: 50%;
+      width: 400%;
+      padding-bottom: 400%;
+      background: conic-gradient(
+        from 0deg,
+        #ff2a2a, #ff8000, #ffff00, #40ff00,
+        #00ffff, #0080ff, #8000ff, #ff00ff, #ff2a2a
+      );
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      animation: rainbow-rotate 3s linear infinite;
+    }
+    .static-rainbow::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset: 3px;
+      background: var(--color-bg-card);
+      border-radius: inherit;
+    }
+    .static-rainbow:hover::before {
+      opacity: 0.8;
+    }
+
+    /* When sound is enabled - dim static rainbow cards too */
+    body.sound-is-on .static-rainbow:hover::before {
+      opacity: 0.15;
+    }
+
+    /* Prose styles for markdown content */
+    .prose {
+      color: var(--tw-prose-body);
+      max-width: 65ch;
+    }
+    .prose p {
+      margin-top: 1.25em;
+      margin-bottom: 1.25em;
+      line-height: 1.75;
+    }
+    .prose blockquote {
+      font-style: italic;
+      border-left: 4px solid var(--color-border);
+      padding-left: 1em;
+      margin: 1.6em 0;
+      color: #d1d5db;
+    }
+    .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+      color: white;
+      font-weight: 700;
+      margin-top: 2em;
+      margin-bottom: 1em;
+      line-height: 1.25;
+    }
+    .prose h1 { font-size: 2.25em; }
+    .prose h2 { font-size: 1.875em; }
+    .prose h3 { font-size: 1.5em; }
+    .prose h4 { font-size: 1.25em; }
+    .prose strong {
+      color: white;
+      font-weight: 600;
+    }
+    .prose em {
+      font-style: italic;
+    }
+    .prose ul, .prose ol {
+      margin: 1.25em 0;
+      padding-left: 1.625em;
+    }
+    .prose li {
+      margin: 0.5em 0;
+    }
+    .prose a {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+    .prose a:hover {
+      color: #93c5fd;
+    }
+    .prose code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.125em 0.25em;
+      border-radius: 0.25em;
+      font-size: 0.875em;
+    }
+    .prose pre {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 1em;
+      border-radius: 0.5em;
+      overflow-x: auto;
+      margin: 1.5em 0;
+    }
+    .prose pre code {
+      background: none;
+      padding: 0;
+    }
+    
+    /* Fast fade transitions for portrait sections */
+    #devlog-section, #collaborators-section, #core-concepts-section {
+      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+      opacity: 1;
+      visibility: visible;
+    }
+    #devlog-section.hidden, #collaborators-section.hidden, #core-concepts-section.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    
+    @keyframes rainbow-rotate {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+
+    /* Loading Animation Styles */
+    #loading-overlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+    #explosion-background.exploding {
+      opacity: 1;
+      animation: color-explosion 0.8s forwards;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    @keyframes color-explosion {
+      0% { background: radial-gradient(circle, #ff2a2a 0%, transparent 10%); }
+      20% { background: radial-gradient(circle, #ffff00 20%, #8000ff 40%, transparent 60%); }
+      40% { background: radial-gradient(circle, #00ffff 40%, #ff8000 60%, transparent 80%); }
+      60% { background: radial-gradient(circle, #8000ff 60%, #00ffff 80%, transparent 100%); }
+      80% { background: radial-gradient(circle, #ff2a2a 80%, #ffff00 100%, transparent 120%); }
+      100% { background: transparent; opacity: 0; }
+    }
+
+    /* Aspect ratio utilities for proper YouTube video sizing */
+    .aspect-w-16 {
+      position: relative;
+      padding-bottom: calc(9 / 16 * 100%); /* 16:9 aspect ratio */
+      height: 0;
+    }
+    .aspect-w-16 iframe,
+    .aspect-w-16 video,
+    .aspect-w-16 img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Ensure minimum height for 720p videos - only apply to video container divs in main content */
+    @media (min-width: 640px) {
+      .prose .aspect-w-16 {
+        padding-bottom: 405px; /* 720px * 9/16 = 405px */
+        height: auto;
+        min-height: 405px;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <canvas id="bg-canvas"></canvas>
+
+  <div id="explosion-background" class="fixed inset-0 z-[99] pointer-events-none opacity-0"></div>
+
+  <div id="loading-overlay" class="fixed inset-0 z-[100] bg-black/70 flex-col items-center justify-center text-center hidden opacity-0">
+    <div class="flex flex-col items-center gap-4">
+      <div class="text-white text-2xl font-bold tracking-[0.2em] uppercase animate-[pulse_1.5s_infinite_ease-in-out]">Loading...</div>
+      <div class="w-[300px] h-2.5 bg-black/50 rounded-full overflow-hidden">
+        <div id="loading-bar-progress" class="h-full w-0 rounded-full transition-[width] duration-[2000ms] linear" style="background: linear-gradient(90deg, #ff2a2a, #ff8000, #ffff00, #40ff00, #00ffff, #0080ff, #8000ff, #ff00ff); background-size: 200% 200%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="no-vr-modal" class="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center text-center hidden">
+    <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-8 max-w-sm mx-4">
+      <h3 class="text-2xl font-bold text-white mb-4 uppercase tracking-wide">No VR Detected</h3>
+      <p class="text-gray-400 mb-6">This experience is designed for WebXR-compatible VR or AR headsets. Please try again on a supported device.</p>
+      <button id="close-no-vr-modal" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Close</button>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <!-- Header -->
+    <header class="py-6 sticky top-0 z-50 bg-[#0A0A0A]">
+      <nav class="flex justify-between items-center">
+        <div class="flex items-center gap-4">
+          <a href="/" id="home-link" class="sound-interactive text-2xl font-bold tracking-tighter text-white hover:text-gray-300">Thomas Graves</a>
+          <button id="sound-toggle" title="Toggle Sound" class="text-gray-500 hover:text-white transition-colors focus:outline-none">
+            <svg id="sound-off-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
+            <svg id="sound-on-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+          </button>
+        </div>
+        <div class="hidden md:flex items-center space-x-2">
+          <a href="/work/" class="sound-interactive interactive-rainbow uppercase text-sm tracking-wider px-3 py-2 rounded-md cursor-pointer transition-colors hover:text-white">Work</a>
+          <a href="/about/" class="sound-interactive interactive-rainbow uppercase text-sm tracking-wider px-3 py-2 rounded-md cursor-pointer transition-colors hover:text-white">About</a>
+          <a href="/blog/" class="sound-interactive interactive-rainbow uppercase text-sm tracking-wider px-3 py-2 rounded-md cursor-pointer transition-colors hover:text-white">Blog</a>
+        </div>
+        <div class="relative hidden md:inline-block">
+          <button id="contact-dropdown-btn" class="sound-interactive px-6 py-3 font-semibold uppercase tracking-wider rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 transition-colors">Contact</button>
+          <div id="contact-dropdown" class="absolute right-0 top-full mt-2 w-56 bg-gray-800 border border-gray-600 rounded-lg shadow-lg hidden z-50">
+            <div class="p-4">
+              <h3 class="font-bold text-gray-200 mb-3 uppercase tracking-wide">Get in Touch</h3>
+              <div class="space-y-2">
+                <a href="mailto:hello@thomasgraves.art" class="flex items-center gap-3 p-2 rounded hover:bg-gray-700 transition-colors">
+                  <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                  </svg>
+                  <span class="text-gray-300 text-sm">Email</span>
+                </a>
+                <a href="https://www.linkedin.com/in/mixedrealitymusician/" target="_blank" class="flex items-center gap-3 p-2 rounded hover:bg-gray-700 transition-colors">
+                  <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span class="text-gray-300 text-sm">LinkedIn</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:hidden">
+          <button id="mobile-menu-button" class="sound-interactive text-white focus:outline-none">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      <div id="mobile-menu" class="hidden md:hidden flex-col text-center space-y-2 absolute top-full left-0 right-0 bg-[#0A0A0A] py-4 border-b border-[var(--color-border)] z-50">
+        <a href="/work/" class="sound-interactive interactive-rainbow block py-2">Work</a>
+        <a href="/about/" class="sound-interactive interactive-rainbow block py-2">About</a>
+        <a href="/blog/" class="sound-interactive interactive-rainbow block py-2">Blog</a>
+        <div class="w-1/2 mx-auto mt-4">
+          <button id="mobile-contact-dropdown-btn" class="sound-interactive w-full px-6 py-3 font-semibold uppercase tracking-wider rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 transition-colors">Contact</button>
+          <div id="mobile-contact-dropdown" class="mt-2 bg-gray-800 border border-gray-600 rounded-lg hidden">
+            <div class="p-4 space-y-2">
+              <a href="mailto:hello@thomasgraves.art" class="flex items-center gap-3 p-2 rounded hover:bg-gray-700 transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+                <span class="text-gray-300 text-sm">Email</span>
+              </a>
+              <a href="https://www.linkedin.com/in/mixedrealitymusician/" target="_blank" class="flex items-center gap-3 p-2 rounded hover:bg-gray-700 transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-300 text-sm">LinkedIn</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main id="main-content" class="transition-opacity duration-300 ease-in-out">
+      
+      <div class="py-8">
+        <section class="py-16">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+      
+      <p class="text-sm text-gray-500 mb-2">December 31, 2022</p>
+      
+      <h1 class="text-4xl tracking-tight uppercase font-bold text-white" style="letter-spacing: 0.1em;">The Art of Improvisation</h1>
+    </div>
+    
+    <img src="/images/pic04.jpg" alt="The Art of Improvisation" class="w-full h-auto rounded-xl mb-12 shadow-lg">
+    
+    <div class="prose prose-invert prose-lg max-w-none text-gray-300">
+      <p><em>Portraits of Change</em> features jazz music, among other genres, because the music is new every time you listen to it. Often times, you have to study and appreciate the intricate harmonic movements in jazz to &quot;get it&quot; or feel it. I am interested in different ways of representing these subtle aspects of jazz. Essentially, to create a real-time visual captioning of the harmony.</p>
+<p>Our approach to visualizing music is simple. We let the music carry the weight of the work, and the change of effects on stage. If we played classical music, we know precisely what the outcome should look like. This is useful in many situations. With jazz improvisation however, this ensures a new, emergent, experience every time.</p>
+<p>I am primarily inspired by <strong>Miles Davis</strong> approach to jazz, and innovation. The way he approached his horn like a laboratory, always trying new sounds, new forms, deeply inspires me. How he approached <em>Bitches Brew</em> is how I tried to embody creativity throughout the project. This is in diametric congruence with <strong>Coltrane's</strong> philosophies, that also deeply influenced my music theory and analytical application of geometry to music. I also utilized music set theory from <strong>Shoenberg</strong> extensively in my audio visualizations.</p>
+
+    </div>
+    
+    <div class="mt-16 mb-8">
+      <a href="/blog/" id="back-link" class="interactive-rainbow inline-block px-6 py-3 rounded-md font-semibold uppercase tracking-wider">&larr; Back</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Simple back button that works exactly like browser back button
+  function setupBackButton() {
+    const backLink = document.getElementById('back-link');
+    if (!backLink) return;
+    
+    // Remove the href to prevent default link behavior
+    backLink.removeAttribute('href');
+    backLink.style.cursor = 'pointer';
+    
+    // Set generic back text
+    backLink.textContent = '← Back';
+    
+    console.log('✅ Back button configured to use browser history');
+  }
+  
+  // Run immediately and also on DOMContentLoaded
+  setupBackButton();
+  document.addEventListener('DOMContentLoaded', setupBackButton);
+  
+  // Setup back link page transitions
+  function setupBackLinkTransitions() {
+    const backLink = document.getElementById('back-link');
+    if (!backLink) return;
+    
+    // Remove existing listeners
+    backLink.replaceWith(backLink.cloneNode(true));
+    const newBackLink = document.getElementById('back-link');
+    
+    // Re-initialize InteractiveEffects for all elements 
+    if (window.InteractiveEffects) {
+      // Force re-scan of all interactive elements
+      InteractiveEffects.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+      
+      // Initialize the new back button element
+      InteractiveEffects.rainbowElements.forEach(el => {
+        if (!el._physics && el.classList.contains('interactive-rainbow')) {
+          const rect = el.getBoundingClientRect();
+          Object.assign(el.dataset, {
+            angle: '0',
+            x: rect.width / 2,
+            y: rect.height / 2,
+            targetX: rect.width / 2,
+            targetY: rect.height / 2,
+            velocityX: '0',
+            velocityY: '0'
+          });
+
+          // Set initial CSS custom properties
+          el.style.setProperty('--x', `${rect.width / 2}px`);
+          el.style.setProperty('--y', `${rect.height / 2}px`);
+          const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+          el.style.setProperty('--angle', `${initialAngle}deg`);
+
+          // Initialize physics object
+          el._physics = {
+            angle: initialAngle,
+            x: rect.width / 2,
+            y: rect.height / 2,
+            targetX: rect.width / 2,
+            targetY: rect.height / 2,
+            velocityX: 0,
+            velocityY: 0
+          };
+
+          // Add mouse event listeners
+          el.addEventListener('mouseenter', (e) => InteractiveEffects.onMouseEnter(e));
+          el.addEventListener('mouseleave', (e) => InteractiveEffects.onMouseLeave(e));
+          el.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
+        }
+      });
+    }
+    
+    // Make the back link use browser history (like back button)
+    newBackLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Check if there's history to go back to
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        // Fallback if no history (e.g., direct link to post)
+        if (typeof PageTransition !== 'undefined') {
+          PageTransition.navigateToPage('/blog/');
+        } else {
+          window.location.href = '/blog/';
+        }
+      }
+    });
+  }
+  
+  // Setup transitions immediately and on DOM ready
+  setupBackLinkTransitions();
+  document.addEventListener('DOMContentLoaded', setupBackLinkTransitions);
+</script>
+      </div>
+      
+    </main>
+
+    <!-- Loading overlay for transitions -->
+
+
+    </footer>
+  </div>
+
+  <script>
+    // AUDIO CONFIGURATION - Edit these settings to customize sounds
+    const AUDIO_CONFIG = {
+      masterVolume: -10,
+      synths: {
+        hover: { type: 'fatsine2', volume: -24, envelope: { attack: 0.1, decay: 0.2, sustain: 0.3, release: 0.8 } },
+        click: { type: 'fatsine4', volume: -10, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.3 } },
+        highClick: { type: 'sine', volume: -14, envelope: { attack: 0.01, decay: 0.05, sustain: 0, release: 0.2 } },
+        pad: { type: 'AMSynth', volume: -20, envelope: { attack: 2.0, decay: 1.0, sustain: 0.8, release: 4.0 } },
+        melody: { type: 'triangle8', volume: -18, envelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 1.0 } }
+      },
+      effects: { reverb: { roomSize: 3, wetness: 0.4 }, filter: { frequency: "2m" } }
+    };
+
+    // Musical Data from Original
+    const NOTE_COLORS = {
+      'C': 0xff2a2a, 'C#': 0xff8000, 'D': 0xffff00, 'D#': 0x40ff00,
+      'E': 0x00ffff, 'F': 0x0080ff, 'F#': 0x8000ff, 'G': 0xff00ff,
+      'G#': 0xff2a2a, 'A': 0xff8000, 'A#': 0xffff00, 'B': 0x40ff00
+    };
+    const CHROMATIC_SCALE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const TONE_ROWS = [
+      ['G4', 'F#4', 'A4', 'C#5', 'D#4', 'B4', 'C4', 'E4', 'F4', 'G#4', 'A#4', 'D4'],
+      ['A4', 'G#4', 'B4', 'D#5', 'F#4', 'C#4', 'D4', 'F4', 'G4', 'A#4', 'C5', 'E4'],
+      ['C4', 'D4', 'B3', 'E4', 'F#4', 'G#4', 'A#4', 'C#5', 'D#5', 'F5', 'G5', 'A5'],
+      ['F#4', 'E4', 'G4', 'D#4', 'C#4', 'A#3', 'A3', 'C4', 'D4', 'F4', 'G#4', 'B4'],
+      ['D4', 'E4', 'C#4', 'F#4', 'G#4', 'A#4', 'B4', 'D#5', 'F5', 'G5', 'A5', 'C5']
+    ];
+    const WHOLE_TONE_SCALES = [
+      ['C', 'D', 'E', 'F#', 'G#', 'A#'],
+      ['C#', 'D#', 'F', 'G', 'A', 'B']
+    ];
+
+    // App State
+    const AppState = {
+      isSoundEnabled: false,
+      activePage: 'hero',
+      currentToneRowIndex: 0,
+      isTransitioning: false,
+      pageToShowAfterTransition: null,
+      transitionTimeoutId: null,
+      visualQueue: [],
+      wholeToneStartIndex: 0,
+      wholeToneDirection: 1,
+    };
+
+    // Function to wait for libraries to load
+    function waitForLibraries() {
+      return new Promise((resolve) => {
+        function checkLibraries() {
+          if (typeof THREE !== 'undefined' && typeof Tone !== 'undefined') {
+            console.log('✅ All libraries loaded');
+            resolve();
+          } else {
+            console.log('⏳ Waiting for libraries... THREE:', typeof THREE !== 'undefined', 'Tone:', typeof Tone !== 'undefined');
+            setTimeout(checkLibraries, 100);
+          }
+        }
+        checkLibraries();
+      });
+    }
+
+    // 3D Background System - WILL BE CREATED AFTER LIBRARIES LOAD
+    let ThreeDBackground = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('📄 DOM Content Loaded');
+
+      // Wait for external libraries to load
+      await waitForLibraries();
+
+      console.log('🔧 Creating 3D Background system...');
+
+      // NOW create the ThreeDBackground object with THREE.js available
+      ThreeDBackground = {
+        scene: null, camera: null, renderer: null, worldGrid: new Map(),
+        cameraTargetPosition: new THREE.Vector3(0, 0, 2),
+        mouse: { x: 0, y: 0 },
+        baseSphereColor: new THREE.Color(0x222222),
+        sphereGeometry: null, sphereMaterial: null,
+        CHUNK_SIZE: 12, VIEW_DISTANCE: 2, // Reduced from 3 to 2 for better performance
+
+        // Enhanced Camera Movement System
+        cameraMovement: {
+          enabled: true, // Camera movement enabled for page transitions
+          velocity: { x: 0, y: 0, z: 0 },
+          targetPosition: { x: 0, y: 0, z: 2 },
+          currentTarget: { x: 0, y: 0, z: 2 },
+          lastChangeTime: 0,
+          changeInterval: 12000, // Change direction every 12 seconds
+          constraints: {
+            x: { min: -15, max: 15 },
+            y: { min: -10, max: 10 },
+            z: { min: 1, max: 8 }
+          },
+          dampening: 0.92,
+          acceleration: 0.0015,
+          maxSpeed: 0.06,
+          smoothness: 0.02
+        },
+
+        init() {
+        console.log('🌟 Initializing ThreeDBackground...');
+
+        const canvas = document.getElementById('bg-canvas');
+        if (!canvas) {
+          console.error('❌ Canvas not available for ThreeJS initialization');
+          return;
+        }
+
+        try {
+          this.scene = new THREE.Scene();
+          this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+          this.renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+          this.renderer.setSize(window.innerWidth, window.innerHeight);
+          console.log('🖥️ Renderer created - canvas size:', canvas.width, 'x', canvas.height, 'window size:', window.innerWidth, 'x', window.innerHeight);
+          this.scene.fog = new THREE.Fog(0x0A0A0A, 20, 80);
+          this.sphereGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+          this.sphereMaterial = new THREE.MeshBasicMaterial({ color: this.baseSphereColor });
+          this.camera.position.z = 2;
+          this.cameraTargetPosition.copy(this.camera.position);
+
+          // Initialize camera movement system
+          this.cameraMovement.currentTarget.x = this.camera.position.x;
+          this.cameraMovement.currentTarget.y = this.camera.position.y;
+          this.cameraMovement.currentTarget.z = this.camera.position.z;
+          this.cameraMovement.targetPosition.x = this.camera.position.x;
+          this.cameraMovement.targetPosition.y = this.camera.position.y;
+          this.cameraMovement.targetPosition.z = this.camera.position.z;
+          this.cameraMovement.lastChangeTime = Date.now();
+          console.log('🎯 Camera movement system initialized');
+          this.updateWorldGrid(true);
+          console.log('✅ ThreeDBackground initialized, starting animation...');
+
+          // Force first render and start animation loop
+          this.renderer.render(this.scene, this.camera);
+          this.animate();
+
+          window.addEventListener('resize', () => this.onWindowResize());
+          document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+
+          console.log('🎬 Animation loop started, spheres should be visible');
+        } catch (error) {
+          console.error('❌ ThreeDBackground initialization failed:', error);
+        }
+      },
+
+      onWindowResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+      },
+
+      onMouseMove(event) {
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      },
+
+      // Enhanced Camera Movement Methods
+      generateRandomTarget() {
+        const movement = this.cameraMovement;
+        const constraints = movement.constraints;
+
+        // Generate new random target within constraints
+        movement.targetPosition.x = constraints.x.min + Math.random() * (constraints.x.max - constraints.x.min);
+        movement.targetPosition.y = constraints.y.min + Math.random() * (constraints.y.max - constraints.y.min);
+        movement.targetPosition.z = constraints.z.min + Math.random() * (constraints.z.max - constraints.z.min);
+
+        console.log('🎯 New camera target:', movement.targetPosition);
+      },
+
+      updateCameraMovement() {
+        if (!this.cameraMovement.enabled) return;
+
+        const movement = this.cameraMovement;
+        const now = Date.now();
+
+        // Check if it's time to change target
+        if (now - movement.lastChangeTime > movement.changeInterval) {
+          // this.generateRandomTarget(); // Disabled for better navigation
+          movement.lastChangeTime = now;
+        }
+
+        // Calculate force towards target
+        const forceX = (movement.targetPosition.x - movement.currentTarget.x) * movement.acceleration;
+        const forceY = (movement.targetPosition.y - movement.currentTarget.y) * movement.acceleration;
+        const forceZ = (movement.targetPosition.z - movement.currentTarget.z) * movement.acceleration;
+
+        // Update velocity with forces
+        movement.velocity.x += forceX;
+        movement.velocity.y += forceY;
+        movement.velocity.z += forceZ;
+
+        // Apply dampening
+        movement.velocity.x *= movement.dampening;
+        movement.velocity.y *= movement.dampening;
+        movement.velocity.z *= movement.dampening;
+
+        // Constrain velocity to max speed
+        const speed = Math.sqrt(movement.velocity.x ** 2 + movement.velocity.y ** 2 + movement.velocity.z ** 2);
+        if (speed > movement.maxSpeed) {
+          const scale = movement.maxSpeed / speed;
+          movement.velocity.x *= scale;
+          movement.velocity.y *= scale;
+          movement.velocity.z *= scale;
+        }
+
+        // Update current target position
+        movement.currentTarget.x += movement.velocity.x;
+        movement.currentTarget.y += movement.velocity.y;
+        movement.currentTarget.z += movement.velocity.z;
+
+        // Apply mouse parallax as secondary influence
+        const parallaxInput = this.mouse.x;
+        const parallaxStrength = 0.3;
+        const parallaxX = parallaxInput * parallaxStrength;
+
+        // Smooth interpolation to final camera position
+        const finalX = movement.currentTarget.x + parallaxX;
+        const finalY = movement.currentTarget.y;
+        const finalZ = movement.currentTarget.z;
+
+        this.camera.position.lerp(
+          new THREE.Vector3(finalX, finalY, finalZ),
+          movement.smoothness
+        );
+      },
+
+      generateChunk(chunkX, chunkY, chunkZ) {
+        const key = `${chunkX},${chunkY},${chunkZ}`;
+        if (this.worldGrid.has(key)) {
+          return;
+        }
+
+        console.log('🎲 Generating chunk:', key, 'at offset:', chunkX * this.CHUNK_SIZE, chunkY * this.CHUNK_SIZE, chunkZ * this.CHUNK_SIZE);
+
+        const chunkSpheres = [];
+        const offset = { x: chunkX * this.CHUNK_SIZE, y: chunkY * this.CHUNK_SIZE, z: chunkZ * this.CHUNK_SIZE };
+        const octave = (chunkX % 8 + 8) % 8 + 2;
+        for (let i = 0; i < 2; i++) { // Reduced from 3 to 2 spheres per chunk
+          const sphere = new THREE.Mesh(this.sphereGeometry, this.sphereMaterial.clone());
+          const noteIndex = Math.floor(Math.random() * 12);
+          sphere.position.set(
+            offset.x + (Math.random() - 0.5) * this.CHUNK_SIZE,
+            offset.y + (Math.random() - 0.5) * this.CHUNK_SIZE,
+            offset.z + (Math.random() - 0.5) * this.CHUNK_SIZE
+          );
+          sphere.userData = {
+            noteName: CHROMATIC_SCALE[noteIndex] + octave,
+            noteBase: CHROMATIC_SCALE[noteIndex],
+            activePulses: [],
+          };
+          this.scene.add(sphere);
+          chunkSpheres.push(sphere);
+        }
+        this.worldGrid.set(key, chunkSpheres);
+        console.log('✅ Chunk generated:', key, 'with', chunkSpheres.length, 'spheres. Total chunks:', this.worldGrid.size);
+      },
+
+      removeChunk(key) {
+        if (!this.worldGrid.has(key)) return;
+        this.worldGrid.get(key).forEach(sphere => {
+          this.scene.remove(sphere);
+          sphere.material.dispose();
+        });
+        this.worldGrid.delete(key);
+      },
+
+      triggerVisualPulse(noteName) {
+        const noteBase = noteName.replace(/\d/g, '');
+        const color = new THREE.Color(NOTE_COLORS[noteBase] || 0xffffff);
+        this.worldGrid.forEach(chunk => {
+          chunk.forEach(sphere => {
+            if (sphere.userData.noteBase === noteBase) {
+              this.lightUpSphereWave(sphere, color, 0);
+            }
+          });
+        });
+      },
+
+      lightUpSphereWave(sphere, color, generation) {
+        if (generation > 2) return;
+        sphere.userData.activePulses.push({
+          color,
+          startTime: Date.now(),
+          intensity: 0.6 - (generation * 0.2)
+        });
+        const allVisibleSpheres = Array.from(this.worldGrid.values()).flat();
+        const neighbors = allVisibleSpheres.map(other => ({
+          sphere: other,
+          dist: sphere.position.distanceTo(other.position)
+        })).filter(item => item.sphere !== sphere && item.dist < this.CHUNK_SIZE / 2)
+          .sort((a, b) => a.dist - b.dist)
+          .slice(0, 4)
+          .map(item => item.sphere);
+
+        setTimeout(() => {
+          neighbors.forEach(neighbor => this.lightUpSphereWave(neighbor, color, generation + 1));
+        }, 150);
+      },
+
+      updateWorldGrid(isInitialLoad = false) {
+        const camChunk = {
+          x: Math.round(this.camera.position.x / this.CHUNK_SIZE),
+          y: Math.round(this.camera.position.y / this.CHUNK_SIZE),
+          z: Math.round(this.camera.position.z / this.CHUNK_SIZE),
+        };
+        for (let x = camChunk.x - this.VIEW_DISTANCE; x <= camChunk.x + this.VIEW_DISTANCE; x++) {
+          for (let y = camChunk.y - this.VIEW_DISTANCE; y <= camChunk.y + this.VIEW_DISTANCE; y++) {
+            for (let z = camChunk.z - this.VIEW_DISTANCE; z <= camChunk.z + this.VIEW_DISTANCE; z++) {
+              this.generateChunk(x, y, z);
+            }
+          }
+        }
+      },
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+
+
+        // Process visual queue from melody system
+        while (AppState.visualQueue.length > 0) {
+          const note = AppState.visualQueue.shift();
+          this.triggerVisualPulse(note);
+        }
+
+        this.updateWorldGrid();
+
+        // Update sphere colors based on active pulses
+        const now = Date.now();
+        const allSpheres = Array.from(this.worldGrid.values()).flat();
+        allSpheres.forEach(sphere => {
+          let finalColor = this.baseSphereColor.clone();
+
+          if (sphere.userData.activePulses.length > 0) {
+            sphere.userData.activePulses = sphere.userData.activePulses.filter(pulse => {
+              const age = now - pulse.startTime;
+              const maxAge = 400;
+              if (age < maxAge) {
+                const intensity = (1.0 - (age / maxAge)) * pulse.intensity;
+                finalColor.add(pulse.color.clone().multiplyScalar(intensity));
+                return true;
+              }
+              return false;
+            });
+          }
+
+          sphere.material.color.lerp(finalColor, 0.6);
+        });
+
+        // Enhanced camera movement with physics-based randomization
+        this.updateCameraMovement();
+
+        // Update interactive effects in same loop (performance optimization)
+        if (window.InteractiveEffects) {
+          InteractiveEffects.updateElements();
+        }
+
+        this.renderer.render(this.scene, this.camera);
+        }
+      };
+
+      // FIRST: Initialize 3D Background immediately - completely independent of audio
+      console.log('🚀 Starting initialization sequence...');
+
+      // Get DOM elements - ensure they exist
+      const soundToggleBtn = document.getElementById('sound-toggle');
+      const soundOnIcon = document.getElementById('sound-on-icon');
+      const soundOffIcon = document.getElementById('sound-off-icon');
+      const canvas = document.getElementById('bg-canvas');
+
+      // Ensure canvas exists before proceeding
+      if (!canvas) {
+        console.error('❌ Canvas element not found!');
+        return;
+      }
+
+      // Initialize 3D Background FIRST, before sound engine
+      console.log('🌟 Initializing 3D Background (BEFORE audio)...');
+      ThreeDBackground.init();
+
+      // Sound Engine Class
+      class SoundEngine {
+        constructor() {
+          this.synths = {};
+          this.effects = {};
+          this.melodySequence = null;
+          this.isSetup = false;
+          this.isEnabled = false;
+        }
+
+        async setup() {
+          if (this.isSetup) return;
+          try {
+            await Tone.start();
+
+            this.effects.reverb = new Tone.Reverb(AUDIO_CONFIG.effects.reverb.roomSize).toDestination();
+            this.effects.reverb.wet.value = AUDIO_CONFIG.effects.reverb.wetness;
+
+            this.effects.filter = new Tone.AutoFilter(AUDIO_CONFIG.effects.filter.frequency)
+              .connect(this.effects.reverb).start();
+
+            this.synths.hover = new Tone.Synth({
+              oscillator: { type: AUDIO_CONFIG.synths.hover.type },
+              envelope: AUDIO_CONFIG.synths.hover.envelope,
+              volume: AUDIO_CONFIG.synths.hover.volume
+            }).connect(this.effects.reverb);
+
+            this.synths.click = new Tone.Synth({
+              oscillator: { type: AUDIO_CONFIG.synths.click.type },
+              envelope: AUDIO_CONFIG.synths.click.envelope,
+              volume: AUDIO_CONFIG.synths.click.volume
+            }).connect(this.effects.reverb);
+
+            this.synths.highClick = new Tone.Synth({
+              oscillator: { type: AUDIO_CONFIG.synths.highClick.type },
+              envelope: AUDIO_CONFIG.synths.highClick.envelope,
+              volume: AUDIO_CONFIG.synths.highClick.volume
+            }).connect(this.effects.reverb);
+
+            this.synths.pad = new Tone.PolySynth(Tone.AMSynth, {
+              envelope: AUDIO_CONFIG.synths.pad.envelope,
+              volume: AUDIO_CONFIG.synths.pad.volume
+            }).connect(this.effects.filter);
+
+            this.synths.melody = new Tone.Synth({
+              oscillator: { type: AUDIO_CONFIG.synths.melody.type },
+              envelope: AUDIO_CONFIG.synths.melody.envelope,
+              volume: AUDIO_CONFIG.synths.melody.volume
+            }).connect(this.effects.filter);
+
+            this.isSetup = true;
+            console.log('🎵 Sound Engine initialized');
+          } catch (error) {
+            console.error('❌ Sound Engine setup failed:', error);
+          }
+        }
+
+        enable() {
+          if (!this.isSetup) { console.warn('Sound engine not setup yet'); return; }
+          this.isEnabled = true;
+          AppState.isSoundEnabled = true;
+          Tone.Destination.mute = false;
+          this.startSoundscape();
+          document.body.classList.add('sound-is-on');
+          console.log('🔊 Sound enabled');
+
+          // Enable gyro on mobile when sound is unmuted
+          if (typeof InteractiveEffects !== 'undefined' && InteractiveEffects.enableGyroOnSoundUnmute) {
+            InteractiveEffects.enableGyroOnSoundUnmute();
+          }
+        }
+
+        disable() {
+          this.isEnabled = false;
+          AppState.isSoundEnabled = false;
+          if (this.isSetup) { Tone.Destination.mute = true; this.stopSoundscape(); }
+          document.body.classList.remove('sound-is-on');
+          console.log('🔇 Sound disabled');
+        }
+
+        toggle() { if (this.isEnabled) { this.disable(); } else { this.enable(); } return this.isEnabled; }
+
+        startSoundscape() {
+          if (!this.isEnabled || !this.isSetup) return;
+          const now = Tone.now();
+          this.synths.pad.triggerAttackRelease(['A2', 'C3', 'E3', 'G3'], '4m', now);
+          this.synths.pad.triggerAttack(['D2', 'F#2', 'A2', 'C3'], now + Tone.Time('4m').toSeconds());
+          this.synths.hover.triggerAttack('D2');
+          Tone.Transport.start();
+          this.setMelodyForPage(AppState.activePage);
+        }
+
+        stopSoundscape() {
+          if (!this.isSetup) return;
+          this.synths.pad.releaseAll();
+          this.synths.hover.volume.rampTo(-60, 0.1);
+          if (this.melodySequence) {
+            this.melodySequence.stop().dispose();
+            this.melodySequence = null;
+          }
+          Tone.Transport.stop();
+        }
+
+        setMelodyForPage(pageId) {
+          if (!AppState.isSoundEnabled || !this.isSetup) return;
+
+          if (this.melodySequence) {
+            this.melodySequence.stop().dispose();
+            this.melodySequence = null;
+          }
+
+          let notes;
+          if (pageId === 'work' || pageId === 'hero') {
+            notes = TONE_ROWS[AppState.currentToneRowIndex];
+          } else {
+            const startNoteName = CHROMATIC_SCALE[AppState.wholeToneStartIndex];
+            const scale = WHOLE_TONE_SCALES[0].includes(startNoteName) ? WHOLE_TONE_SCALES[0] : WHOLE_TONE_SCALES[1];
+            const startIndexInScale = scale.indexOf(startNoteName);
+            notes = [];
+            for (let i = 0; i < 12; i++) {
+              const step = i < 6 ? i : 10 - i;
+              const noteIndex = (startIndexInScale + step + scale.length) % scale.length;
+              const noteBase = scale[noteIndex];
+              const octave = (i < 6 || i === 10) ? '5' : '4';
+              notes.push(noteBase + octave);
+            }
+            AppState.wholeToneStartIndex += AppState.wholeToneDirection;
+            if (AppState.wholeToneStartIndex >= 11) {
+              AppState.wholeToneDirection = -1;
+              AppState.wholeToneStartIndex = 11;
+            } else if (AppState.wholeToneStartIndex <= 0) {
+              AppState.wholeToneDirection = 1;
+              AppState.wholeToneStartIndex = 0;
+            }
+          }
+
+          this.melodySequence = new Tone.Sequence((time, note) => {
+            this.synths.melody.triggerAttackRelease(note, "8n", time);
+            Tone.Draw.schedule(() => {
+              AppState.visualQueue.push(note);
+            }, time);
+          }, notes, '4n').start(0);
+          this.melodySequence.loop = true;
+        }
+
+        playHoverSound() { if (this.synths.hover && this.isEnabled) this.synths.hover.volume.rampTo(-24, 0.5); }
+        stopHoverSound() { if (this.synths.hover && this.isEnabled) this.synths.hover.volume.rampTo(-60, 0.8); }
+        playClickSound() { if (this.isEnabled) { this.synths.click?.triggerAttackRelease('G3', '0.5'); this.synths.highClick?.triggerAttackRelease('G5', '0.5'); } }
+      }
+
+      // Initialize sound engine (non-blocking)
+      const soundEngine = new SoundEngine();
+      // Setup sound engine asynchronously without blocking other systems
+      soundEngine.setup().then(() => {
+        console.log('🎵 Sound engine ready');
+        // Set melody for current page after sound engine is ready
+        if (AppState.isSoundEnabled) {
+          soundEngine.setMelodyForPage(AppState.activePage);
+        }
+      }).catch(error => {
+        console.warn('🎵 Sound engine setup failed:', error);
+      });
+
+      // Mobile Menu System
+      const MobileMenu = {
+        init() {
+          const mobileMenuButton = document.getElementById('mobile-menu-button');
+          const mobileMenu = document.getElementById('mobile-menu');
+
+          if (!mobileMenuButton || !mobileMenu) {
+            console.warn('Mobile menu elements not found');
+            return;
+          }
+
+          mobileMenuButton.addEventListener('click', () => {
+            this.toggleMenu();
+          });
+
+          // Close mobile menu when clicking on links
+          const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+          mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+              this.closeMenu();
+            });
+          });
+
+          // Close menu when clicking outside
+          document.addEventListener('click', (e) => {
+            if (!mobileMenuButton.contains(e.target) && !mobileMenu.contains(e.target)) {
+              this.closeMenu();
+            }
+          });
+        },
+
+        toggleMenu() {
+          const mobileMenu = document.getElementById('mobile-menu');
+          mobileMenu.classList.toggle('hidden');
+          mobileMenu.classList.toggle('flex');
+
+          // INSTANT visual feedback
+          if (AppState.visualQueue) {
+            // Visual effects handled by melody system
+          }
+
+          // Play sound feedback
+          if (soundEngine && soundEngine.isEnabled) {
+            soundEngine.playClickSound();
+          }
+        },
+
+        closeMenu() {
+          const mobileMenu = document.getElementById('mobile-menu');
+          mobileMenu.classList.add('hidden');
+          mobileMenu.classList.remove('flex');
+        },
+
+        openMenu() {
+          const mobileMenu = document.getElementById('mobile-menu');
+          mobileMenu.classList.remove('hidden');
+          mobileMenu.classList.add('flex');
+        }
+      };
+
+      // Advanced Interactive Effects System
+      const InteractiveEffects = {
+        rainbowElements: [],
+        gyroEnabled: false,
+
+        init() {
+          // If already initialized, just scan for new elements
+          if (this.initialized) {
+            console.log('🔄 InteractiveEffects re-scanning for new elements...');
+            this.addNewElements();
+            return;
+          }
+          this.initialized = true;
+          
+          this.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+
+          // Initialize each rainbow element with physics data
+          this.rainbowElements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            Object.assign(el.dataset, {
+              angle: '0',
+              x: rect.width / 2,
+              y: rect.height / 2,
+              targetX: rect.width / 2,
+              targetY: rect.height / 2,
+              velocityX: '0',
+              velocityY: '0'
+            });
+
+            // Set initial CSS custom properties
+            el.style.setProperty('--x', `${rect.width / 2}px`);
+            el.style.setProperty('--y', `${rect.height / 2}px`);
+            // Reality Engine button starts with visible rotation
+            const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+            el.style.setProperty('--angle', `${initialAngle}deg`);
+
+            // Initialize physics object immediately for better responsiveness
+            el._physics = {
+              angle: initialAngle,
+              x: rect.width / 2,
+              y: rect.height / 2,
+              targetX: rect.width / 2,
+              targetY: rect.height / 2,
+              velocityX: 0,
+              velocityY: 0
+            };
+
+            // Add mouse event listeners
+            el.addEventListener('mouseenter', (e) => this.onMouseEnter(e));
+            el.addEventListener('mouseleave', (e) => this.onMouseLeave(e));
+            el.addEventListener('mousemove', (e) => this.onMouseMove(e));
+          });
+
+          // Make globally available for shared animation loop
+          window.InteractiveEffects = this;
+
+          // Invalidate cached rects on window resize
+          window.addEventListener('resize', () => {
+            this.rainbowElements.forEach(el => {
+              delete el._cachedRect;
+            });
+          });
+
+          console.log('✨ Interactive Effects initialized with', this.rainbowElements.length, 'elements (using shared animation loop)');
+        },
+
+        onMouseEnter(e) {
+          const el = e.currentTarget;
+          this.updateRainbowTarget(el, e);
+        },
+
+        onMouseLeave(e) {
+          const el = e.currentTarget;
+          this.resetRainbowTarget(el);
+        },
+
+        onMouseMove(e) {
+          const el = e.currentTarget;
+          this.updateRainbowTarget(el, e);
+        },
+
+        updateRainbowTarget(el, e) {
+          // Optimized: Cache rect and use physics object directly
+          if (!el._cachedRect) {
+            el._cachedRect = el.getBoundingClientRect();
+          }
+          if (el._physics) {
+            el._physics.targetX = e.clientX - el._cachedRect.left;
+            el._physics.targetY = e.clientY - el._cachedRect.top;
+          }
+        },
+
+        resetRainbowTarget(el) {
+          if (!el._cachedRect) {
+            el._cachedRect = el.getBoundingClientRect();
+          }
+          if (el._physics) {
+            el._physics.targetX = el._cachedRect.width / 2;
+            el._physics.targetY = el._cachedRect.height / 2;
+          }
+        },
+
+        addNewElements() {
+          // Find all interactive-rainbow elements
+          const allElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+          
+          // Filter to only new elements (those not in rainbowElements array)
+          const newElements = allElements.filter(el => !this.rainbowElements.includes(el));
+          
+          if (newElements.length > 0) {
+            console.log(`✨ Found ${newElements.length} new interactive elements`);
+            
+            // Initialize new elements
+            newElements.forEach(el => {
+              const rect = el.getBoundingClientRect();
+              Object.assign(el.dataset, {
+                angle: '0',
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: '0',
+                velocityY: '0'
+              });
+
+              // Set initial CSS custom properties
+              el.style.setProperty('--x', `${rect.width / 2}px`);
+              el.style.setProperty('--y', `${rect.height / 2}px`);
+              // Reality Engine button starts with visible rotation
+              const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+              el.style.setProperty('--angle', `${initialAngle}deg`);
+
+              // Initialize physics object immediately for better responsiveness
+              el._physics = {
+                angle: initialAngle,
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: 0,
+                velocityY: 0
+              };
+
+              // Add mouse event listeners
+              el.addEventListener('mouseenter', (e) => this.onMouseEnter(e));
+              el.addEventListener('mouseleave', (e) => this.onMouseLeave(e));
+              el.addEventListener('mousemove', (e) => this.onMouseMove(e));
+            });
+            
+            // Add new elements to the array
+            this.rainbowElements.push(...newElements);
+          }
+        },
+
+        animate() {
+          // Optimized: Use single animation loop shared with 3D background
+          this.updateElements();
+        },
+
+        updateElements() {
+          // Optimized: Process elements only when needed, reduce DOM operations
+          this.rainbowElements.forEach(el => {
+            // Use numeric properties instead of dataset strings
+            if (!el._physics) {
+              el._physics = {
+                angle: 0,
+                x: parseFloat(el.dataset.x),
+                y: parseFloat(el.dataset.y),
+                targetX: parseFloat(el.dataset.targetX),
+                targetY: parseFloat(el.dataset.targetY),
+                velocityX: 0,
+                velocityY: 0
+              };
+            }
+
+            const p = el._physics;
+
+            // Update angle (continuous rotation)
+            p.angle += 0.5;
+
+            // Physics-based movement towards target
+            const forceX = (p.targetX - p.x) * 0.01;
+            const forceY = (p.targetY - p.y) * 0.01;
+
+            p.velocityX = (p.velocityX + forceX) * 0.92;
+            p.velocityY = (p.velocityY + forceY) * 0.92;
+
+            p.x += p.velocityX;
+            p.y += p.velocityY;
+
+            // Keep rainbow effect within element bounds
+            if (!el._cachedRect) {
+              el._cachedRect = el.getBoundingClientRect();
+            }
+            const bounds = el._cachedRect;
+            p.x = Math.max(0, Math.min(bounds.width, p.x));
+            p.y = Math.max(0, Math.min(bounds.height, p.y));
+
+            // Batch DOM updates - only update CSS properties
+            el.style.setProperty('--angle', `${p.angle}deg`);
+            el.style.setProperty('--x', `${p.x}px`);
+            el.style.setProperty('--y', `${p.y}px`);
+          });
+        },
+
+        setupDeviceOrientation() {
+          // Only for mobile devices
+          if (!('ontouchstart' in window)) return;
+
+          // Request permission for iOS devices
+          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission()
+              .then(permissionState => {
+                if (permissionState === 'granted') {
+                  window.addEventListener('deviceorientation', (e) => this.onDeviceMove(e));
+                  console.log('📱 Device orientation enabled');
+                }
+              })
+              .catch(console.error);
+          } else {
+            // For Android and other devices
+            window.addEventListener('deviceorientation', (e) => this.onDeviceMove(e));
+            console.log('📱 Device orientation enabled');
+          }
+        },
+
+        enableGyroOnSoundUnmute() {
+          // Only for mobile devices and if not already enabled
+          if (!('ontouchstart' in window)) return;
+
+          console.log('📱 Attempting to enable gyro on sound unmute...');
+
+          // For iOS devices that require permission
+          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission()
+              .then(permissionState => {
+                if (permissionState === 'granted') {
+                  if (!this.gyroEnabled) {
+                    window.addEventListener('deviceorientation', (e) => this.onDeviceMove(e));
+                    this.gyroEnabled = true;
+                    console.log('📱 Gyro enabled after sound unmute');
+                  }
+                } else {
+                  console.log('📱 Device orientation permission denied');
+                }
+              })
+              .catch(error => {
+                console.warn('📱 Device orientation permission request failed:', error);
+              });
+          } else {
+            // For Android and other devices that don't require explicit permission
+            if (!this.gyroEnabled) {
+              window.addEventListener('deviceorientation', (e) => this.onDeviceMove(e));
+              this.gyroEnabled = true;
+              console.log('📱 Gyro enabled after sound unmute (Android/other)');
+            }
+          }
+        },
+
+        onDeviceMove(event) {
+          if (event.gamma === null) return;
+
+          // Convert gamma (left-right tilt) to a normalized value
+          const tilt = Math.max(-60, Math.min(60, event.gamma));
+          const normalizedTilt = tilt / 60; // Range: -1 to 1
+
+          // Apply subtle device tilt effect to all rainbow elements
+          this.rainbowElements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const offsetX = centerX + (normalizedTilt * rect.width * 0.3);
+
+            // Update target position based on device orientation
+            el.dataset.targetX = Math.max(0, Math.min(rect.width, offsetX)).toString();
+          });
+        }
+      };
+
+      // Loading Animation System
+      const LoadingSystem = {
+        activeAnimations: new Set(),
+
+        async showLoadingAnimation(options = {}) {
+          const animationId = Date.now() + Math.random();
+          this.activeAnimations.add(animationId);
+
+          const {
+            duration = 2000,
+            showExplosion = true,
+            playMusic = true,
+            message = 'Loading...',
+            callback = null
+          } = options;
+
+          // Each animation has its own ID, no global blocking
+
+          const loadingOverlay = document.getElementById('loading-overlay');
+          const explosionBg = document.getElementById('explosion-background');
+          const progressBar = document.getElementById('loading-bar-progress');
+          const loadingText = loadingOverlay.querySelector('.text-white');
+
+          if (!loadingOverlay || !explosionBg || !progressBar) {
+            console.warn('Loading elements not found');
+            this.activeAnimations.delete(animationId);
+            return Promise.resolve();
+          }
+
+          // Update loading message
+          loadingText.textContent = message;
+
+          // Show loading overlay
+          loadingOverlay.classList.remove('hidden');
+          loadingOverlay.classList.add('flex');
+
+          // Show explosion background if requested
+          if (showExplosion) {
+            explosionBg.classList.add('exploding');
+          }
+
+          // Fade in overlay
+          setTimeout(() => {
+            loadingOverlay.style.opacity = '1';
+            progressBar.style.width = '100%';
+          }, 10);
+
+          // Play musical accompaniment
+          if (playMusic && soundEngine && soundEngine.isEnabled) {
+            this.playLoadingMusic();
+          }
+
+          // Return promise that resolves when loading is complete
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              // Fade out
+              loadingOverlay.style.opacity = '0';
+
+              setTimeout(() => {
+                // Hide elements
+                loadingOverlay.classList.add('hidden');
+                loadingOverlay.classList.remove('flex');
+                explosionBg.classList.remove('exploding');
+                progressBar.style.width = '0%';
+
+                this.activeAnimations.delete(animationId);
+
+                // Execute callback if provided
+                if (callback) {
+                  callback();
+                }
+
+                resolve();
+              }, 150);
+            }, duration);
+          });
+        },
+
+        playLoadingMusic() {
+          if (!soundEngine || !soundEngine.isEnabled) return;
+
+          const now = Tone.now();
+
+          // Play musical sequence inspired by the original
+          const loadingNotes = ['C4', 'E4', 'G4', 'C5', 'G4', 'E4', 'C4', 'G3'];
+
+          loadingNotes.forEach((note, index) => {
+            setTimeout(() => {
+              if (soundEngine.synths.melody) {
+                soundEngine.synths.melody.triggerAttackRelease(note, '16n');
+
+                // Visual pulses handled by melody system only
+              }
+            }, index * 200);
+          });
+
+          // Add some sparkle with the high click synth
+          setTimeout(() => {
+            if (soundEngine.synths.highClick) {
+              ['C6', 'E6', 'G6'].forEach((note, index) => {
+                setTimeout(() => {
+                  soundEngine.synths.highClick.triggerAttackRelease(note, '32n');
+                }, index * 150);
+              });
+            }
+          }, 800);
+        },
+
+        // Quick loading for page transitions
+        showQuickLoading(message = 'Transitioning...') {
+          return this.showLoadingAnimation({
+            duration: 600,
+            showExplosion: false,
+            playMusic: false,
+            message
+          });
+        },
+
+        // Full loading with all effects
+        showFullLoading(message = 'Loading...', callback = null) {
+          return this.showLoadingAnimation({
+            duration: 800,
+            showExplosion: true,
+            playMusic: true,
+            message,
+            callback
+          });
+        }
+      };
+
+      // Blog post data - loaded from Eleventy
+      const BlogData = {
+        posts: [
+          {
+            title: "The Art of Improvisation",
+            date: "December 31, 2022",
+            url: "/posts/Essay-improvisation/",
+            image: "images/pic04.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Essay","Photo"],
+            content: "<p><em>Portraits of Change</em> features jazz music, among other genres, because the music is new every time you listen to it. Often times, you have to study and appreciate the intricate harmonic movements in jazz to &quot;get it&quot; or feel it. I am interested in different ways of representing these subtle aspects of jazz. Essentially, to create a real-time visual captioning of the harmony.</p>\n<p>Our approach to visualizing music is simple. We let the music carry the weight of the work, and the change of effects on stage. If we played classical music, we know precisely what the outcome should look like. This is useful in many situations. With jazz improvisation however, this ensures a new, emergent, experience every time.</p>\n<p>I am primarily inspired by <strong>Miles Davis</strong> approach to jazz, and innovation. The way he approached his horn like a laboratory, always trying new sounds, new forms, deeply inspires me. How he approached <em>Bitches Brew</em> is how I tried to embody creativity throughout the project. This is in diametric congruence with <strong>Coltrane's</strong> philosophies, that also deeply influenced my music theory and analytical application of geometry to music. I also utilized music set theory from <strong>Shoenberg</strong> extensively in my audio visualizations.</p>\n"
+          },{
+            title: "Game Dev Meetup MR Performance",
+            date: "September 10, 2022",
+            url: "/posts/performance-2022-09-09/",
+            image: "",
+            videoId: "",
+            tags: ["Portraits of Change","Performance","Video"],
+            content: "<p>Despite being rained out on for our outside event, the video game developers meetup was still going on in Colorado Springs! And we were able to demo some live music to an unlikely audience.</p>\n<div class=\"text-center my-8\">\n  <video controls class=\"max-w-4xl w-full rounded-lg shadow-lg\" src=\"/images/AQPLkixl134wfmmIHeW5PqG5AYi95Hsy8SboMDH3uDi77bC5cS8anrYJiA39xsuR8pgniYXcUqGRBYL6M7aoiW_653835292925003.mp4\"></video>\n</div>"
+          },{
+            title: "Portraits of Change on FOX21 News",
+            date: "September 9, 2022",
+            url: "/posts/Media-whatif/",
+            image: "",
+            videoId: "",
+            tags: ["Portraits of Change","Media","Video"],
+            content: "<p>Got to help out the What If Festival promote the event by bringing my project to the local news station and talk about it for a couple of minutes. Was so much fun!!! Remember to join us in Colorado Springs for the What If... Festival of Innovation and Imagination 2022!</p>\n<div class=\"text-center my-8\">\n  <video controls class=\"max-w-4xl w-full rounded-lg shadow-lg\" src=\"/images/What IF Festival 2023 FOX21 News Colorado.mp4\"></video>\n</div>"
+          },{
+            title: "Headed to the Festival",
+            date: "September 9, 2022",
+            url: "/posts/Announcement-2022-09-10/",
+            image: "images/480778747_1183621756819765_3112620102943742103_n_559793182535962.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Update","Photo"],
+            content: "<p>We are packed up and headed to the festival!</p>\n"
+          },{
+            title: "What If?... 2022 Festival Preview",
+            date: "August 29, 2022",
+            url: "/posts/Announcement-2022-08-29/",
+            image: "images/474461813_1998429683999767_5093809811565207258_n_1434382320404509.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Announcement","Photo"],
+            content: "<p>What if you could see music? What if you could step inside the world that music paints in our heads? What if we used AR/VR technology to enrich live music? Explore these questions with us at the What If... Festival of Innovation &amp; Imagination! We are so excited to return with our updated beta software and hardware to show everyone the progress we have made since our first public showcase at the festival in 2019. Try out our custom AR headset and grow your love of music in new and exciting ways!</p>\n"
+          },{
+            title: "Brass Quintet in Mixed Reality",
+            date: "November 29, 2021",
+            url: "/posts/performance-2021-11-29/",
+            image: "https://img.youtube.com/vi/uwoQDt-eHTY/maxresdefault.jpg",
+            videoId: "uwoQDt-eHTY",
+            tags: ["Portraits of Change","Performance","Video"],
+            content: "<p>Scene from our first performance of the beta! This live performance of mixed reality and music features a <strong>brass quintet</strong> playing a piece by Handel. Instead of using real fireworks and risking burning down a building like the original performance, we can use AR to capture a similar effect. Each instrument controls MIDI-driven visual effects with various music equipment.</p>\n<h2>Performers</h2>\n<ul>\n<li>Trumpet: Thomas Graves</li>\n<li>Trumpet: Ivan Acurio</li>\n<li>Horn: Ray Beltran</li>\n<li>Trombone: Richard Platt</li>\n<li>Tuba: Tyler Perea</li>\n</ul>\n<p><strong>Music by George Frideric Handel</strong></p>\n"
+          },{
+            title: "Bitches Brew in Mixed Reality",
+            date: "November 28, 2021",
+            url: "/posts/performance-2021-11-28/",
+            image: "https://img.youtube.com/vi/HlHTue853-E/maxresdefault.jpg",
+            videoId: "HlHTue853-E",
+            tags: ["Portraits of Change","Performance","Video"],
+            content: "<p>A <strong>mixed reality audiovisual experience</strong> where the music drives every visual change.<br>\nRecorded on November 28th, 2021 and performed live as part of my bachelor’s degree recital, this was the culmination of years of developing <em>Portraits of Change</em> in Unity.</p>\n<h2>Description</h2>\n<p>This performance was part of my mixed-reality recital, using a VR pass-through prototype built with the Valve Index and ZED Mini stereoscopic camera. Since 2019, I have been developing <em>Portraits of Change</em> as a way to enhance live music through VR/AR rather than simply stream concerts remotely.</p>\n<h2>Why Bitches Brew</h2>\n<p>Miles Davis’s <em>Bitches Brew</em> was chosen for its immense influence in jazz and rock, and for pioneering fusion. We approached rehearsals differently than other songs- the form was loose, harmonic structure open, and the performance played with a sense of discovery and unease.</p>\n<p>I paired the music with visuals of space and cosmology, attempting to tell the story of the origins of the universe. The performance begins in chaos and gradually forms into equilibrium, with cascading melodies and harmonies emerging through improvisation.</p>\n<h2>Performers</h2>\n<ul>\n<li>Trumpet: Thomas Graves</li>\n<li>Keys: Tony Szajowski</li>\n<li>Electronic Drums: Michael Manzanares</li>\n<li>Upright Bass: Jay Martinez</li>\n<li>Electric Bass: Jordan Barney</li>\n<li>Electric Guitar: Thaddeus Zimmerman</li>\n<li>Tenor Sax: Connor Thomas</li>\n<li>Bassoon: DJ Henson</li>\n</ul>\n<p><strong>Music composed by Miles Davis</strong><br>\nArranged by pure chaos and group improvisation.</p>\n"
+          },{
+            title: "Recital Poster",
+            date: "November 17, 2021",
+            url: "/posts/Announcement-2021-11-17/",
+            image: "images/471171827_1978076419368427_6270906807133954940_n_1241799052996171.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Announcement","Photo"],
+            content: "<p>Hi everyone! Its been a long time coming, but the first public performance of my trumpet recital and music technology project Portraits of Change will be on November 28th at 5pm. It will be at Hoag Hall at CSU-Pueblo. DM me if you have any questions. Free admission, please be vaccinated. Will be recorded and possibly live streamed. We will feature 12 musical song environments and 12 audience members will wear an AR headset and watch a real-time audiovisual music performance.</p>\n"
+          },{
+            title: "Rehearsal with Bits",
+            date: "November 7, 2021",
+            url: "/posts/devlog-2021-11-07/",
+            image: "images/255127195_1234758527033557_8037080540170382448_n_1234758530366890.png",
+            videoId: "",
+            tags: ["Portraits of Change","Devlog","Photo"],
+            content: "<p>Yesterday we rehearsed the jazz portion of the setlist. We also set up the MIDI interface with guitar, upright and electric bass, e-kit, and trumpet. It was the first time we had so many instruments at once, and it worked great. A Vive Tracker was attached to an upright bass and an e-kit. Very soon there will be more test videos, documentation published, and the performance date will be announced.</p>\n"
+          },{
+            title: "The Mount",
+            date: "September 6, 2021",
+            url: "/posts/devlog-2021-09-06/",
+            image: "images/469583321_1966737787168957_2211266147452802019_n_1191408001368610.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Devlog","Photo"],
+            content: "<p>The mount works! The magnets hold well, the camera snaps in great and now we have the project logo prominently displayed on the front of the headset. Now we just need a shorter cable! Can't wait to have people try out the headset while we play music.</p>\n"
+          },{
+            title: "3D Printing and Me",
+            date: "September 4, 2021",
+            url: "/posts/devlog-2021-09-04/",
+            image: "images/469529974_1966733493836053_2799346835596574124_n_1189983424844401.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Devlog","Photo"],
+            content: "<p>Hard to believe this was 3D printed! Using HP Multi Jet Fusion 3D-printing technology, I was able to print this camera mount with nylon and print it in color to display our logo! I will spend some time calibrating the camera with the VR headset, but will be able to record more tests with more instruments and get the final pieces in motion for the first public performance. The recital date will be announced this upcoming week! Special thanks to Resin Foundry for making the part quickly and with some crazy cool technology. If anyone in the Springs needs to 3D print with SLA or MJF tech, hit them up! Also, If anyone needs normal stuff 3D printed with FDM, I recommend Catz Design Farm who gave me the referral to Resin Foundry when they couldn't print this part with traditional 3D printing. https://www.resinfoundry.com/ https://www.catzdesignfarm.com/</p>\n<h2>Related Links</h2>\n<ul>\n<li>\n<p><a href=\"https://www.resinfoundry.com/\">https://www.resinfoundry.com/</a></p>\n</li>\n<li>\n<p><a href=\"https://www.catzdesignfarm.com/\">https://www.catzdesignfarm.com/</a></p>\n</li>\n</ul>\n"
+          },{
+            title: "Trumpet Performance in Mixed Reality with Haydn",
+            date: "May 15, 2021",
+            url: "/posts/devlog-2021-05-15/",
+            image: "",
+            videoId: "jM_3Ma0daAA",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>Check out our latest trumpet test in mixed reality! A little Haydn in color.</p>\n"
+          },{
+            title: "Real-Time VFX MIDI Testing in 2D Unity Scene",
+            date: "April 15, 2021",
+            url: "/posts/devlog-2021-04-15/",
+            image: "",
+            videoId: "l-iUqews7Q0",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>This video contains a collection of different effects I've made for Portraits. In this 2D Unity scene, I can test different MIDI driven VFX without needing VR. There isn't sound, but these effects are being driven by my MIDI keyboard in real-time.</p>\n"
+          },{
+            title: "Piano Performance with Mr. Creager",
+            date: "March 26, 2021",
+            url: "/posts/performance-2021-04-12/",
+            image: "",
+            videoId: "xYRqNQzCxVM",
+            tags: ["Portraits of Change","Performance","Video"],
+            content: "<p>The past year has been very challenging on all of us. I honestly have been struggling. Struggling to work on a project for performing arts without any performances, struggling to stay motivated through a pandemic. I am sure many of you can relate. I still wanted to continue work with VR/AR and music so I shifted gears, and started working on an educational tool to help teach basic conducting in a college classroom. I recently had the opportunity to bring my VR/AR rig down to CSU-P and got to do what I love, sharing the gifts of music and mixed reality with my peers and mentors. I demonstrated a rudimentary conducting VR app, but also got the chance to showcase some of my progress in Portraits of Change. With the pandemic soon recessing as we ramp up vaccinations, the prospect of live performance with live audiences become possible again. There will be a Portraits performance as my senior recital by the end of the year. I look forward to announcing details soon, and collaborating with more musicians to bring our music to light! Here is a short demonstration of the Beta prototype and software with the man who taught me piano, Greg Creager!</p>\n"
+          },{
+            title: "Mixed Reality and Music Education",
+            date: "February 8, 2021",
+            url: "/posts/devlog-2021-02-08/",
+            image: "https://img.youtube.com/vi/tnRLI_YxqZQ/maxresdefault.jpg",
+            videoId: "tnRLI_YxqZQ",
+            tags: ["ConductVR","Presentation","Video","Photo"],
+            content: "<p>For my <em>Music Technology for Music Educators</em> class, I walked into a Zoom meeting with my Valve Index controllers and a surprise presentation. I hadn’t realized we were presenting that day, but I decided to improvise. The question I posed was simple:</p>\n<p><strong>Can virtual reality controllers become tools for conducting?</strong></p>\n<p>What followed was a short demo and a bigger conversation about the future of mixed reality (MR) in music education. This blog post distills that talk, highlights some of the most exciting tools already out there, and shares my own prototype project, <em>ConductVR</em>.</p>\n<hr>\n<h2>What is Mixed Reality?</h2>\n<p>Microsoft defines mixed reality as <em>“a blend of physical and digital worlds unlocking the links between human, computer, and environment.”</em></p>\n<p>It’s a spectrum:</p>\n<ul>\n<li><strong>Virtual Reality (VR)</strong>: fully immersive (e.g., Meta Quest, Valve Index).</li>\n<li><strong>Augmented Reality (AR)</strong>: overlays digital objects onto the real world (e.g., Pokémon Go, Microsoft HoloLens).</li>\n<li><strong>Mixed Reality (MR)</strong>: merges the two, letting virtual objects exist and interact within real spaces.</li>\n</ul>\n<p>For music, this opens up fascinating possibilities: gesture-based conducting, holographic lessons, immersive practice environments, and interactive tools that rethink how we learn.</p>\n<hr>\n<h2>Software: Current Landscape</h2>\n<p>We’re already used to digital tools:</p>\n<ul>\n<li><strong>Digital Audio Workstations</strong>: <a href=\"https://www.ableton.com/\">Ableton</a>, <a href=\"https://www.avid.com/pro-tools\">Pro Tools</a>, <a href=\"https://www.image-line.com/\">FL Studio</a></li>\n<li><strong>Gaming for learning</strong>: <a href=\"https://www.ubisoft.com/game/rocksmith\">Rocksmith</a>, evolving from Guitar Hero.</li>\n<li><strong>AI Assessment &amp; Analysis</strong>: <a href=\"https://www.smartmusic.com/\">SmartMusic</a></li>\n<li><strong>DJ instruction</strong>: <a href=\"https://www.tribexr.com/\">Tribe XR</a></li>\n<li><strong>AR improvisation</strong>: <a href=\"https://www.microsoft.com/en-us/research/project/music-everywhere/\">Music Everywhere</a></li>\n</ul>\n<hr>\n<h2>Hardware: The Wearables Revolution</h2>\n<ul>\n<li><strong>VR Headsets</strong>: Valve Index, Oculus Quest, PlayStation VR.</li>\n<li><strong>AR Glasses</strong>: Microsoft HoloLens, Nreal/Unreal glasses.</li>\n<li><strong>MIDI Controllers &amp; Digital Instruments</strong>: Accessible and diverse instrument control.</li>\n</ul>\n<p>Over time, AR glasses may shift from niche to everyday devices, just like smartphones did.</p>\n<hr>\n<h2>Pedagogy: Why It Matters</h2>\n<p>Educational models are already adapting to digital-first learning:</p>\n<ul>\n<li>Blended and remote instruction.</li>\n<li>Collaborative learning communities.</li>\n<li>Multimedia and open resources.</li>\n<li>Student-driven exploration.</li>\n</ul>\n<p>Mixed reality adds <em>environmental input</em>, placing learning from abstract books back into a shared, spatial context. Imagine holographic ensembles, remote conducting lessons, or practice environments that respond to gesture and sound.</p>\n<hr>\n<h2>My Project: <em>ConductVR</em></h2>\n<p>I wanted to test whether VR could accelerate the way students learn conducting. Using Unity, C#, and the Valve Index, I prototyped a VR classroom where you can:</p>\n<ul>\n<li>Pick up a baton that responds to finger and wrist movement.</li>\n<li>Visualize conducting patterns in 3D space.</li>\n<li>Adjust conducting space and pattern library with interactive tools.</li>\n</ul>\n<p>The prototype is still very alpha (right now, the baton explodes into flowers if you drop it, a leftover from testing grenade physics), but the foundation is there. The big idea: <strong>can VR reduce the time it takes to acquire conducting technique?</strong></p>\n<hr>\n<h2>Benefits and Challenges</h2>\n<p><strong>Potential benefits</strong>:</p>\n<ul>\n<li>More immersive, interactive learning.</li>\n<li>Accessible remote lessons.</li>\n<li>Exposure to diverse conducting styles.</li>\n</ul>\n<p><strong>Challenges</strong>:</p>\n<ul>\n<li>Cost — VR/AR hardware is still expensive.</li>\n<li>Adoption — many schools lack infrastructure.</li>\n<li>Scope — VR can’t replace every nuance, like a conductor’s facial expression.</li>\n</ul>\n<hr>\n<h2>Closing Thoughts</h2>\n<p>Mixed reality in education is about creating new ways to teach, learn, and connect. Whether it’s a holographic piano teacher, a VR DJ school, or a baton that explodes into flowers, these tools point toward the future of music education.</p>\n<p>I’m excited to keep building <em>ConductVR</em> and testing its potential. If you’re working on similar projects, or want to collaborate, let’s connect!</p>\n<p>Updated September 9th, 2025 with a summary of the transcript</p>\n"
+          },{
+            title: "Digital Sheet Music in Mixed Reality",
+            date: "April 28, 2020",
+            url: "/posts/devlog-2020-04-28/",
+            image: "",
+            videoId: "",
+            tags: ["Music Stand","Devlog"],
+            content: "<p>Portraits of Change is a mixed-reality jazz show. Learn more at <a href=\"https://mixedrealitymusician.com/work/portraits-of-change\">mixedrealitymusician.com/work/portraits-of-change</a>.</p>\n<p>A recent update to our software includes HDRP support and a look into digital sheet music, calibrating VFX on a piano using hand tracking (thanks to the Leap Motion), and playing the piano in an AR environment using VR passthrough with the ZED Mini and Valve Index.</p>\n<p>In this test, we implimented our PDF reader solution built from the HoloLens 2 demo to test reading sheet music in a VR environment with mixed reality passthrough.</p>\n<p>A novel UI was designed to access the visual effects and the sheet music for different instruments.</p>\n<div class=\"text-center my-8\">\n  <iframe\n    class=\"max-w-4xl w-full rounded-lg shadow-lg aspect-video\"\n    src=\"https://www.youtube.com/embed/RUBBKnUVU-s?start=408\"\n    title=\"Digital Sheet Music Integration\"\n    frameborder=\"0\"\n    allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\"\n    allowfullscreen>\n  </iframe>\n</div>"
+          },{
+            title: "Pandemic Development and HDRP Integration",
+            date: "April 27, 2020",
+            url: "/posts/devlog-2020-04-27/",
+            image: "",
+            videoId: "RUBBKnUVU-s",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>Well, that happened. Coronavirus has altered our way of life, and the performing arts have suffered. The prospects of live music performance are not looking great... I am still working through Portraits, hoping to attain some Vive trackers and adding more visual effects and refining the AR pass-through prototype. In our recent update, I added HDRP support and am using VFX graphs exclusively for the particle system.</p>\n"
+          },{
+            title: "SteamVR Tracking and Index Headset Integration",
+            date: "March 27, 2020",
+            url: "/posts/devlog-2020-03-27/",
+            image: "",
+            videoId: "C5lcmrWpCXE",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>We have upgraded to SteamVR tracking! With the addition of the Index headset to our mixed reality arsenal, we can start prototyping AR pass-through with the ZED mini and LEAP motion sensor in a well-tracked environment with multiple objects in scene.</p>\n"
+          },{
+            title: "Beta Release Anniversary",
+            date: "March 16, 2020",
+            url: "/posts/Milestone-2020-03-16/",
+            image: "images/90345627_804304316745649_2555671339742527488_n_804304310078983.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Milestone","Photo"],
+            content: "<p>On March 15, 2019 Portraits of Change became a fiscally sponsored project. Almost exactly a year ago, we launched our online presence and have since made tremendous progress in Mixed Reality technology along with its artistic application within music. We have shared our progress with the community at live events and through online videos. I am proud to announce today- March 16th, 2020 that Portraits of Change has entered it's Beta! Using the Valve Index, ZED Mini stereoscopic depth camera, LEAP Motion IR sensor, streamlined MIDI interface and the Beta PoC Software has allowed us to create true augmented reality using pass-through VR. Even when we pick a new AR HMD platform for 1.0, we will still use this tracking system on stage to give us greater control of the mixed reality live performance. Expect public demonstrations once the Coronavirus isn't a public health crisis, but feel free to reach out to me if you would like to try out our Beta experience! It will be available for testing Q2 2020.</p>\n"
+          },{
+            title: "Peak Arts Prize 2020 Submission",
+            date: "February 5, 2020",
+            url: "/posts/devlog-2020-02-06/",
+            image: "https://img.youtube.com/vi/_1gPVE5BIjs/maxresdefault.jpg",
+            videoId: "_1gPVE5BIjs",
+            tags: ["Portraits of Change","Update"],
+            content: "<p><em>Portraits of Change</em> is an ongoing music-technology project that aims to cultivate live music appreciation through bold and unabashed innovation. For <strong>Peak Arts Prize 2020</strong>, I submitted <em>Portraits of Change</em> as an individual artist.</p>\n<hr>\n<h2>Description</h2>\n<p>Utilizing Mixed Reality and MIDI technologies, this project introduces a new medium of live music visualization. By bringing 21st-century tools to 21st-century musicians, we hope to contribute to the innovative musical heritage of jazz.</p>\n<p><em>Portraits of Change</em> will feature six different pieces of music that have been influential or innovative to jazz in some way. Each piece will vary radically in style, genre, and instrumentation, reflecting the diverse roots of jazz and expanding its future.</p>\n<p>Learn more at <a href=\"https://mixedrealitymusician.com/work/portraits-of-change\">mixedrealitymusician.com/portraits</a>.</p>\n<hr>\n"
+          },{
+            title: "Multi-Instrument Harmony Session with Noah Suazo",
+            date: "February 5, 2020",
+            url: "/posts/devlog-2020-02-05/",
+            image: "",
+            videoId: "FFIsxg-flIg",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>I managed to get a recording with our session pianist Noah Suazo. It was a really great experience and really rich to finally see some multi instrument harmony in action. We are both energized to see what more of our music looks like! I also used footage from this session for my Peak Arts Prize 2020 proposal.</p>\n"
+          },{
+            title: "Trumpet Module Complete - First Multi-Instrument Version",
+            date: "January 9, 2020",
+            url: "/posts/devlog-2020-01-09/",
+            image: "",
+            videoId: "IxDf7hlPQLw",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>This is where things get good. A little over a full year has past and we have a fully functioning trumpet module working! 0.2.5 will also be our first multi-instrument supported version.</p>\n"
+          },{
+            title: "Reading Sheet Music in AR with MRTK",
+            date: "October 19, 2019",
+            url: "/posts/devlog-2019-10-19/",
+            image: "https://img.youtube.com/vi/UoVAPxiZuHk/maxresdefault.jpg",
+            videoId: "UoVAPxiZuHk",
+            tags: ["Music Stand","Announcement","Video"],
+            content: "<p>I’m creating experiments and tools for myself to read <strong>holographic sheet music</strong>, along with other music projects in augmented reality. This demo is built with the MRTK and Unity, and my goal is to use it on an AR HMD to keep an organized practice routine that requires no physical sheet music.</p>\n<hr>\n<h2>Background</h2>\n<p>I started experimenting with the MRTK with devices like the <strong>HoloLens 2</strong> in mind after attending the Mixed Reality Dev Days event at Microsoft’s HQ in Seattle. This video is just a quick demonstration of what’s possible with these new devices and how they can be relevant to music practice and pedagogy!</p>\n<hr>\n<h2>Future Development</h2>\n<p>I hope to continue refining these tools so they can be used both in my own practice and as resources for my students and other musicians.</p>\n"
+          },{
+            title: "Electric Trumpet Test",
+            date: "September 23, 2019",
+            url: "/posts/devlog-2019-09-23/",
+            image: "https://img.youtube.com/vi/Lml8TpSYFUI/maxresdefault.jpg",
+            videoId: "Lml8TpSYFUI",
+            tags: ["Portraits of Change","Devlog"],
+            content: "<p>Testing an <strong>electric trumpet</strong> performance in <em>Portraits of Change 0.2.4</em>. This experiment pairs Miles Davis’s <em>Blue in Green</em> with a matching <strong>blue and green color palette</strong>, performed while orbiting a blue and green planet.</p>\n<p>This test was built using the <strong>Oculus CV1</strong>, a <strong>green screen</strong>, a <strong>Logitech Brio camera</strong>, and <strong>LIV mixed reality software</strong>.</p>\n"
+          },{
+            title: "Artificial Light and Jazz",
+            date: "September 22, 2019",
+            url: "/posts/Essay-2019-09-22/",
+            image: "images/70536249_666587543850661_8025495367258734592_n_666587540517328.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Essay","Photo"],
+            content: "<p>Artificial light is a very American thing. From the first bulb to first LED, it has revolutionized every-day life. You know what else is American? Jazz. Need I say more?</p>\n"
+          },{
+            title: "Post-Festival Update",
+            date: "September 15, 2019",
+            url: "/posts/devlog-2019-09-15/",
+            image: "",
+            videoId: "VPJgtfEtFgQ",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>With the What If... Festival wrapped up, we are bunkering down to develop our MIDI conversion system after all this time researching and prototyping on piano. 0.2.4 will see the addition of the trumpet along with bug fixes and updates to the performance mode of Portraits of Change.</p>\n"
+          },{
+            title: "What If... Festival of Innovation and Imagination",
+            date: "September 6, 2019",
+            url: "/posts/Announcement-2019-09-06/",
+            image: "images/69579214_655992901576792_4775086859497766912_n_655992891576793.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Announcement","Photo"],
+            content: "<p>On September 14th, there's an amazing festival happening downtown Colorado Springs called the What If.... Festival of Innovation and Imagination. We have a booth and will be running demos of our current prototype on an Oculus Rift headset and a piano. Come by and learn more about mixed reality, jazz, and the future of music!</p>\n"
+          },{
+            title: "AR MIDI Color Testing with Session Pianist",
+            date: "August 25, 2019",
+            url: "/posts/devlog-2019-08-25/",
+            image: "",
+            videoId: "Q6Wat4iVT-M",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>We have been hard at work testing our MIDI color system in augmented reality, while still polishing the VR experience for our upcoming events. We were fortunate to host our session pianist Noah Suazo for our most recent test, to uncover the possibilities of augmented reality! This test was used with the LIV software, and it is a really incredible tool for mixed reality recording.</p>\n"
+          },{
+            title: "Alpha 0.2.2 Preview",
+            date: "August 10, 2019",
+            url: "/posts/performance-2019-08-10/",
+            image: "",
+            videoId: "Znv5EWZoBo0",
+            tags: ["Portraits of Change","Demo","Video"],
+            content: "<p>Just a hint of what is coming with our Alpha 0.2.2 Booth Demo! New logo, new effects, new colors, new hands! Find us at the <em>What If... Festival of Innovation and Imagination</em> on September 14th in downtown Colorado Springs to check it out!</p>\n"
+          },{
+            title: "Fundraising & First Event",
+            date: "July 11, 2019",
+            url: "/posts/devlog-2019-07-11/",
+            image: "",
+            videoId: "NMaVNASWMLU",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>July Update- It has been a busy summer for Portraits of Change! We have officially reached our first fundraising milestone- to raise $1000! We also have our first event finalized! On September 14th, 2019, you can find a booth of Portraits of Change at the What If... Festival of Innovation &amp; Imagination in Downtown Colorado Springs!</p>\n"
+          },{
+            title: "Hello World Launch",
+            date: "April 26, 2019",
+            url: "/posts/Announcement-2019-04-26/",
+            image: "images/58375475_574608839715199_3923551473568317440_n_574608833048533.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Announcement","Photo"],
+            content: "<p>We plan on bringing a small sample of what we have developed to many music/technology conferences in 2020. We also have an invitation to go to Microsoft's Mixed Reality Dev Days in Seattle next week. The good news is that the live demo is almost complete! The bad news is that these conferences can be quite expensive to exhibit. If you would like to help get us there, and would like to see Portraits of Change on a national stage, please consider donating at portraitsofchange.org. Your help is greatly appreciated! More info and a VR trailer will be coming out soon!</p>\n"
+          },{
+            title: "Initial Prototype",
+            date: "April 15, 2019",
+            url: "/posts/devlog-2019-04-15/",
+            image: "",
+            videoId: "3-ZnpXlRGYI",
+            tags: ["Portraits of Change","Devlog","Video"],
+            content: "<p>We had made some breakthroughs in developing an initial prototype of the idea of incorporating VR/AR into a live music performance. With help of some incredible developers and through the discovery of amazing open-sourced projects and samples, I was able to build a Frankenstein of a Unity project that actually works! MIDI turned out to be a key player in utilizing physical interfaces to generate low-latency effects directly from the music itself.</p>\n"
+          },{
+            title: "Why Jazz? A History of Innovation",
+            date: "March 15, 2019",
+            url: "/posts/Essay-why-jazz/",
+            image: "",
+            videoId: "",
+            tags: ["Portraits of Change","Essay","Photo"],
+            content: "<p>You may be wondering what all the fuss is about. Is it &quot;elevator music&quot;? Is it for pretentious cocktail parties? After learning its history, you decide.</p>\n<p>Jazz sits at the center of Portraits of Change. What evolved between a confrontation in culture led to a syncretism of art. As technology continues to develop in both the music world and in other fields, there arises a need to continue Jazz's cultural heritage in new, dynamic ways.</p>\n<p>Portraits of Change initially started as a recital focused on music innovation. I wanted to highlight past innovative works within jazz, and try to paint a &quot;portrait&quot; of the composer through their own music. A portrait can be defined as a painting, drawing, photo, or visual representation of a person usually depicting only the face or head and shoulders. A more abstract definition is a representation or impression of someone. That is exactly what we set out with our audiovisual environments, to paint with sound and light an impression of the mood and likeness of the composer.</p>\n<blockquote>\n<p>&quot;If a Jazz musician plays someone else's song, he has a responsibility to make a distinct &amp; original statement.&quot;</p>\n</blockquote>\n<p>I hope that by adding a visual component to the music, it makes it more accessible to untrained ears and more enjoyable and immersive for everyone. I hope to spark joy and interest in these wonderful musicians throughout time that have inspired me and to foster more listeners to their music through this medium of mixed reality and music.</p>\n"
+          },{
+            title: "The Band",
+            date: "March 14, 2019",
+            url: "/posts/Announcement-2019-03-14/",
+            image: "images/54514638_551769265332490_4740775542591062016_n_551769261999157.jpg",
+            videoId: "",
+            tags: ["Portraits of Change","Announcement","Photo"],
+            content: "<p>Exciting things are happening in Southern Colorado. More to be announced soon!</p>\n<p>Featuring: (from left to right) Thomas Graves, Noah Suazo, Gerad Ortiz, Michael Manzanaras, Jordan Barney, DJ Henson</p>\n"
+          },
+        ]
+      };
+
+      // Simple Page Manager - just handles sound and basic interactions
+      const PageManager = {
+        init() {
+          AppState.currentToneRowIndex = Math.floor(Math.random() * TONE_ROWS.length);
+          AppState.activePage = 'hero';
+
+          // Set melody based on current page
+          const path = window.location.pathname;
+          if (path.includes('/work')) {
+            AppState.activePage = 'work';
+          } else if (path.includes('/about')) {
+            AppState.activePage = 'about';
+          } else if (path.includes('/blog')) {
+            AppState.activePage = 'blog';
+          }
+
+          // Melody will be set when sound engine is ready and enabled
+
+          // Load blog content if on blog page
+          if (AppState.activePage === 'blog') {
+            this.loadBlogContent();
+          }
+        },
+
+        loadBlogContent() {
+          const blogGrid = document.getElementById('blog-grid');
+          if (!blogGrid) return;
+
+          blogGrid.innerHTML = BlogData.posts.map(post => {
+            let imageUrl = 'images/pic01.jpg';
+            if (post.videoId && post.videoId !== '') {
+              imageUrl = `https://img.youtube.com/vi/${post.videoId}/maxresdefault.jpg`;
+            } else if (post.image && post.image !== '') {
+              imageUrl = post.image;
+            }
+
+            return `
+              <article class="bg-[var(--color-bg-card)] rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+                <div class="relative">
+                  <img src="${imageUrl}" alt="${post.title}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                  ${post.videoId && post.videoId !== '' ? `
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <div class="bg-red-600 rounded-full p-3 shadow-lg">
+                        <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.841z"/>
+                        </svg>
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
+                <div class="p-6">
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    ${post.data.tags ? post.data.tags.map(tag => `<span class="inline-block bg-[var(--color-secondary)] text-xs font-medium px-2.5 py-1 rounded-full">${tag}</span>`).join('') : ''}
+                  </div>
+                  <h3 class="text-xl font-bold text-white mb-2 group-hover:text-gray-300 transition-colors">${post.title}</h3>
+                  <p class="text-gray-500 text-sm mb-4">${post.date}</p>
+                  <a href="${post.url}" class="inline-block sound-interactive interactive-rainbow px-4 py-2 font-semibold text-sm uppercase tracking-wider rounded-lg transition-colors">Read More</a>
+                </div>
+              </article>
+            `;
+          }).join('');
+        }
+      };
+
+      // Setup event listeners - ensure sound engine is setup first
+      soundToggleBtn.addEventListener('click', async () => {
+        try {
+          if (!soundEngine.isSetup) {
+            console.log('🎵 Setting up sound engine...');
+            await soundEngine.setup();
+          }
+
+          // Explicitly handle first-time activation
+          if (!soundEngine.isEnabled) {
+            soundEngine.enable();
+            console.log('🔊 Sound enabled on first click');
+          } else {
+            soundEngine.disable();
+            console.log('🔇 Sound disabled');
+          }
+
+          // Update UI
+          const isEnabled = soundEngine.isEnabled;
+          soundOnIcon.classList.toggle('hidden', !isEnabled);
+          soundOffIcon.classList.toggle('hidden', isEnabled);
+        } catch (error) {
+          console.error('❌ Sound toggle failed:', error);
+        }
+      });
+
+      // Sound interaction events
+      document.body.addEventListener('mouseover', e => {
+        if (e.target.closest('.sound-interactive')) {
+          soundEngine.playHoverSound();
+        }
+      });
+
+      document.body.addEventListener('mouseout', e => {
+        if (e.target.closest('.sound-interactive')) {
+          soundEngine.stopHoverSound();
+        }
+      });
+
+      document.body.addEventListener('click', e => {
+        if (e.target.closest('.sound-interactive')) {
+          // Only play click sound, let melody system handle visuals
+          soundEngine.playClickSound();
+        }
+      });
+
+
+      // Page Transition System
+      const PageTransition = {
+        isTransitioning: false,
+
+        async navigateToPage(url, pushState = true) {
+          if (this.isTransitioning) {
+            console.log('📄 Navigation already in progress, allowing concurrent requests');
+          }
+          this.isTransitioning = true;
+
+          try {
+            // Show loading overlay
+            const overlay = document.getElementById('page-transition-overlay');
+            const mainContent = document.getElementById('main-content');
+
+            overlay.style.pointerEvents = 'all';
+            overlay.style.opacity = '0.3';
+            mainContent.style.opacity = '0.7';
+
+            // Fetch new page content
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to load page');
+
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Extract the new content and title
+            const newMainContent = doc.querySelector('main');
+            const newTitle = doc.querySelector('title')?.textContent || 'Thomas Graves';
+
+            if (!newMainContent) throw new Error('Invalid page structure');
+
+            // Update page title and URL
+            document.title = newTitle;
+            if (pushState) {
+              history.pushState({ url }, '', url);
+            }
+
+            // Close mobile menu if open
+            if (typeof MobileMenu !== 'undefined') {
+              MobileMenu.closeMenu();
+            }
+
+            // Trigger visual transition effects
+            this.triggerTransitionEffects();
+
+            // Fade out completely
+            mainContent.style.opacity = '0';
+
+            // Wait for fade out (faster)
+            await new Promise(resolve => setTimeout(resolve, 150));
+
+            // Replace content
+            mainContent.innerHTML = newMainContent.innerHTML;
+            mainContent.className = newMainContent.className;
+
+            // Update active page for music and camera
+            const path = url;
+            let newPageId;
+            if (path.includes('/work')) {
+              newPageId = 'work';
+            } else if (path.includes('/about')) {
+              newPageId = 'about';
+            } else if (path.includes('/blog')) {
+              newPageId = 'blog';
+            } else {
+              newPageId = 'hero';
+            }
+
+            AppState.activePage = newPageId;
+
+            // Set new melody for the page (music continues seamlessly)
+            soundEngine.setMelodyForPage(AppState.activePage);
+
+            // Animate camera to new page position
+            this.animateCameraForPage(newPageId);
+
+            // Load blog content if needed
+            if (AppState.activePage === 'blog') {
+              PageManager.loadBlogContent();
+            }
+
+            // Reinitialize page-specific functionality
+            this.initializePageSpecificScripts();
+
+            // Reinitialize interactive effects for new elements
+            if (typeof InteractiveEffects !== 'undefined') {
+              InteractiveEffects.init();
+            }
+
+            // Fade in new content
+            overlay.style.opacity = '0';
+            mainContent.style.opacity = '1';
+
+            // Clean up overlay (faster)
+            setTimeout(() => {
+              overlay.style.pointerEvents = 'none';
+            }, 200);
+
+          } catch (error) {
+            console.error('Navigation error:', error);
+            // Fallback to normal navigation
+            window.location.href = url;
+          } finally {
+            this.isTransitioning = false;
+          }
+        },
+
+        init() {
+          // Intercept navigation clicks
+          document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href]');
+            if (!link) return;
+
+            const href = link.getAttribute('href');
+
+            // Only intercept internal links
+            if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
+              return;
+            }
+
+            // Don't intercept if ctrl/cmd/shift clicked (user wants new tab)
+            if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+
+            e.preventDefault();
+            this.navigateToPage(href);
+          });
+
+          // Handle browser back/forward buttons
+          window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.url) {
+              this.navigateToPage(e.state.url, false);
+            } else {
+              this.navigateToPage(window.location.pathname, false);
+            }
+          });
+
+          // Store initial state
+          history.replaceState({ url: window.location.pathname }, '', window.location.pathname);
+        },
+
+        initializePageSpecificScripts() {
+          // Initialize project page toggle functionality
+          this.initProjectPageToggles();
+
+          // Initialize Reality Engine button if we're on the home page
+          this.initRealityEngineButton();
+          
+          // Initialize blog sort button
+          this.initBlogSortButton();
+        },
+
+        initRealityEngineButton() {
+          // Reality Engine Button with Loading System - only initialize if button exists
+          const realityEngineBtn = document.getElementById('reality-engine-btn');
+          const noVrModal = document.getElementById('no-vr-modal');
+          const closeNoVrModalBtn = document.getElementById('close-no-vr-modal');
+
+          if (realityEngineBtn) {
+            // Remove any existing event listeners to prevent duplicates
+            const newRealityEngineBtn = realityEngineBtn.cloneNode(true);
+            realityEngineBtn.parentNode.replaceChild(newRealityEngineBtn, realityEngineBtn);
+
+            // Let InteractiveEffects handle this button with its normal initialization
+            if (window.InteractiveEffects) {
+              // Simply re-run init to pick up the new element
+              InteractiveEffects.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+              
+              // Find and re-initialize just this button
+              const rect = newRealityEngineBtn.getBoundingClientRect();
+              Object.assign(newRealityEngineBtn.dataset, {
+                angle: '0',
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: '0',
+                velocityY: '0'
+              });
+
+              // Set initial CSS custom properties - reality engine starts at 45 degrees
+              newRealityEngineBtn.style.setProperty('--x', `${rect.width / 2}px`);
+              newRealityEngineBtn.style.setProperty('--y', `${rect.height / 2}px`);
+              newRealityEngineBtn.style.setProperty('--angle', '45deg');
+
+              // Initialize physics object
+              newRealityEngineBtn._physics = {
+                angle: 45, // Reality Engine button starts with visible rotation
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: 0,
+                velocityY: 0
+              };
+
+              // Re-add event listeners
+              newRealityEngineBtn.addEventListener('mouseenter', (e) => InteractiveEffects.onMouseEnter(e));
+              newRealityEngineBtn.addEventListener('mouseleave', (e) => InteractiveEffects.onMouseLeave(e));
+              newRealityEngineBtn.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
+            }
+
+            newRealityEngineBtn.addEventListener('click', async (e) => {
+              e.preventDefault();
+              e.stopPropagation(); // Prevent event bubbling that could trigger sound
+
+              // Visual effects will be handled by melody system
+
+              // INSTANT visual feedback - start loading animation immediately
+              const loadingPromise = LoadingSystem.showFullLoading('Initializing Reality Engine...');
+
+              // PARALLEL execution - all these happen while animation runs
+              const soundSetupPromise = (async () => {
+                // Only setup sound engine, don't automatically enable it
+                if (!soundEngine.isSetup) {
+                  await soundEngine.setup();
+                }
+                // Play click sound only if sound is already enabled
+                if (AppState.isSoundEnabled) {
+                  soundEngine.playClickSound();
+                }
+              })();
+
+              const pagePreloadPromise = fetch('/work/');
+
+              const webxrCheckPromise = (async () => {
+                try {
+                  if (navigator.xr && await navigator.xr.isSessionSupported('immersive-vr')) {
+                    console.log('✅ WebXR VR session supported');
+                    return { hasVR: true };
+                  } else {
+                    console.log('❌ WebXR not supported');
+                    return { hasVR: false };
+                  }
+                } catch (error) {
+                  console.error('WebXR check failed:', error);
+                  return { hasVR: false };
+                }
+              })();
+
+              // Wait for all parallel operations to complete
+              const [loadingResult, soundResult, pageResult, webxrResult] = await Promise.all([
+                loadingPromise,
+                soundSetupPromise,
+                pagePreloadPromise,
+                webxrCheckPromise
+              ]);
+
+              // Navigate immediately after loading animation completes
+              if (webxrResult.hasVR) {
+                window.location.href = '/work/';
+              } else {
+                if (noVrModal) {
+                  noVrModal.classList.remove('hidden');
+                }
+              }
+            });
+          }
+
+          // Close VR Modal
+          if (closeNoVrModalBtn && noVrModal) {
+            // Remove existing event listener and add new one
+            const newCloseBtn = closeNoVrModalBtn.cloneNode(true);
+            closeNoVrModalBtn.parentNode.replaceChild(newCloseBtn, closeNoVrModalBtn);
+
+            newCloseBtn.addEventListener('click', () => {
+              noVrModal.classList.add('hidden');
+              if (AppState.isSoundEnabled) {
+                soundEngine.playClickSound();
+              }
+            });
+          }
+        },
+
+        initProjectPageToggles() {
+          // Development log data for Portraits of Change
+          const devlogData = [
+            { id: '2021-05-15', title: 'Devlog: Trumpet Test in MR', date: 'May 15, 2021', videoId: 'jM_3Ma0daAA', text: "Check out our latest trumpet test in mixed reality! A little Haydn in color.", tags: ['Devlog', 'Portraits of Change'] },
+            { id: '2021-04-15', title: 'Devlog: VFX MIDI Tests', date: 'April 15, 2021', videoId: 'l-iUqews7Q0', text: "This video contains a collection of different effects I've made for Portraits. In this 2D Unity scene, I can test different MIDI driven VFX without needing VR. There isn't sound, but these effects are being driven by my MIDI keyboard in real-time.", tags: ['Devlog', 'Portraits of Change'] },
+            { id: '2021-04-12', title: 'Devlog: University Demo', date: 'April 12, 2021', videoId: 'xYRqNQzCxVM', text: "I got to bring my VR/AR rig down to my university to demonstrate a VR conducting app I have been working on for a class, and couldn't help myself in sharing some Portraits stuff as well!", tags: ['Devlog', 'Update'] },
+            { id: '2020-04-27', title: 'Devlog: Coronavirus Update', date: 'April 27, 2020', videoId: 'RUBBKnUVU-s', text: "Well, that happened. Coronavirus has altered our way of life, and the performing arts have suffered. The prospects of live music performance are not looking great...", tags: ['Devlog', 'Update'] },
+            { id: '2020-03-27', title: 'Devlog: SteamVR Tracking', date: 'March 27, 2020', videoId: 'C5lcmrWpCXE', text: "We have upgraded to SteamVR tracking! With the addition of the Index headset to our mixed reality arsenal, we can start prototyping AR pass-through with the ZED mini and LEAP motion sensor.", tags: ['Devlog', 'Hardware'] },
+            { id: '2020-02-05', title: 'Devlog: Multi-Instrument Harmony', date: 'February 5, 2020', videoId: 'FFIsxg-flIg', text: "I managed to get a recording with our session pianist Noah Suazo. It was a really great experience and really rich to finally see some multi instrument harmony in action.", tags: ['Devlog', 'Milestone'] },
+            { id: '2020-01-09', title: 'Devlog: Trumpet Module', date: 'January 9, 2020', videoId: 'IxDf7hlPQLw', text: "This is where things get good. A little over a full year has past and we have a fully functioning trumpet module working! 0.2.5 will also be our first multi-instrument supported version.", tags: ['Devlog', 'Milestone'] },
+            { id: '2019-09-15', title: 'Devlog: Post-Festival Update', date: 'September 15, 2019', videoId: 'VPJgtfEtFgQ', text: "With the What If... Festival wrapped up, we are bunkering down to develop our MIDI conversion system after all this time researching and prototyping on piano.", tags: ['Devlog', 'Event'] },
+            { id: '2019-08-25', title: 'Devlog: AR MIDI Color Test', date: 'August 25, 2019', videoId: 'Q6Wat4iVT-M', text: "We have been hard at work testing our MIDI color system in augmented reality, while still polishing the VR experience for our upcoming events.", tags: ['Devlog', 'AR'] },
+            { id: '2019-07-11', title: 'Devlog: Fundraising & First Event', date: 'July 11, 2019', videoId: 'NMaVNASWMLU', text: "July Update- It has been a busy summer for Portraits of Change! We have officially reached our first fundraising milestone- to raise $1000!", tags: ['Devlog', 'Update'] },
+            { id: '2019-04-15', title: 'Devlog: Initial Prototype', date: 'April 15, 2019', videoId: '3-ZnpXlRGYI', text: "We had made some breakthroughs in developing an initial prototype of the idea of incorporating VR/AR into a live music performance.", tags: ['Devlog', 'Prototype'] }
+          ];
+
+          // Get toggle elements
+          const devlogBtn = document.getElementById('toggle-devlog-btn');
+          const collaboratorsBtn = document.getElementById('toggle-collaborators-btn');
+          const devlogSection = document.getElementById('devlog-section');
+          const collaboratorsSection = document.getElementById('collaborators-section');
+          const coreConceptsSection = document.getElementById('core-concepts-section');
+          const devlogGrid = document.getElementById('devlog-grid');
+
+          // Populate devlog grid if it exists
+          if (devlogGrid && devlogGrid.children.length === 0) {
+            devlogGrid.innerHTML = devlogData.map((entry, index) => `
+              <div class="sound-interactive interactive-rainbow bg-[var(--color-bg-card)] border border-[var(--color-border)] p-4 flex flex-col rounded-lg group cursor-pointer hover:shadow-lg transition-all duration-300" data-devlog-id="${entry.id}" data-devlog-index="${index}">
+                <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden mb-3 bg-black">
+                  <img src="https://img.youtube.com/vi/${entry.videoId}/hqdefault.jpg" alt="Thumbnail for ${entry.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                </div>
+                <p class="text-xs text-gray-500 mb-2">${entry.date}</p>
+                <h4 class="font-bold text-md text-white mb-3 uppercase tracking-wide flex-grow">${entry.title}</h4>
+                <p class="text-gray-400 text-sm">${entry.text}</p>
+              </div>
+            `).join('');
+
+            // Add proper event listeners to devlog cards
+            setTimeout(() => {
+              const devlogCards = devlogGrid.querySelectorAll('[data-devlog-id]');
+              devlogCards.forEach(card => {
+                const devlogId = card.dataset.devlogId;
+                const targetUrl = `/posts/devlog-${devlogId}/`;
+
+                card.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  console.log('🎯 Devlog card clicked:', devlogId, 'URL:', targetUrl);
+
+                  // Use normal navigation to preserve browser history
+                  console.log('🎯 Navigating to devlog post:', targetUrl);
+                  window.location.href = targetUrl;
+                });
+              });
+
+              // Re-initialize interactive effects for new devlog elements
+              if (typeof InteractiveEffects !== 'undefined') {
+                InteractiveEffects.init();
+              }
+            }, 150);
+          }
+
+          // Remove any existing event listeners to prevent duplicates
+          if (devlogBtn) {
+            devlogBtn.replaceWith(devlogBtn.cloneNode(true));
+            const newDevlogBtn = document.getElementById('toggle-devlog-btn');
+            
+            // Re-initialize InteractiveEffects for cloned button
+            if (window.InteractiveEffects) {
+              InteractiveEffects.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+              InteractiveEffects.rainbowElements.forEach(el => {
+                if (!el._physics && el.classList.contains('interactive-rainbow')) {
+                  const rect = el.getBoundingClientRect();
+                  Object.assign(el.dataset, {
+                    angle: '0', x: rect.width / 2, y: rect.height / 2,
+                    targetX: rect.width / 2, targetY: rect.height / 2, velocityX: '0', velocityY: '0'
+                  });
+                  el.style.setProperty('--x', `${rect.width / 2}px`);
+                  el.style.setProperty('--y', `${rect.height / 2}px`);
+                  const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+                  el.style.setProperty('--angle', `${initialAngle}deg`);
+                  el._physics = { angle: initialAngle, x: rect.width / 2, y: rect.height / 2, 
+                    targetX: rect.width / 2, targetY: rect.height / 2, velocityX: 0, velocityY: 0 };
+                  el.addEventListener('mouseenter', (e) => InteractiveEffects.onMouseEnter(e));
+                  el.addEventListener('mouseleave', (e) => InteractiveEffects.onMouseLeave(e));
+                  el.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
+                }
+              });
+            }
+            
+            newDevlogBtn.addEventListener('click', () => {
+              const isCurrentlyHidden = devlogSection.classList.contains('hidden');
+              
+              if (isCurrentlyHidden) {
+                // Showing devlog - hide collaborators and core concepts
+                devlogSection.classList.remove('hidden');
+                newDevlogBtn.textContent = 'Hide Development Log';
+                newDevlogBtn.classList.add('toggled');
+                
+                // Always hide collaborators when showing devlog
+                if (collaboratorsSection) {
+                  collaboratorsSection.classList.add('hidden');
+                  const collabBtn = document.getElementById('toggle-collaborators-btn');
+                  if (collabBtn) {
+                    collabBtn.textContent = 'View Collaborators';
+                    collabBtn.classList.remove('toggled');
+                  }
+                }
+                
+                // Hide core concepts
+                if (coreConceptsSection) {
+                  coreConceptsSection.classList.add('hidden');
+                }
+              } else {
+                // Hiding devlog - show core concepts
+                devlogSection.classList.add('hidden');
+                newDevlogBtn.textContent = 'View Development Log';
+                newDevlogBtn.classList.remove('toggled');
+                
+                // Show core concepts
+                if (coreConceptsSection) {
+                  coreConceptsSection.classList.remove('hidden');
+                }
+              }
+            });
+          }
+
+          if (collaboratorsBtn) {
+            collaboratorsBtn.replaceWith(collaboratorsBtn.cloneNode(true));
+            const newCollaboratorsBtn = document.getElementById('toggle-collaborators-btn');
+            
+            // Re-initialize InteractiveEffects for cloned button
+            if (window.InteractiveEffects) {
+              InteractiveEffects.rainbowElements = Array.from(document.querySelectorAll('.interactive-rainbow'));
+              InteractiveEffects.rainbowElements.forEach(el => {
+                if (!el._physics && el.classList.contains('interactive-rainbow')) {
+                  const rect = el.getBoundingClientRect();
+                  Object.assign(el.dataset, {
+                    angle: '0', x: rect.width / 2, y: rect.height / 2,
+                    targetX: rect.width / 2, targetY: rect.height / 2, velocityX: '0', velocityY: '0'
+                  });
+                  el.style.setProperty('--x', `${rect.width / 2}px`);
+                  el.style.setProperty('--y', `${rect.height / 2}px`);
+                  const initialAngle = el.id === 'reality-engine-btn' ? 45 : 0;
+                  el.style.setProperty('--angle', `${initialAngle}deg`);
+                  el._physics = { angle: initialAngle, x: rect.width / 2, y: rect.height / 2, 
+                    targetX: rect.width / 2, targetY: rect.height / 2, velocityX: 0, velocityY: 0 };
+                  el.addEventListener('mouseenter', (e) => InteractiveEffects.onMouseEnter(e));
+                  el.addEventListener('mouseleave', (e) => InteractiveEffects.onMouseLeave(e));
+                  el.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
+                }
+              });
+            }
+            
+            newCollaboratorsBtn.addEventListener('click', () => {
+              const isCurrentlyHidden = collaboratorsSection.classList.contains('hidden');
+              
+              if (isCurrentlyHidden) {
+                // Showing collaborators - hide devlog and core concepts
+                collaboratorsSection.classList.remove('hidden');
+                newCollaboratorsBtn.textContent = 'Hide Collaborators';
+                newCollaboratorsBtn.classList.add('toggled');
+                
+                // Always hide devlog when showing collaborators
+                if (devlogSection) {
+                  devlogSection.classList.add('hidden');
+                  const devlogBtn = document.getElementById('toggle-devlog-btn');
+                  if (devlogBtn) {
+                    devlogBtn.textContent = 'View Development Log';
+                    devlogBtn.classList.remove('toggled');
+                  }
+                }
+                
+                // Hide core concepts
+                if (coreConceptsSection) {
+                  coreConceptsSection.classList.add('hidden');
+                }
+              } else {
+                // Hiding collaborators - show core concepts
+                collaboratorsSection.classList.add('hidden');
+                newCollaboratorsBtn.textContent = 'View Collaborators';
+                newCollaboratorsBtn.classList.remove('toggled');
+                
+                // Show core concepts
+                if (coreConceptsSection) {
+                  coreConceptsSection.classList.remove('hidden');
+                }
+              }
+            });
+          }
+        },
+
+        initBlogSortButton() {
+          const sortButton = document.getElementById('sortButton');
+          const sortArrow = document.getElementById('sortArrow');
+          const blogGrid = document.getElementById('blogGrid');
+          
+          if (!sortButton || !sortArrow || !blogGrid) return;
+          
+          // Remove any existing event listeners to prevent duplicates
+          const newSortButton = sortButton.cloneNode(true);
+          sortButton.parentNode.replaceChild(newSortButton, sortButton);
+          
+          // Get the new references after replacement
+          const freshSortButton = document.getElementById('sortButton');
+          const freshSortArrow = document.getElementById('sortArrow');
+          
+          let currentlyNewest = true; // Posts start newest first
+          freshSortArrow.textContent = '↓'; // Show current state
+          
+          freshSortButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Get all posts
+            const posts = Array.from(blogGrid.children);
+            
+            // Sort them
+            posts.sort((a, b) => {
+              const dateTextA = a.querySelector('p.text-sm.text-gray-500')?.textContent.trim();
+              const dateTextB = b.querySelector('p.text-sm.text-gray-500')?.textContent.trim();
+              
+              if (!dateTextA || !dateTextB) return 0;
+              
+              const dateA = new Date(dateTextA);
+              const dateB = new Date(dateTextB);
+              
+              if (currentlyNewest) {
+                // Currently newest, switch to oldest
+                return dateA - dateB; // oldest first
+              } else {
+                // Currently oldest, switch to newest
+                return dateB - dateA; // newest first
+              }
+            });
+            
+            // Clear grid and add sorted posts
+            blogGrid.innerHTML = '';
+            posts.forEach(post => blogGrid.appendChild(post));
+            
+            // Toggle state and update arrow
+            currentlyNewest = !currentlyNewest;
+            freshSortArrow.textContent = currentlyNewest ? '↓' : '↑';
+          });
+        },
+
+        animateCameraForPage(pageId) {
+          // Define base camera positions for different pages
+          const baseCameraPositions = {
+            'hero': { x: 0, y: 0, z: 2 },
+            'work': { x: -2, y: 1, z: 3 },
+            'about': { x: 2, y: -1, z: 4 },
+            'blog': { x: 0, y: 2, z: 3 }
+          };
+
+          const basePos = baseCameraPositions[pageId] || baseCameraPositions['hero'];
+
+          // Add randomization for more dynamic transitions
+          const randomFactor = 0.5; // How much randomization to apply
+          const distanceMultiplier = 1 + (Math.random() - 0.5) * 1.0; // 0.5x to 1.5x distance
+
+          const targetPos = {
+            x: basePos.x + (Math.random() - 0.5) * randomFactor * 2,
+            y: basePos.y + (Math.random() - 0.5) * randomFactor * 2,
+            z: basePos.z * distanceMultiplier + (Math.random() - 0.5) * randomFactor
+          };
+
+          console.log('🎯 Randomized camera target for', pageId, 'base:', basePos, 'randomized:', targetPos);
+
+          if (ThreeDBackground && ThreeDBackground.cameraTargetPosition) {
+            // Smooth camera transition over 1 second (faster like original)
+            const startPos = ThreeDBackground.cameraTargetPosition.clone();
+            const endPos = new THREE.Vector3(targetPos.x, targetPos.y, targetPos.z);
+
+            let startTime = Date.now();
+            const duration = 1000; // 1 second
+
+            const animateCamera = () => {
+              const elapsed = Date.now() - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+
+              // Use easeInOutCubic for smooth animation
+              const easedProgress = progress < 0.5
+                ? 4 * progress * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+              const currentPos = startPos.clone().lerp(endPos, easedProgress);
+              ThreeDBackground.cameraTargetPosition.copy(currentPos);
+              // Also update the movement system target for smooth transition
+              ThreeDBackground.cameraMovement.targetPosition.x = currentPos.x;
+              ThreeDBackground.cameraMovement.targetPosition.y = currentPos.y;
+              ThreeDBackground.cameraMovement.targetPosition.z = currentPos.z;
+
+              if (progress < 1) {
+                requestAnimationFrame(animateCamera);
+              }
+            };
+
+            animateCamera();
+
+            // Visual effects handled by melody system only
+          }
+        },
+
+        triggerTransitionEffects() {
+          if (!ThreeDBackground || !ThreeDBackground.scene) return;
+
+          // Create a dramatic visual effect during page transitions
+          const effectNotes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
+
+          // Trigger rapid fire note pulses in sequence
+          effectNotes.forEach((note, index) => {
+            setTimeout(() => {
+              AppState.visualQueue.push(note);
+
+              // Add some extra intensity by triggering multiple related notes
+              if (index % 2 === 0) {
+                const harmonicNote = note.replace('4', '3'); // Drop an octave
+                setTimeout(() => AppState.visualQueue.push(harmonicNote), 50);
+              }
+            }, index * 40);
+          });
+
+          // Add a cascading wave effect after the rapid sequence
+          setTimeout(() => {
+            const waveNotes = ['G5', 'E5', 'C5', 'A4', 'F4', 'D4'];
+            waveNotes.forEach((note, index) => {
+              setTimeout(() => AppState.visualQueue.push(note), index * 60);
+            });
+          }, 320);
+        }
+      };
+
+      // Initialize remaining systems (3D background already initialized)
+      console.log('📄 Initializing Page Manager...');
+      PageManager.init();
+
+      console.log('🔄 Initializing Page Transitions...');
+      PageTransition.init();
+
+      console.log('📱 Initializing Mobile Menu...');
+      MobileMenu.init();
+
+      console.log('✨ Initializing Interactive Effects...');
+      InteractiveEffects.init();
+      InteractiveEffects.setupDeviceOrientation();
+      
+      // InteractiveEffects will be updated by ThreeDBackground animation loop for optimal performance
+      console.log('🚀 InteractiveEffects will use shared animation loop (ThreeDBackground.animate)...');
+      if (window.InteractiveEffects && typeof InteractiveEffects.updateElements === 'function') {
+        // Force initial update to kick-start all elements
+        console.log('🎬 Forcing initial InteractiveEffects update...');
+        InteractiveEffects.updateElements();
+        console.log('✅ InteractiveEffects will be updated by shared animation loop');
+        
+        // Double check Reality Engine button specifically
+        setTimeout(() => {
+          const realityBtn = document.getElementById('reality-engine-btn');
+          if (realityBtn) {
+            console.log('🌈 Reality Engine button found:', realityBtn);
+            console.log('🔍 Physics object:', realityBtn._physics);
+            console.log('🎨 Current --angle:', realityBtn.style.getPropertyValue('--angle'));
+            
+            // If physics object is missing, create it manually
+            if (!realityBtn._physics) {
+              console.log('⚡ Creating missing physics object for Reality Engine button');
+              const rect = realityBtn.getBoundingClientRect();
+              realityBtn._physics = {
+                angle: 45,
+                x: rect.width / 2,
+                y: rect.height / 2,
+                targetX: rect.width / 2,
+                targetY: rect.height / 2,
+                velocityX: 0,
+                velocityY: 0
+              };
+            }
+            
+            // Force a manual angle update
+            realityBtn._physics.angle = 45; // Start with a visible angle
+            realityBtn.style.setProperty('--angle', '45deg');
+            console.log('🔄 Manually set Reality Engine angle to 45deg');
+          }
+        }, 100);
+      }
+
+      console.log('⚙️ Initializing page-specific scripts...');
+      PageTransition.initializePageSpecificScripts();
+
+      // Initialize contact dropdown functionality
+      console.log('📞 Initializing contact dropdowns...');
+      const contactDropdownBtn = document.getElementById('contact-dropdown-btn');
+      const contactDropdown = document.getElementById('contact-dropdown');
+      const mobileContactDropdownBtn = document.getElementById('mobile-contact-dropdown-btn');
+      const mobileContactDropdown = document.getElementById('mobile-contact-dropdown');
+
+      if (contactDropdownBtn && contactDropdown) {
+        contactDropdownBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          contactDropdown.classList.toggle('hidden');
+          soundEngine.playClickSound();
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!contactDropdownBtn.contains(e.target) && !contactDropdown.contains(e.target)) {
+            contactDropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      if (mobileContactDropdownBtn && mobileContactDropdown) {
+        mobileContactDropdownBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          mobileContactDropdown.classList.toggle('hidden');
+          soundEngine.playClickSound();
+        });
+      }
+
+      // Set initial camera position based on current page
+      const currentPath = window.location.pathname;
+      let currentPage = 'hero';
+      if (currentPath.includes('/work')) {
+        currentPage = 'work';
+      } else if (currentPath.includes('/about')) {
+        currentPage = 'about';
+      } else if (currentPath.includes('/blog')) {
+        currentPage = 'blog';
+      }
+
+      console.log('🎯 Current page detected:', currentPage, 'from path:', currentPath);
+
+      // Set initial camera position without animation - immediately
+      const cameraPositions = {
+        'hero': { x: 0, y: 0, z: 2 },
+        'work': { x: -2, y: 1, z: 3 },
+        'about': { x: 2, y: -1, z: 4 },
+        'blog': { x: 0, y: 2, z: 3 }
+      };
+
+      const initialPos = cameraPositions[currentPage] || cameraPositions['hero'];
+      if (ThreeDBackground && ThreeDBackground.cameraTargetPosition) {
+        ThreeDBackground.cameraTargetPosition.set(initialPos.x, initialPos.y, initialPos.z);
+        console.log('📷 Camera position set to:', initialPos);
+
+        // Force a render after camera position is set
+        setTimeout(() => {
+          if (ThreeDBackground.renderer && ThreeDBackground.scene && ThreeDBackground.camera) {
+            ThreeDBackground.renderer.render(ThreeDBackground.scene, ThreeDBackground.camera);
+            console.log('🎬 Forced render completed');
+          }
+        }, 100);
+      }
+
+      // Final animation verification
+      console.log('🔥 Final animation check...');
+      setTimeout(() => {
+        if (ThreeDBackground && typeof ThreeDBackground.animate === 'function') {
+          console.log('✅ ThreeDBackground animation is running');
+        } else {
+          console.warn('⚠️ ThreeDBackground animation may not be running');
+        }
+        console.log('✅ All animations should be running');
+      }, 200);
+    });
+  </script>
+
+  <!-- Footer with social links -->
+  <footer class="mt-16 py-8 border-t border-gray-800 text-center">
+
+  <div class="flex justify-center space-x-6 mb-6">
+      <a href="https://www.youtube.com/@MixedRealityMusician" target="_blank" class="text-gray-400 hover:text-white transition-colors" aria-label="YouTube">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h6a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" clip-rule="evenodd"></path>
+        </svg>
+      </a>
+      <a href="https://github.com/tgraves719" target="_blank" class="text-gray-400 hover:text-white transition-colors" aria-label="GitHub">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+        </svg>
+      </a>
+      <a href="https://www.linkedin.com/in/mixedrealitymusician/" target="_blank" class="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"></path>
+        </svg>
+      </a>
+    </div>
+    <div id="page-transition-overlay" class="fixed inset-0 bg-[#0A0A0A] z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+
+        <p class="text-gray-500">&copy; 2025 Thomas Graves. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
