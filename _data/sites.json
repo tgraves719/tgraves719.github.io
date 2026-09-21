@@ -1,0 +1,26 @@
+[
+  {
+    "id": "archive",
+    "title": "The Archive",
+    "mode": "Computation as observation",
+    "line": "What a computational model of a society can see, and what the instrument that recorded it was built to see.",
+    "question": "When a bureaucracy counts a population, whose categories survive into the data?",
+    "theory": "A register is not a window onto a society; it is an operator applied to one. So the method models the observing apparatus alongside the thing observed, and keeps the record's own words in a layer that normalization is never allowed to overwrite — the part of the object that the concept does not exhaust."
+  },
+  {
+    "id": "workplace",
+    "title": "The Workplace",
+    "mode": "Computation as intervention",
+    "line": "Building the instrument for the side of the table that did not have one.",
+    "question": "Does this system let the affected party raise an objection that somebody is obliged to answer in reasons?",
+    "theory": "A contract only management can parse coordinates behaviour the way money and administrative power do: it moves outcomes without anyone having to justify them. Retrieval with citations is an attempt to run that backwards — to turn a document that was working as leverage back into a set of claims a worker can check and contest. A score cannot be argued with; a cited clause can."
+  },
+  {
+    "id": "stage",
+    "title": "The Stage",
+    "mode": "Computation as practice",
+    "line": "Live music made machine-computable, and what the machine then does to the playing.",
+    "question": "Whose reality is being programmed when a musical practice is modelled in real time?",
+    "theory": "Making jazz computable is not neutral instrumentation. It fixes a representation, and a representation has a politics — it decides what counts as the music. The work here takes the resulting institutional friction as evidence rather than as an obstacle, including the parts of that friction that turned out to be right."
+  }
+]

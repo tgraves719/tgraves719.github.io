@@ -1,0 +1,56 @@
+---
+layout: base.njk
+title: KARL
+permalink: /research/karl/
+---
+<article class="py-16">
+  <div class="max-w-4xl mx-auto">
+    <p class="text-gray-500 uppercase tracking-wider text-sm mb-3">The Workplace · 2025–</p>
+    <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-6" style="letter-spacing: 0.1em;">KARL</h1>
+    <p class="text-xl text-gray-300 mb-4">Knowledge Assistant for Rights and Labor. Ask a question in plain language — <em>what's the Sunday premium for a courtesy clerk?</em> — and KARL answers from the collective bargaining agreement itself, citing the article, section and page it read.</p>
+    <p class="text-lg text-gray-400 mb-12">Open source, union-first, and built by a member of the bargaining unit it serves. Piloting with UFCW Local 7 across three onboarded contracts.</p>
+
+    <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-wide">The argument</h2>
+    <p class="text-gray-400 mb-6">A collective agreement is the outcome of argument. Once signed, it stops behaving like one. It becomes a seventy-page document that one side can parse and the other side receives in the mail — and at that point it coordinates behaviour the way money and administrative power do, moving outcomes without anyone having to justify them in terms the affected party can dispute.</p>
+    <p class="text-gray-400 mb-6">That is the specific failure I think retrieval can address, and the reason the citation is not a UI nicety but the whole point. An answer with an article and section attached is a claim a worker can take to the physical contract and check. It restores the possibility of saying <em>no, look at what it actually says</em> — which is argument, and which a score can never be.</p>
+    <p class="text-gray-400 mb-12">The test I hold the system to is the one I hold institutions to: at the decision point, can the affected party raise an objection that somebody is obliged to answer in reasons they can contest?</p>
+
+    <h2 class="text-2xl font-bold text-white mb-8 uppercase tracking-wide">What it refuses</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+      <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] p-6 rounded-lg">
+        <h3 class="font-bold text-lg uppercase tracking-wide text-white mb-2">No employer surface</h3>
+        <p class="text-gray-400 text-sm">No employer-facing dashboards, no productivity scoring, no management-side analytics. Contributions that would add them are rejected by the contributing policy, not just discouraged.</p>
+      </div>
+      <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] p-6 rounded-lg">
+        <h3 class="font-bold text-lg uppercase tracking-wide text-white mb-2">Retention off by default</h3>
+        <p class="text-gray-400 text-sm">Chat messages are not stored unless a union explicitly turns retention on. Telemetry is anonymised, members can opt out in a way that suppresses writes entirely, and members can delete their own data.</p>
+      </div>
+      <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] p-6 rounded-lg">
+        <h3 class="font-bold text-lg uppercase tracking-wide text-white mb-2">Isolation that is tested</h3>
+        <p class="text-gray-400 text-sm">Per-local separation is enforced by PostgreSQL row-level security and verified by an integration suite against a live database — not by application-layer filtering that a future refactor could quietly drop.</p>
+      </div>
+      <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] p-6 rounded-lg">
+        <h3 class="font-bold text-lg uppercase tracking-wide text-white mb-2">Stated, not implied</h3>
+        <p class="text-gray-400 text-sm">Answering a question calls an external model API, and the README says so in those words. A union that wants no third-party exposure can point its instance at infrastructure it controls.</p>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-wide">Evaluation, honestly described</h2>
+    <p class="text-gray-400 mb-6">The evaluation suite is release infrastructure rather than a scoreboard: continuous integration runs it on every change, and a gate check blocks release when a measured metric falls below its floor. What the numbers mean is stated with their limits attached.</p>
+    <ul class="list-disc pl-6 text-gray-400 space-y-2 mb-6">
+      <li><strong class="text-gray-300">Retrieval hit-rate</strong> means the expected citation appeared in the retrieved context. It does not mean the answer was correct, complete or safe.</li>
+      <li><strong class="text-gray-300">Deterministic integrity checks</strong> — isolation, contamination, abstention, provenance — assert exact invariants, and are the strongest guarantee the system makes.</li>
+      <li><strong class="text-gray-300">Graded answer quality</strong> exists and is the least mature layer. No validated end-to-end answer-accuracy claim is made, because none has been earned.</li>
+    </ul>
+    <p class="text-gray-400 mb-12">Wage and entitlement lookups resolve from structured tables on the server with no model call at all. The highest-stakes questions are the ones that never touch a language model.</p>
+
+    <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-wide">The open problem</h2>
+    <p class="text-gray-400 mb-12">How do you keep a worker-controlled tool from reproducing the power relations it was built against? Governance is part of the answer — release and data-policy authority sits with a council, and the licence and ethical-use terms encode the union-first commitment. But governance documents are promises, and the interesting version of the question is architectural: which capabilities should simply not exist in the codebase, so that no future operator has the option. That is the question I want to keep working on.</p>
+
+    <div class="flex flex-wrap gap-4">
+      <a href="https://karlstewardship.com/" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">For stewards</a>
+      <a href="https://github.com/tgraves719/Knowledge-Assistant-Rights-Labor" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Repository</a>
+      <a href="/research/strike/" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Where it came from</a>
+    </div>
+  </div>
+</article>

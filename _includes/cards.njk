@@ -1,0 +1,69 @@
+{#
+  One project card, rendered from a record in _data/projects.json.
+
+  Every consumer of this macro passes the whole record, so a card can only ever
+  show what the data says — including `status`, which is the field the old
+  four-card grid did not have and which is why it could claim four current
+  practices when two of them had been finished for years.
+
+  A project without an `href` is not a dead link: it renders as a card with no
+  anchor, and its outbound links (if any) still work.
+#}
+{% macro statusPill(status) %}
+  {% set label = { active: "In progress", preserved: "Preserved, not maintained", published: "Published", next: "Next", record: "Record" } %}
+  <span class="inline-block text-xs font-medium uppercase tracking-wider px-2.5 py-1 rounded-full border border-[var(--color-border)] text-gray-400">{{ label[status] or status }}</span>
+{% endmacro %}
+
+{% macro projectCard(p) %}
+  {% set inner %}
+    {% if p.image %}
+    <div class="m-3 overflow-hidden rounded-xl aspect-video">
+      <img src="{{ p.image }}" alt="{{ p.title }}" class="w-full h-full object-cover">
+    </div>
+    {% endif %}
+    <div class="p-6 flex-grow flex flex-col">
+      <div class="flex items-baseline justify-between gap-3 mb-2">
+        <h3 class="text-lg font-semibold text-white uppercase tracking-wide">{{ p.title }}</h3>
+        <span class="text-sm text-gray-500 whitespace-nowrap">{{ p.years }}</span>
+      </div>
+      <p class="text-gray-400 mb-4">{{ p.line }}</p>
+
+      {# Inherits and refuses sit on the card, not in a lineage document.
+         A system described only by what it enables has not been designed. #}
+      <dl class="text-sm space-y-2 mb-4 border-l border-[var(--color-border)] pl-4">
+        <div>
+          <dt class="text-gray-500 uppercase tracking-wider text-xs">Inherits</dt>
+          <dd class="text-gray-400">{{ p.inherits }}</dd>
+        </div>
+        <div>
+          <dt class="text-gray-500 uppercase tracking-wider text-xs">Refuses</dt>
+          <dd class="text-gray-400">{{ p.refuses }}</dd>
+        </div>
+      </dl>
+
+      <div class="mt-auto flex flex-wrap items-center gap-2">
+        {{ statusPill(p.status) }}
+        {% for t in p.tags %}
+        <span class="inline-block bg-[var(--color-secondary)] text-xs font-medium px-2.5 py-1 rounded-full">{{ t }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endset %}
+
+  {% if p.href %}
+  <a href="{{ p.href }}" class="card static-rainbow bg-[var(--color-bg-card)] rounded-xl flex flex-col group transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-900/10">
+    {{ inner | safe }}
+  </a>
+  {% else %}
+  <div class="card static-rainbow bg-[var(--color-bg-card)] rounded-xl flex flex-col">
+    {{ inner | safe }}
+    {% if p.links | length %}
+    <div class="px-6 pb-6 flex flex-wrap gap-3">
+      {% for l in p.links %}
+      <a href="{{ l.url }}" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow text-sm uppercase tracking-wider px-4 py-2 rounded-md">{{ l.label }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+{% endmacro %}
