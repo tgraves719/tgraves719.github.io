@@ -1,10 +1,13 @@
 ---
+
 layout: base.njk
 title: Home
+instrument: true
 ---
+
 <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight uppercase" style="letter-spacing: 0.05em;">Thomas J Graves</h1>
-<p class="max-w-3xl mx-auto mt-6 text-lg text-gray-300">I build computational models of human practices — a jazz performance, a union contract, a colonial print register — and study what the model does to the practice, and whom the resulting system serves.</p>
-<p class="max-w-3xl mx-auto mt-4 text-gray-400">Musician and developer. Currently: an open-source contract assistant piloting with UFCW Local 7, and three published years of the imperial print register of British Punjab.</p>
+<p class="max-w-3xl mx-auto mt-6 text-lg text-gray-300">i build computational models of human practices. what does the model do to the practice, and whom does the resulting system serve?</p>
+<p class="max-w-3xl mx-auto mt-4 text-gray-400">a jazz performance, a union contract, a colonial print register.</p>
 <a href="/research/" id="reality-engine-btn" class="sound-interactive interactive-rainbow inline-block mt-10 px-8 py-4 text-lg font-bold uppercase tracking-wider rounded-lg transition-all duration-300 hover:scale-105">
   The Research
 </a>

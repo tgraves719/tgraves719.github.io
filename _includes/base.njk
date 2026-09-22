@@ -7,8 +7,25 @@
   <meta name="description" content="{{ description or 'Thomas J Graves builds computational models of human practices — a jazz performance, a union contract, a colonial print register — and studies what the model does to the practice, and whom the resulting system serves.' }}">
   <!-- Tailwind and fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
+    {#
+      The particle field and the audio engine are the instrument, and they load
+      only where the content is the instrument: a page sets `instrument: true`
+      in its front matter. An argument, an index or a case study does not ship
+      half a megabyte of WebGL and synthesis to be read.
+
+      Every THREE and Tone reference below is reachable only when this is set,
+      and the sound toggle is not rendered at all on a page that cannot make
+      sound -- a control that looks live and is not is the failure this site
+      exists to stop repeating.
+    #}
+    {# Development chatter stays available but silent: a visitor who opens the
+       console on a portfolio should find it empty, not narrated in emoji. #}
+    <script>window.DEBUG = false;</script>
+    <script>window.HAS_INSTRUMENT = {% if instrument %}true{% else %}false{% endif %};</script>
+    {% if instrument %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    {% endif %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -22,6 +39,29 @@
       font-family: 'Inter', sans-serif;
       background-color: #0A0A0A;
       color: #E0E0E0;
+    }
+
+    /* A reader who has asked their system for less motion has said something
+       about how they read. The rainbow is identity and stays; the movement
+       under it is decoration and goes. */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      #bg-canvas { display: none; }
+    }
+
+    /* Two controls set focus:outline-none and replaced it with nothing, so the
+       keyboard position vanished on them. One explicit ring for every
+       interactive element, rather than trusting a default the dark background
+       can swallow. */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 3px;
+      border-radius: 4px;
     }
     #bg-canvas {
       position: fixed;
@@ -331,6 +371,7 @@
       <nav class="flex justify-between items-center">
         <div class="flex items-center gap-4">
           <a href="/" id="home-link" class="sound-interactive text-2xl font-bold tracking-tighter text-white hover:text-gray-300">Thomas J Graves</a>
+          {% if instrument %}
           <button id="sound-toggle" title="Toggle Sound" class="text-gray-500 hover:text-white transition-colors focus:outline-none">
             <svg id="sound-off-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd" />
@@ -340,6 +381,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
             </svg>
           </button>
+          {% endif %}
         </div>
         <div class="hidden md:flex items-center space-x-2">
           <a href="/research/" class="sound-interactive interactive-rainbow uppercase text-sm tracking-wider px-3 py-2 rounded-md cursor-pointer transition-colors hover:text-white">Research</a>
@@ -487,15 +529,21 @@
       wholeToneDirection: 1,
     };
 
-    // Function to wait for libraries to load
+    // Wait for the instrument's libraries, but never wait forever: everything
+    // after this gate -- the navigation, the mobile menu, the rainbow borders --
+    // used to be unreachable if a CDN was slow or blocked, and is unreachable
+    // by definition on a page that does not load the libraries at all.
     function waitForLibraries() {
       return new Promise((resolve) => {
+        if (!window.HAS_INSTRUMENT) return resolve();
+        const deadline = Date.now() + 4000;
         function checkLibraries() {
           if (typeof THREE !== 'undefined' && typeof Tone !== 'undefined') {
-            console.log('✅ All libraries loaded');
+            resolve();
+          } else if (Date.now() > deadline) {
+            console.warn('Instrument libraries did not load; continuing without them.');
             resolve();
           } else {
-            console.log('⏳ Waiting for libraries... THREE:', typeof THREE !== 'undefined', 'Tone:', typeof Tone !== 'undefined');
             setTimeout(checkLibraries, 100);
           }
         }
@@ -507,14 +555,16 @@
     let ThreeDBackground = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      console.log('📄 DOM Content Loaded');
+      window.DEBUG && console.log('📄 DOM Content Loaded');
 
       // Wait for external libraries to load
       await waitForLibraries();
 
-      console.log('🔧 Creating 3D Background system...');
+      // THREE is present only on instrument pages. Everything from here to the
+      // matching close brace touches it, so it is built only when it can be.
+      const hasThree = typeof THREE !== 'undefined';
 
-      // NOW create the ThreeDBackground object with THREE.js available
+      if (hasThree) {
       ThreeDBackground = {
         scene: null, camera: null, renderer: null, worldGrid: new Map(),
         cameraTargetPosition: new THREE.Vector3(0, 0, 2),
@@ -543,7 +593,7 @@
         },
 
         init() {
-        console.log('🌟 Initializing ThreeDBackground...');
+        window.DEBUG && console.log('🌟 Initializing ThreeDBackground...');
 
         const canvas = document.getElementById('bg-canvas');
         if (!canvas) {
@@ -556,7 +606,7 @@
           this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
           this.renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
           this.renderer.setSize(window.innerWidth, window.innerHeight);
-          console.log('🖥️ Renderer created - canvas size:', canvas.width, 'x', canvas.height, 'window size:', window.innerWidth, 'x', window.innerHeight);
+          window.DEBUG && console.log('🖥️ Renderer created - canvas size:', canvas.width, 'x', canvas.height, 'window size:', window.innerWidth, 'x', window.innerHeight);
           this.scene.fog = new THREE.Fog(0x0A0A0A, 20, 80);
           this.sphereGeometry = new THREE.SphereGeometry(0.15, 16, 16);
           this.sphereMaterial = new THREE.MeshBasicMaterial({ color: this.baseSphereColor });
@@ -571,9 +621,9 @@
           this.cameraMovement.targetPosition.y = this.camera.position.y;
           this.cameraMovement.targetPosition.z = this.camera.position.z;
           this.cameraMovement.lastChangeTime = Date.now();
-          console.log('🎯 Camera movement system initialized');
+          window.DEBUG && console.log('🎯 Camera movement system initialized');
           this.updateWorldGrid(true);
-          console.log('✅ ThreeDBackground initialized, starting animation...');
+          window.DEBUG && console.log('✅ ThreeDBackground initialized, starting animation...');
 
           // Force first render and start animation loop
           this.renderer.render(this.scene, this.camera);
@@ -582,7 +632,7 @@
           window.addEventListener('resize', () => this.onWindowResize());
           document.addEventListener('mousemove', (e) => this.onMouseMove(e));
 
-          console.log('🎬 Animation loop started, spheres should be visible');
+          window.DEBUG && console.log('🎬 Animation loop started, spheres should be visible');
         } catch (error) {
           console.error('❌ ThreeDBackground initialization failed:', error);
         }
@@ -608,7 +658,7 @@
         movement.targetPosition.y = constraints.y.min + Math.random() * (constraints.y.max - constraints.y.min);
         movement.targetPosition.z = constraints.z.min + Math.random() * (constraints.z.max - constraints.z.min);
 
-        console.log('🎯 New camera target:', movement.targetPosition);
+        window.DEBUG && console.log('🎯 New camera target:', movement.targetPosition);
       },
 
       updateCameraMovement() {
@@ -674,7 +724,7 @@
           return;
         }
 
-        console.log('🎲 Generating chunk:', key, 'at offset:', chunkX * this.CHUNK_SIZE, chunkY * this.CHUNK_SIZE, chunkZ * this.CHUNK_SIZE);
+        window.DEBUG && console.log('🎲 Generating chunk:', key, 'at offset:', chunkX * this.CHUNK_SIZE, chunkY * this.CHUNK_SIZE, chunkZ * this.CHUNK_SIZE);
 
         const chunkSpheres = [];
         const offset = { x: chunkX * this.CHUNK_SIZE, y: chunkY * this.CHUNK_SIZE, z: chunkZ * this.CHUNK_SIZE };
@@ -696,7 +746,7 @@
           chunkSpheres.push(sphere);
         }
         this.worldGrid.set(key, chunkSpheres);
-        console.log('✅ Chunk generated:', key, 'with', chunkSpheres.length, 'spheres. Total chunks:', this.worldGrid.size);
+        window.DEBUG && console.log('✅ Chunk generated:', key, 'with', chunkSpheres.length, 'spheres. Total chunks:', this.worldGrid.size);
       },
 
       removeChunk(key) {
@@ -801,9 +851,9 @@
         this.renderer.render(this.scene, this.camera);
         }
       };
+      } // if (hasThree)
 
-      // FIRST: Initialize 3D Background immediately - completely independent of audio
-      console.log('🚀 Starting initialization sequence...');
+      window.DEBUG && console.log('🚀 Starting initialization sequence...');
 
       // Get DOM elements - ensure they exist
       const soundToggleBtn = document.getElementById('sound-toggle');
@@ -811,15 +861,10 @@
       const soundOffIcon = document.getElementById('sound-off-icon');
       const canvas = document.getElementById('bg-canvas');
 
-      // Ensure canvas exists before proceeding
-      if (!canvas) {
-        console.error('❌ Canvas element not found!');
-        return;
-      }
-
       // Initialize 3D Background FIRST, before sound engine
-      console.log('🌟 Initializing 3D Background (BEFORE audio)...');
-      ThreeDBackground.init();
+      if (hasThree && canvas) {
+        ThreeDBackground.init();
+      }
 
       // Sound Engine Class
       class SoundEngine {
@@ -872,7 +917,7 @@
             }).connect(this.effects.filter);
 
             this.isSetup = true;
-            console.log('🎵 Sound Engine initialized');
+            window.DEBUG && console.log('🎵 Sound Engine initialized');
           } catch (error) {
             console.error('❌ Sound Engine setup failed:', error);
           }
@@ -885,7 +930,7 @@
           Tone.Destination.mute = false;
           this.startSoundscape();
           document.body.classList.add('sound-is-on');
-          console.log('🔊 Sound enabled');
+          window.DEBUG && console.log('🔊 Sound enabled');
 
           // Enable gyro on mobile when sound is unmuted
           if (typeof InteractiveEffects !== 'undefined' && InteractiveEffects.enableGyroOnSoundUnmute) {
@@ -898,7 +943,7 @@
           AppState.isSoundEnabled = false;
           if (this.isSetup) { Tone.Destination.mute = true; this.stopSoundscape(); }
           document.body.classList.remove('sound-is-on');
-          console.log('🔇 Sound disabled');
+          window.DEBUG && console.log('🔇 Sound disabled');
         }
 
         toggle() { if (this.isEnabled) { this.disable(); } else { this.enable(); } return this.isEnabled; }
@@ -971,11 +1016,12 @@
         playClickSound() { if (this.isEnabled) { this.synths.click?.triggerAttackRelease('G3', '0.5'); this.synths.highClick?.triggerAttackRelease('G5', '0.5'); } }
       }
 
-      // Initialize sound engine (non-blocking)
+      // Initialize sound engine (non-blocking). Constructing it is free; setup()
+      // touches Tone, so it only runs where Tone was loaded.
       const soundEngine = new SoundEngine();
-      // Setup sound engine asynchronously without blocking other systems
-      soundEngine.setup().then(() => {
-        console.log('🎵 Sound engine ready');
+      const soundSetup = () => (typeof Tone === 'undefined' ? Promise.resolve() : soundEngine.setup());
+      soundSetup().then(() => {
+        window.DEBUG && console.log('🎵 Sound engine ready');
         // Set melody for current page after sound engine is ready
         if (AppState.isSoundEnabled) {
           soundEngine.setMelodyForPage(AppState.activePage);
@@ -1052,7 +1098,7 @@
         init() {
           // If already initialized, just scan for new elements
           if (this.initialized) {
-            console.log('🔄 InteractiveEffects re-scanning for new elements...');
+            window.DEBUG && console.log('🔄 InteractiveEffects re-scanning for new elements...');
             this.addNewElements();
             return;
           }
@@ -1107,7 +1153,7 @@
             });
           });
 
-          console.log('✨ Interactive Effects initialized with', this.rainbowElements.length, 'elements (using shared animation loop)');
+          window.DEBUG && console.log('✨ Interactive Effects initialized with', this.rainbowElements.length, 'elements (using shared animation loop)');
         },
 
         onMouseEnter(e) {
@@ -1154,7 +1200,7 @@
           const newElements = allElements.filter(el => !this.rainbowElements.includes(el));
           
           if (newElements.length > 0) {
-            console.log(`✨ Found ${newElements.length} new interactive elements`);
+            window.DEBUG && console.log(`✨ Found ${newElements.length} new interactive elements`);
             
             // Initialize new elements
             newElements.forEach(el => {
@@ -1259,14 +1305,14 @@
               .then(permissionState => {
                 if (permissionState === 'granted') {
                   window.addEventListener('deviceorientation', (e) => this.onDeviceMove(e));
-                  console.log('📱 Device orientation enabled');
+                  window.DEBUG && console.log('📱 Device orientation enabled');
                 }
               })
               .catch(console.error);
           } else {
             // For Android and other devices
             window.addEventListener('deviceorientation', (e) => this.onDeviceMove(e));
-            console.log('📱 Device orientation enabled');
+            window.DEBUG && console.log('📱 Device orientation enabled');
           }
         },
 
@@ -1274,7 +1320,7 @@
           // Only for mobile devices and if not already enabled
           if (!('ontouchstart' in window)) return;
 
-          console.log('📱 Attempting to enable gyro on sound unmute...');
+          window.DEBUG && console.log('📱 Attempting to enable gyro on sound unmute...');
 
           // For iOS devices that require permission
           if (typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -1284,10 +1330,10 @@
                   if (!this.gyroEnabled) {
                     window.addEventListener('deviceorientation', (e) => this.onDeviceMove(e));
                     this.gyroEnabled = true;
-                    console.log('📱 Gyro enabled after sound unmute');
+                    window.DEBUG && console.log('📱 Gyro enabled after sound unmute');
                   }
                 } else {
-                  console.log('📱 Device orientation permission denied');
+                  window.DEBUG && console.log('📱 Device orientation permission denied');
                 }
               })
               .catch(error => {
@@ -1298,7 +1344,7 @@
             if (!this.gyroEnabled) {
               window.addEventListener('deviceorientation', (e) => this.onDeviceMove(e));
               this.gyroEnabled = true;
-              console.log('📱 Gyro enabled after sound unmute (Android/other)');
+              window.DEBUG && console.log('📱 Gyro enabled after sound unmute (Android/other)');
             }
           }
         },
@@ -1535,21 +1581,22 @@
         }
       };
 
-      // Setup event listeners - ensure sound engine is setup first
-      soundToggleBtn.addEventListener('click', async () => {
+      // Setup event listeners - ensure sound engine is setup first.
+      // The toggle is not rendered on pages without the audio engine.
+      if (soundToggleBtn) soundToggleBtn.addEventListener('click', async () => {
         try {
           if (!soundEngine.isSetup) {
-            console.log('🎵 Setting up sound engine...');
-            await soundEngine.setup();
+            window.DEBUG && console.log('🎵 Setting up sound engine...');
+            await soundSetup();
           }
 
           // Explicitly handle first-time activation
           if (!soundEngine.isEnabled) {
             soundEngine.enable();
-            console.log('🔊 Sound enabled on first click');
+            window.DEBUG && console.log('🔊 Sound enabled on first click');
           } else {
             soundEngine.disable();
-            console.log('🔇 Sound disabled');
+            window.DEBUG && console.log('🔇 Sound disabled');
           }
 
           // Update UI
@@ -1588,7 +1635,7 @@
 
         async navigateToPage(url, pushState = true) {
           if (this.isTransitioning) {
-            console.log('📄 Navigation already in progress, allowing concurrent requests');
+            window.DEBUG && console.log('📄 Navigation already in progress, allowing concurrent requests');
           }
           this.isTransitioning = true;
 
@@ -1798,7 +1845,7 @@
               const soundSetupPromise = (async () => {
                 // Only setup sound engine, don't automatically enable it
                 if (!soundEngine.isSetup) {
-                  await soundEngine.setup();
+                  await soundSetup();
                 }
                 // Play click sound only if sound is already enabled
                 if (AppState.isSoundEnabled) {
@@ -1811,10 +1858,10 @@
               const webxrCheckPromise = (async () => {
                 try {
                   if (navigator.xr && await navigator.xr.isSessionSupported('immersive-vr')) {
-                    console.log('✅ WebXR VR session supported');
+                    window.DEBUG && console.log('✅ WebXR VR session supported');
                     return { hasVR: true };
                   } else {
-                    console.log('❌ WebXR not supported');
+                    window.DEBUG && console.log('❌ WebXR not supported');
                     return { hasVR: false };
                   }
                 } catch (error) {
@@ -1908,10 +1955,10 @@
 
                 card.addEventListener('click', (e) => {
                   e.preventDefault();
-                  console.log('Devlog card clicked:', targetUrl);
+                  window.DEBUG && console.log('Devlog card clicked:', targetUrl);
 
                   // Use normal navigation to preserve browser history
-                  console.log('🎯 Navigating to devlog post:', targetUrl);
+                  window.DEBUG && console.log('🎯 Navigating to devlog post:', targetUrl);
                   window.location.href = targetUrl;
                 });
               });
@@ -2127,7 +2174,7 @@
             z: basePos.z * distanceMultiplier + (Math.random() - 0.5) * randomFactor
           };
 
-          console.log('🎯 Randomized camera target for', pageId, 'base:', basePos, 'randomized:', targetPos);
+          window.DEBUG && console.log('🎯 Randomized camera target for', pageId, 'base:', basePos, 'randomized:', targetPos);
 
           if (ThreeDBackground && ThreeDBackground.cameraTargetPosition) {
             // Smooth camera transition over 1 second (faster like original)
@@ -2194,38 +2241,49 @@
       };
 
       // Initialize remaining systems (3D background already initialized)
-      console.log('📄 Initializing Page Manager...');
+      window.DEBUG && console.log('📄 Initializing Page Manager...');
       PageManager.init();
 
-      console.log('🔄 Initializing Page Transitions...');
+      window.DEBUG && console.log('🔄 Initializing Page Transitions...');
       PageTransition.init();
 
-      console.log('📱 Initializing Mobile Menu...');
+      window.DEBUG && console.log('📱 Initializing Mobile Menu...');
       MobileMenu.init();
 
-      console.log('✨ Initializing Interactive Effects...');
+      window.DEBUG && console.log('✨ Initializing Interactive Effects...');
       InteractiveEffects.init();
       InteractiveEffects.setupDeviceOrientation();
+
+      // The rainbow borders are normally driven from ThreeDBackground.animate,
+      // which does not exist on a text page. They are the site's identity and
+      // cost nothing, so they get their own loop instead of being dropped.
+      if (!hasThree && typeof InteractiveEffects.updateElements === 'function') {
+        const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!reduced) {
+          const tick = () => { InteractiveEffects.updateElements(); requestAnimationFrame(tick); };
+          requestAnimationFrame(tick);
+        }
+      }
       
       // InteractiveEffects will be updated by ThreeDBackground animation loop for optimal performance
-      console.log('🚀 InteractiveEffects will use shared animation loop (ThreeDBackground.animate)...');
+      window.DEBUG && console.log('🚀 InteractiveEffects will use shared animation loop (ThreeDBackground.animate)...');
       if (window.InteractiveEffects && typeof InteractiveEffects.updateElements === 'function') {
         // Force initial update to kick-start all elements
-        console.log('🎬 Forcing initial InteractiveEffects update...');
+        window.DEBUG && console.log('🎬 Forcing initial InteractiveEffects update...');
         InteractiveEffects.updateElements();
-        console.log('✅ InteractiveEffects will be updated by shared animation loop');
+        window.DEBUG && console.log('✅ InteractiveEffects will be updated by shared animation loop');
         
         // Double check Reality Engine button specifically
         setTimeout(() => {
           const realityBtn = document.getElementById('reality-engine-btn');
           if (realityBtn) {
-            console.log('🌈 Reality Engine button found:', realityBtn);
-            console.log('🔍 Physics object:', realityBtn._physics);
-            console.log('🎨 Current --angle:', realityBtn.style.getPropertyValue('--angle'));
+            window.DEBUG && console.log('🌈 Reality Engine button found:', realityBtn);
+            window.DEBUG && console.log('🔍 Physics object:', realityBtn._physics);
+            window.DEBUG && console.log('🎨 Current --angle:', realityBtn.style.getPropertyValue('--angle'));
             
             // If physics object is missing, create it manually
             if (!realityBtn._physics) {
-              console.log('⚡ Creating missing physics object for Reality Engine button');
+              window.DEBUG && console.log('⚡ Creating missing physics object for Reality Engine button');
               const rect = realityBtn.getBoundingClientRect();
               realityBtn._physics = {
                 angle: 45,
@@ -2241,16 +2299,16 @@
             // Force a manual angle update
             realityBtn._physics.angle = 45; // Start with a visible angle
             realityBtn.style.setProperty('--angle', '45deg');
-            console.log('🔄 Manually set Reality Engine angle to 45deg');
+            window.DEBUG && console.log('🔄 Manually set Reality Engine angle to 45deg');
           }
         }, 100);
       }
 
-      console.log('⚙️ Initializing page-specific scripts...');
+      window.DEBUG && console.log('⚙️ Initializing page-specific scripts...');
       PageTransition.initializePageSpecificScripts();
 
       // Initialize contact dropdown functionality
-      console.log('📞 Initializing contact dropdowns...');
+      window.DEBUG && console.log('📞 Initializing contact dropdowns...');
       const contactDropdownBtn = document.getElementById('contact-dropdown-btn');
       const contactDropdown = document.getElementById('contact-dropdown');
       const mobileContactDropdownBtn = document.getElementById('mobile-contact-dropdown-btn');
@@ -2290,7 +2348,7 @@
         currentPage = 'blog';
       }
 
-      console.log('🎯 Current page detected:', currentPage, 'from path:', currentPath);
+      window.DEBUG && console.log('🎯 Current page detected:', currentPage, 'from path:', currentPath);
 
       // Set initial camera position without animation - immediately
       const cameraPositions = {
@@ -2303,26 +2361,23 @@
       const initialPos = cameraPositions[currentPage] || cameraPositions['hero'];
       if (ThreeDBackground && ThreeDBackground.cameraTargetPosition) {
         ThreeDBackground.cameraTargetPosition.set(initialPos.x, initialPos.y, initialPos.z);
-        console.log('📷 Camera position set to:', initialPos);
+        window.DEBUG && console.log('📷 Camera position set to:', initialPos);
 
         // Force a render after camera position is set
         setTimeout(() => {
           if (ThreeDBackground.renderer && ThreeDBackground.scene && ThreeDBackground.camera) {
             ThreeDBackground.renderer.render(ThreeDBackground.scene, ThreeDBackground.camera);
-            console.log('🎬 Forced render completed');
+            window.DEBUG && console.log('🎬 Forced render completed');
           }
         }, 100);
       }
 
-      // Final animation verification
-      console.log('🔥 Final animation check...');
+      // Final animation verification (only where there is an animation to verify)
       setTimeout(() => {
-        if (ThreeDBackground && typeof ThreeDBackground.animate === 'function') {
-          console.log('✅ ThreeDBackground animation is running');
-        } else {
-          console.warn('⚠️ ThreeDBackground animation may not be running');
+        if (hasThree && !(ThreeDBackground && typeof ThreeDBackground.animate === 'function')) {
+          console.warn('ThreeDBackground animation may not be running');
         }
-        console.log('✅ All animations should be running');
+        window.DEBUG && console.log('✅ All animations should be running');
       }, 200);
     });
   </script>

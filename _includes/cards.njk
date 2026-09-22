@@ -41,11 +41,15 @@
         </div>
       </dl>
 
-      <div class="mt-auto flex flex-wrap items-center gap-2">
+      {#
+        Status only. The tags in projects.json repeated what the strand heading
+        above the grid already says -- "Archives" under "The Archive" -- and a
+        card that says everything says nothing, because the reader cannot tell
+        what mattered. The field stays in the data for when something needs to
+        filter on it.
+      #}
+      <div class="mt-auto">
         {{ statusPill(p.status) }}
-        {% for t in p.tags %}
-        <span class="inline-block bg-[var(--color-secondary)] text-xs font-medium px-2.5 py-1 rounded-full">{{ t }}</span>
-        {% endfor %}
       </div>
     </div>
   {% endset %}
