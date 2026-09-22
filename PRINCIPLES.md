@@ -115,6 +115,43 @@ and cannot rewind it:
 
 ---
 
+## Two rules that follow from all of this
+
+### Voice is lowercase; the record is sentence case
+
+Where Thomas speaks as himself — the home page, About, the essays introduction, an
+essay's own prose — the text is lowercase. Where the site documents work for someone
+who has to evaluate it — project cards, the research case studies, the blog, error
+pages — it is sentence case.
+
+This is content dictating form at the level of the letter: the two registers are doing
+different jobs, and the reader can feel which one they are in before reading a word.
+Proper nouns keep their capitals in both, because clarity adjudicates and *ufcw local 7*
+costs more than the effect is worth. What is not allowed is the third thing — lowercase
+applied unevenly across pages of the same kind, which reads as an accident rather than a
+choice.
+
+### Essays argue; the blog records
+
+They are separate collections, not one collection with a filter. An essay is an argument
+its author is willing to be wrong about in public; a blog post is what was built, when,
+and what broke. The old site had both under a `contentType: essay` tag, which is how a
+56-word photo caption came to sit beside a history of jazz innovation.
+
+Consequences, in force:
+
+- **The early writing stays in the record.** Three 2019–2022 pieces are tagged as essays
+  in the blog. They are not promoted into the essays section, because a section whose
+  first item is 56 words teaches the reader what to expect from the rest of it.
+- **An essay may become a video essay.** `videoId` in front matter puts the video above
+  the text on the same page — the same argument in another medium, not a second work.
+  Until that field is filled, the page says nothing about video at all.
+- **What is coming is listed, and unlinked.** Forthcoming essays appear with a status and
+  a statement of what each is waiting on. They are not cards, because they are not
+  clickable, and a reader must be able to tell an intention from a promise.
+
+---
+
 ## What these principles have not yet been applied to
 
 Kept visible rather than quietly deferred:

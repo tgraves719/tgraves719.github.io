@@ -1,0 +1,21 @@
+Copy this into essays/<slug>.md and write. The file is the publication: add it,
+build, and it is on the site and in the index.
+
+Not named .md so the collection does not pick it up as an essay.
+
+---
+layout: essay.njk
+title: "A Dialectics of Jazz"
+dek: "One sentence that says what the argument is. Shown under the title and on
+  the index card, so it is the only summary that needs writing."
+strand: "The Stage"          # optional: The Archive | The Workplace | The Stage
+date: 2026-11-30             # the date it is published
+videoId: null                # a YouTube id once the video essay exists; until
+                             # then the page says nothing about video at all
+revision: ""                 # optional: what changed, if it is revised later
+relatedHref: "/work/"        # optional: the work the argument comes out of
+relatedLabel: "Portraits of Change"
+---
+
+The body is markdown. Front-load: the first seven words of each section may be
+the only seven read.

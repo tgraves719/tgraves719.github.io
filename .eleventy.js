@@ -25,6 +25,22 @@ module.exports = function(eleventyConfig) {
     });
   });
 
+  // --- Essays ---------------------------------------------------------
+  // Essays are arguments; the blog is the record of making things. They are
+  // different kinds of writing with different readers, so they are different
+  // collections rather than one collection with a `contentType` filter --
+  // which is what the old site did, and which is why a 56-word photo caption
+  // and a history of jazz innovation sat side by side under "essay".
+  //
+  // An essay may later carry a video: `videoId` in front matter turns the
+  // written piece into the companion text for a video essay. Until that field
+  // is filled the page says nothing about video at all.
+  eleventyConfig.addCollection("essay", function (collectionApi) {
+    return collectionApi
+      .getFilteredByGlob("essays/*.md")
+      .sort((a, b) => b.date - a.date);
+  });
+
   // --- Project wiring -------------------------------------------------
   // Posts declare which project they belong to via `project:` front matter
   // ("portraits-of-change", "conductvr", "musicstand"). These filters let a

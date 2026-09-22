@@ -1,0 +1,41 @@
+---
+layout: base.njk
+---
+{#
+  An essay page. The text is the piece; a video, when there is one, is the
+  same argument in another medium and sits above it. There is no control,
+  no placeholder and no promise on an essay that has no video yet.
+#}
+<article class="py-16">
+  <div class="max-w-3xl mx-auto">
+    <header class="mb-12">
+      {% if strand %}<p class="text-gray-500 uppercase tracking-wider text-sm mb-3">{{ strand }}</p>{% endif %}
+      <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-4" style="letter-spacing: 0.08em;">{{ title }}</h1>
+      {% if dek %}<p class="text-xl text-gray-300 mb-6">{{ dek }}</p>{% endif %}
+      <p class="text-sm text-gray-500">
+        {{ date | postDate }}
+        {%- if videoId %} · Video essay and text{% endif %}
+      </p>
+      {% if revision %}
+      <p class="text-sm text-gray-500 mt-2 border-l border-[var(--color-border)] pl-4">{{ revision }}</p>
+      {% endif %}
+    </header>
+
+    {% if videoId %}
+    <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden mb-12 shadow-lg bg-black">
+      <iframe src="https://www.youtube.com/embed/{{ videoId }}" title="{{ title }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+    </div>
+    {% endif %}
+
+    <div class="prose prose-invert prose-lg max-w-none text-gray-300">
+      {{ content | safe }}
+    </div>
+
+    <footer class="mt-16 pt-8 border-t border-[var(--color-border)] flex flex-wrap gap-4">
+      <a href="/essays/" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">All essays</a>
+      {% if relatedHref %}
+      <a href="{{ relatedHref }}" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">{{ relatedLabel or "The work behind it" }}</a>
+      {% endif %}
+    </footer>
+  </div>
+</article>

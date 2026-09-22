@@ -1,0 +1,51 @@
+---
+layout: base.njk
+title: Essays
+permalink: /essays/
+---
+<section class="py-16">
+  <div class="max-w-3xl">
+    <h1 class="text-3xl tracking-tight mb-6 uppercase font-bold text-white" style="letter-spacing: 0.1em;">Essays</h1>
+    <p class="text-lg text-gray-300 mb-4">an essay is an argument i am willing to be wrong about in public. the blog is the record of making things — what was built, when, and what broke. they are kept apart because they are read differently.</p>
+    <p class="text-lg text-gray-400">some of these will become video essays. where a video exists, it sits above the text on the same page, because it is the same argument in another medium and not a second piece of work.</p>
+  </div>
+
+  {% if collections.essay | length %}
+  <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 p-2">
+    {% for e in collections.essay %}
+    <a href="{{ e.url }}" class="card static-rainbow bg-[var(--color-bg-card)] rounded-xl flex flex-col p-6 transition-transform duration-300 hover:-translate-y-1">
+      <p class="text-gray-500 uppercase tracking-wider text-xs mb-2">{{ e.date | postDate }}{% if e.data.videoId %} · Video essay{% endif %}</p>
+      <h2 class="text-lg font-semibold text-white mb-2 uppercase tracking-wide">{{ e.data.title }}</h2>
+      <p class="text-gray-400">{{ e.data.dek or (e.templateContent | excerptText(160)) }}</p>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {#
+    The programme. These are listed without links because they do not exist
+    yet, and a card that looks clickable and is not is the failure this site
+    is built to avoid. Each one states what it is waiting on, so a reader can
+    tell an intention from a promise.
+  #}
+  <div class="mt-24 max-w-3xl">
+    <h2 class="text-2xl font-bold text-white mb-3 uppercase tracking-wide">What is coming</h2>
+    <p class="text-gray-400 mb-10">Three arguments in order. The third depends on the first two being finished, and says so.</p>
+    <ol class="space-y-10">
+      {% for f in forthcoming %}
+      <li class="border-l-2 border-[var(--color-border)] pl-6">
+        <p class="text-gray-500 uppercase tracking-wider text-xs mb-2">{{ f.status }}</p>
+        <h3 class="text-xl font-bold text-white uppercase tracking-wide mb-3">{{ f.title }}</h3>
+        <p class="text-gray-400 mb-3">{{ f.line }}</p>
+        <p class="text-gray-500 text-sm"><span class="uppercase tracking-wider text-xs">Waiting on</span> — {{ f.needs }}</p>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+
+  <div class="mt-24 max-w-3xl border-t border-[var(--color-border)] pt-10">
+    <h2 class="text-xl font-bold text-white mb-3 uppercase tracking-wide">The record</h2>
+    <p class="text-gray-400 mb-6">Development logs, performances and announcements from 2019 onward — including the earliest writing, which stays where it was written rather than being promoted into this section.</p>
+    <a href="/blog/" class="sound-interactive interactive-rainbow inline-block px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">The blog</a>
+  </div>
+</section>
