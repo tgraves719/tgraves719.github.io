@@ -58,6 +58,31 @@ description: "Portraits of Change, a mixed reality music recital: twelve portrai
     <div class="max-w-4xl mx-auto">
       <h2 class="text-2xl font-bold text-white uppercase tracking-wide mb-4">The program</h2>
       {{ quote("As the songs progress, the main song color will move around the chromatic color wheel throughout the performance.") }}
+      {#
+        The claim above, checked against the footage. Each rect is the stage wall's
+        color as the fixed floor camera recorded it (_data/recitalWall.json): 520
+        ten-second samples, merged into runs. Numbers mark where each portrait's
+        music starts in the room recording, aligned to the camera.
+      #}
+      {% set W = recitalWall %}
+      <figure class="my-10">
+        <svg viewBox="0 0 {{ W.steps }} 24" preserveAspectRatio="none" class="block w-full h-10 rounded" role="img"
+             aria-label="The stage wall's color across {{ W.minutes }} minutes of the recital: yellow, then green, cyan, blue, purple and magenta.">
+          {%- for r in W.runs %}<rect x="{{ r.x }}" y="0" width="{{ r.w + 0.3 }}" height="24" fill="{{ r.c }}"/>{% endfor -%}
+        </svg>
+        <div class="relative h-7 text-xs font-mono">
+          {% for p in W.pieces %}
+          <a href="#portrait-{{ p.n }}" title="{{ p.name }}, {{ p.start | round(1) }} min"
+             class="absolute top-0 -translate-x-1/2 flex flex-col items-center text-gray-400 hover:text-white" style="left: {{ (p.start * 6 / W.steps * 100) | round(2) }}%;">
+            <span class="w-px h-2 bg-gray-500"></span>{{ p.n }}
+          </a>
+          {% endfor %}
+          {# The long gap between 6 and 7 is the intermission and the stage reset; say so. #}
+          {% set gapMid = ((W.pieces[5].start + 4.0 + W.pieces[6].start) / 2) %}
+          <span class="absolute top-2 -translate-x-1/2 text-gray-600 italic font-sans" style="left: {{ (gapMid * 6 / W.steps * 100) | round(2) }}%;">intermission</span>
+        </div>
+        <figcaption class="text-gray-500 text-sm mt-2">The stage wall as the fixed floor camera recorded it: {{ W.minutes }} minutes, one sample every ten seconds. Numbers mark where each portrait’s music begins. The camera renders the programmed greens as cyan, and it stopped during La Vie en rose, so Bitches Brew and Resolution are not in this footage.</figcaption>
+      </figure>
       <p class="text-gray-400 mb-6">Each portrait below carries its stage-light color, its running time as the length of its bar, the players, and how each instrument reached the machine. The stage plot beside each ensemble is the one drawn for the hall.</p>
 
       <dl class="grid sm:grid-cols-3 gap-4 text-sm mb-14">
@@ -84,7 +109,7 @@ description: "Portraits of Change, a mixed reality music recital: twelve portrai
           <h3 class="text-gray-500 uppercase tracking-wider text-sm mb-6">{{ e.name }}</h3>
           <ol class="space-y-10">
             {% for p in e.portraits %}
-            <li class="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-4">
+            <li id="portrait-{{ p.n }}" class="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-4 scroll-mt-28">
               {# Relative luminance picks the numeral's color: black on yellow, white on blue. #}
               {% set lum = p.rgb[0] * 0.2126 + p.rgb[1] * 0.7152 + p.rgb[2] * 0.0722 %}
               <span class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold {{ 'text-black' if lum > 0.4 else 'text-white' }}" style="background: {{ rgb(p.rgb) }};" aria-hidden="true">{{ p.n }}</span>
