@@ -92,6 +92,19 @@ The sound toggle is not rendered at all on pages that cannot make sound.
 
 ---
 
+**Where it caught something, again — Portraits of Change**
+
+The page is the recital program, because the recital already had a form: twelve pieces
+walking once around the color wheel, five ensembles, a stage plot for each. Quotations
+are verbatim from the 2021 research portfolio, misspellings included. Laying the data
+beside the drawings exposed two things the prose never said: the brass quintet had five
+players and four converters, so the trombone was never heard; and Appendix B and the
+stage plot disagree about which Bitches Brew instruments were tracked. The first is now
+on the page as a finding. The second is shown as a disagreement rather than silently
+resolved — the same rule the Punjab pipeline follows for the imperial register.
+
+---
+
 ## All in the service of clarity
 
 The adjudicating test. When two principles disagree — when *less is more* wants a
@@ -160,6 +173,3 @@ Kept visible rather than quietly deferred:
   than the site uses. A build step is the fix.
 - **`_includes/base.njk` is one 97 KB file** — layout, styles, the audio engine, the
   particle field and the navigation. Content dictating form would split it.
-- **Portraits of Change is described rather than shown.** The research portfolio, the
-  performance files and the behind-the-scenes material are the content, and the page does
-  not yet have a form derived from them.

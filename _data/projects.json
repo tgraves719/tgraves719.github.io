@@ -10,10 +10,20 @@
     "refuses": "Silently correcting the catalogue. Uncertain readings go to an adjudication queue with stated reasons.",
     "href": "/research/punjab/",
     "image": "/images/pic27.jpg",
-    "tags": ["Computational sociology", "Archives", "Open data"],
+    "tags": [
+      "Computational sociology",
+      "Archives",
+      "Open data"
+    ],
     "links": [
-      { "label": "Live explorer", "url": "https://tgraves719.github.io/Punjab-Data-Project/" },
-      { "label": "Repository", "url": "https://github.com/tgraves719/Punjab-Data-Project" }
+      {
+        "label": "Live explorer",
+        "url": "https://tgraves719.github.io/Punjab-Data-Project/"
+      },
+      {
+        "label": "Repository",
+        "url": "https://github.com/tgraves719/Punjab-Data-Project"
+      }
     ]
   },
   {
@@ -27,10 +37,20 @@
     "refuses": "Employer dashboards, productivity scoring, and retention by default — the features its own architecture would make easiest.",
     "href": "/research/karl/",
     "image": "/images/pic26.jpg",
-    "tags": ["Labor", "Applied AI", "Governance"],
+    "tags": [
+      "Labor",
+      "Applied AI",
+      "Governance"
+    ],
     "links": [
-      { "label": "For stewards", "url": "https://karlstewardship.com/" },
-      { "label": "Repository", "url": "https://github.com/tgraves719/Knowledge-Assistant-Rights-Labor" }
+      {
+        "label": "For stewards",
+        "url": "https://karlstewardship.com/"
+      },
+      {
+        "label": "Repository",
+        "url": "https://github.com/tgraves719/Knowledge-Assistant-Rights-Labor"
+      }
     ]
   },
   {
@@ -44,7 +64,11 @@
     "refuses": "Telling this as a technology story. The tool exists because of relationships built on the line.",
     "href": "/research/strike/",
     "image": "/images/pic05.jpg",
-    "tags": ["Organizing", "Music", "Information literacy"],
+    "tags": [
+      "Organizing",
+      "Music",
+      "Information literacy"
+    ],
     "links": []
   },
   {
@@ -53,12 +77,15 @@
     "site": "stage",
     "years": "2018–2023",
     "status": "preserved",
-    "line": "Live music visualised in mixed reality, driven by harmonic information captured as it is played. Culminated in a recital at Hoag Hall with stereoscopic passthrough, four audio-to-MIDI converters and a Valve Index.",
+    "line": "Twelve pieces played once around the color wheel, with live MIDI from acoustic instruments driving mixed-reality visuals. Hoag Hall, CSU-Pueblo, 28 November 2021.",
     "inherits": "A recital about innovation in jazz, and a question about what a visualisation is for.",
     "refuses": "The assumption that one representation is the correct one.",
     "href": "/work/portraits-of-change/",
-    "image": "/images/pic27.jpg",
-    "tags": ["Mixed reality", "Music"],
+    "image": "/images/portraits/fig20-beta-headset.jpg",
+    "tags": [
+      "Mixed reality",
+      "Music"
+    ],
     "links": []
   },
   {
@@ -72,7 +99,11 @@
     "refuses": "Any mechanic with no real relationship to rhythm. Menus where gesture would do.",
     "href": null,
     "image": "/images/pic06.jpg",
-    "tags": ["Games", "Embodiment", "Rhythm"],
+    "tags": [
+      "Games",
+      "Embodiment",
+      "Rhythm"
+    ],
     "links": []
   },
   {
@@ -86,7 +117,10 @@
     "refuses": "Capture without consent. A commons built on unconsented bodies is not giveable.",
     "href": null,
     "image": "/images/pic26.jpg",
-    "tags": ["Computer vision", "Pedagogy"],
+    "tags": [
+      "Computer vision",
+      "Pedagogy"
+    ],
     "links": []
   },
   {
@@ -100,7 +134,10 @@
     "refuses": "Grading the gesture. It shows the pattern; it does not score the student.",
     "href": "/work/conductvr/",
     "image": "/images/pic26.jpg",
-    "tags": ["VR", "Education"],
+    "tags": [
+      "VR",
+      "Education"
+    ],
     "links": []
   },
   {
@@ -114,7 +151,10 @@
     "refuses": "Shipping the scores. The reader is the tool; the library is not ours to give.",
     "href": "/work/musicstand/",
     "image": "/images/pic06.jpg",
-    "tags": ["XR", "Tool"],
+    "tags": [
+      "XR",
+      "Tool"
+    ],
     "links": []
   },
   {
@@ -128,7 +168,10 @@
     "refuses": "Decorative colour. A tritone comes out neutral because the arithmetic says it must.",
     "href": "/work/musicbox/",
     "image": "/images/pic05.jpg",
-    "tags": ["Audiovisual", "Web Audio"],
+    "tags": [
+      "Audiovisual",
+      "Web Audio"
+    ],
     "links": []
   },
   {
@@ -142,7 +185,10 @@
     "refuses": "Doing it again at the scale the tools allowed last time.",
     "href": null,
     "image": "/images/pic25.jpg",
-    "tags": ["Music theatre", "AI"],
+    "tags": [
+      "Music theatre",
+      "AI"
+    ],
     "links": []
   }
 ]

@@ -1,0 +1,41 @@
+{#
+  A video that costs nothing until it is asked for.
+
+  It renders as a real link to the video on YouTube, with its thumbnail, so it
+  works with no script at all. With script, pressing it swaps in the player in
+  place (youtube-nocookie, autoplay on the click that asked for it). A page of
+  embedded players loads every player up front; this loads a thumbnail each,
+  and one player -- the one somebody chose.
+#}
+{% macro video(id, title, ratio="aspect-video", poster="hqdefault") %}
+<a href="https://www.youtube.com/watch?v={{ id }}" data-yt="{{ id }}" data-yt-title="{{ title }}"
+   class="yt-lite group relative block {{ ratio }} w-full overflow-hidden rounded-xl bg-black"
+   target="_blank" rel="noopener">
+  <img src="https://i.ytimg.com/vi/{{ id }}/{{ poster }}.jpg" alt="{{ title }}" {% if poster == "hqdefault" %}loading="lazy"{% endif %}
+       class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+  <span class="absolute inset-0 flex items-center justify-center">
+    <span class="rounded-full bg-black/70 border border-white/60 w-16 h-16 flex items-center justify-center text-white text-2xl pl-1 group-hover:scale-110 transition-transform" aria-hidden="true">&#9654;</span>
+  </span>
+  <span class="sr-only">Play: {{ title }}</span>
+</a>
+{% endmacro %}
+
+{% macro videoScript() %}
+<script>
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a.yt-lite');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + a.dataset.yt + '?autoplay=1&rel=0';
+    f.title = a.dataset.ytTitle || 'Video';
+    f.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+    f.allowFullscreen = true;
+    f.className = 'absolute inset-0 w-full h-full';
+    var box = document.createElement('div');
+    box.className = a.className.replace('yt-lite', '').replace('group', '');
+    box.appendChild(f);
+    a.replaceWith(box);
+  });
+</script>
+{% endmacro %}

@@ -2,6 +2,7 @@ module.exports = function(eleventyConfig) {
   // Tell Eleventy to copy static assets and images as‑is
   eleventyConfig.addPassthroughCopy("assets");
   eleventyConfig.addPassthroughCopy("images");
+  eleventyConfig.addPassthroughCopy("files");
 
   // Helper filter to format dates in a human readable way
   eleventyConfig.addFilter("postDate", (dateObj) => {
@@ -53,6 +54,17 @@ module.exports = function(eleventyConfig) {
     return posts
       .filter((p) => p.data.project === project)
       .sort((a, b) => b.date - a.date);
+  });
+
+  // The built URL of a post, looked up by its file slug. A page that links to
+  // a devlog asks Eleventy where that post actually went instead of guessing
+  // the path -- the slug is the stable key, the URL is whatever was built.
+  // (A Nunjucks `set` inside a `for` cannot carry a value out of the loop,
+  // which is why this is a filter and not a template loop.)
+  eleventyConfig.addFilter("postUrl", (posts, slug) => {
+    if (!posts || !slug) return "";
+    const hit = posts.find((p) => p.page && p.page.fileSlug === slug);
+    return hit ? hit.url : "";
   });
 
   // Narrow to one contentType (e.g. "devlog").

@@ -1,0 +1,488 @@
+{
+  "_source": "Every quotation and figure below is taken verbatim from 'Portraits of Change: Mixed Reality Music Recital Research Portfolio' (Thomas Graves, 11/28/21, updated 2022). Hues, running minutes and stage-light RGB are Appendix B. MIDI assignments are Appendix B. Stage plots are Appendix C. Spelling is the source's own and is not corrected.",
+  "performance": {
+    "title": "Portraits of Change",
+    "subtitle": "a Mixed Reality Music Recital",
+    "venue": "Hoag Hall, CSU-Pueblo",
+    "date": "28 November 2021, 5:00 pm",
+    "lede": "Using these new technologies, we can present musical portraits painted in real-time with the live music driving every visual change.",
+    "video": {
+      "id": "HlHTue853-E",
+      "title": "Bitches Brew, recital, 28 November 2021"
+    }
+  },
+  "ensembles": [
+    {
+      "name": "Trumpet and piano",
+      "plot": "plot-trumpet-piano",
+      "portraits": [
+        {
+          "n": 1,
+          "title": "Trumpet Concerto in E-flat Major — I. Allegro",
+          "composer": "Franz Joseph Haydn",
+          "hue": "Yellow",
+          "rgb": [
+            1,
+            1,
+            0
+          ],
+          "minutes": 7,
+          "players": "Thomas Graves, Carol Wilson",
+          "rig": [
+            "Ch1 Trumpet (T1)",
+            "Ch5 Piano (T5)"
+          ],
+          "note": "Instead of sculpting busts of heads on stage or making literal 2D portraits, these song environments represent a combination of visual art and aural art in a real-time performance to capture the feeling of the music and its composer."
+        },
+        {
+          "n": 2,
+          "title": "II. Andante",
+          "composer": "Franz Joseph Haydn",
+          "hue": "Chartreuse",
+          "rgb": [
+            0.5,
+            1,
+            0
+          ],
+          "minutes": 4,
+          "players": "Thomas Graves, Carol Wilson",
+          "rig": [
+            "Ch1 Trumpet (T1)",
+            "Ch5 Piano (T5)"
+          ]
+        },
+        {
+          "n": 3,
+          "title": "III. Allegro",
+          "composer": "Franz Joseph Haydn",
+          "hue": "Green",
+          "rgb": [
+            0,
+            1,
+            0
+          ],
+          "minutes": 5,
+          "players": "Thomas Graves, Carol Wilson",
+          "rig": [
+            "Ch1 Trumpet (T1)",
+            "Ch5 Piano (T5)"
+          ]
+        },
+        {
+          "n": 4,
+          "title": "Sonata for Trumpet and Piano, op. 137 — I. Mit Kraft",
+          "composer": "Paul Hindemith",
+          "hue": "Spring Green",
+          "rgb": [
+            0,
+            1,
+            0.5
+          ],
+          "minutes": 5,
+          "players": "Thomas Graves, Carol Wilson",
+          "rig": [
+            "Ch1 Trumpet (T1)",
+            "Ch5 Piano (T5)"
+          ],
+          "note": "In this performance, the piano creates an environmental visual effect all around the trumpet player and the audience. The back and forth between the two can be felt spatially through both aural and visual senses."
+        }
+      ]
+    },
+    {
+      "name": "Brass quintet",
+      "plot": "plot-brass-quintet",
+      "portraits": [
+        {
+          "n": 5,
+          "title": "Music for the Royal Fireworks — IV. La Rejouissance",
+          "composer": "George Frideric Handel",
+          "hue": "Cyan",
+          "rgb": [
+            0,
+            1,
+            1
+          ],
+          "minutes": 2,
+          "players": "Thomas Graves, Ivan Acurio, Ray Beltran, Richard Platt, Tyler Perea",
+          "rig": [
+            "Ch1 Trumpet I (E)",
+            "Ch2 Tuba (E)",
+            "Ch3 Trumpet II (E)",
+            "Ch4 Horn (E)"
+          ],
+          "note": "This piece originally for wind instruments could be considered an early audiovisual music performance.",
+          "videoId": "uwoQDt-eHTY"
+        },
+        {
+          "n": 6,
+          "title": "“Dear Theodosia,” from Hamilton",
+          "composer": "Lin-Manuel Miranda, arr. Thomas Graves",
+          "hue": "Azure",
+          "rgb": [
+            0,
+            0.5,
+            1
+          ],
+          "minutes": 3,
+          "players": "Thomas Graves, Tyler Perea, Ivan Acurio, Richard Platt, Ray Beltran",
+          "rig": [
+            "Ch1 Trumpet (E)",
+            "Ch2 Tuba (E)",
+            "Ch3 Trumpet II (E)",
+            "Ch4 Horn (E)"
+          ],
+          "note": "a brass quintet is used with the two trumpets representing Aaron Burr and Alexander Hamilton."
+        }
+      ]
+    },
+    {
+      "name": "Jazz combo",
+      "plot": "plot-jazz-combo",
+      "intermissionBefore": 10,
+      "portraits": [
+        {
+          "n": 7,
+          "title": "West End Blues",
+          "composer": "Joe “King” Oliver",
+          "hue": "Blue",
+          "rgb": [
+            0,
+            0,
+            1
+          ],
+          "minutes": 5,
+          "players": "Thomas Graves, Tony Szajowski, Jay Martinez, Michael Manzanares",
+          "rig": [
+            "Ch1 Trumpet (T1)",
+            "Ch2 Bass (T2)",
+            "Ch4 Guitar (E)",
+            "Ch5 Piano (T5)",
+            "Ch10 Drums (T4)"
+          ],
+          "note": "We tune the chromatic circle so that blue will be on Eb, the tonic of this particular Blues."
+        },
+        {
+          "n": 8,
+          "title": "All Limbs Are, from 12 Little Spells",
+          "composer": "Esperanza Spalding, arr. Thomas Graves",
+          "hue": "Purple",
+          "rgb": [
+            0.5,
+            0,
+            1
+          ],
+          "minutes": 4,
+          "players": "Thomas Graves, Tony Szajowski, Jay Martinez",
+          "rig": [
+            "Ch1 Trumpet (T1)",
+            "Ch5 Piano (T5)",
+            "Ch2 Upright Bass (T2)"
+          ],
+          "note": "By applying a two-color palette on each alternating note, we can show these chromatic and whole tone movements in a visually appealing way by using complimentary colors."
+        },
+        {
+          "n": 9,
+          "title": "Donna Lee",
+          "composer": "Charlie Parker",
+          "hue": "Magenta",
+          "rgb": [
+            1,
+            0,
+            1
+          ],
+          "minutes": 5,
+          "players": "Thomas Graves, Tony Szajowski, Jordan Barney, Connor Thomas, Michael Manzanares",
+          "rig": [
+            "Ch1 Trumpet (T1)",
+            "Ch2 Bass (T2)",
+            "Ch3 Alto sax, mic (T3)",
+            "Ch5 Piano (T5)",
+            "Ch10 Drums (T4)"
+          ],
+          "note": "The goal of using chromatic color wheels around a chromatic music circle is to allow visual communication of the chord changes and improvisation patterns as they emerge sonically to the audience."
+        },
+        {
+          "n": 10,
+          "title": "La Vie en rose",
+          "composer": "Edith Piaf",
+          "hue": "Rose",
+          "rgb": [
+            1,
+            0,
+            0.5
+          ],
+          "minutes": 3,
+          "players": "Thomas Graves, Jordan Barney, DJ Henson, Tony Szajowski, Michael Manzanares",
+          "rig": [
+            "Ch1 Trumpet (T1)",
+            "Ch2 Bass (T2)",
+            "Ch3 Flute (T3)",
+            "Ch5 Piano (T5)",
+            "Ch10 Drums (T4)"
+          ],
+          "note": "Our arrangement digs into the ‘happy hues’ near red and blue."
+        }
+      ]
+    },
+    {
+      "name": "Extended combo",
+      "plot": "plot-extended-combo",
+      "portraits": [
+        {
+          "n": 11,
+          "title": "Bitches Brew",
+          "composer": "Miles Davis",
+          "hue": "Red",
+          "rgb": [
+            1,
+            0,
+            0
+          ],
+          "minutes": 10,
+          "players": "Thomas Graves, Tony Szajowski, Jay Martinez, Jordan Barney, Thaddeus Zimmerman, DJ Henson, Michael Manzanares",
+          "rig": [
+            "Ch1 Trumpet (E)",
+            "Ch2 Bass (E)",
+            "Ch3 Bass clarinet, mic (E)",
+            "Ch4 Guitar (E)",
+            "Ch5 Piano (E)",
+            "Ch6 Piano (E)",
+            "Ch10 Drums (E)"
+          ],
+          "note": "With this song, we are telling the story of the origins of the universe. Why? Because what signifies chaos and searching for meaning more than cosmology!",
+          "videoId": "HlHTue853-E",
+          "rigNote": "Appendix B lists every instrument in this piece as environmental. The stage plot for the same piece marks the trumpet, bass, e-kit and bass clarinet as tracked. Both are reproduced as drawn."
+        }
+      ]
+    },
+    {
+      "name": "Jazz Ensemble I and voice",
+      "plot": "plot-big-band",
+      "portraits": [
+        {
+          "n": 12,
+          "title": "Resolution, from A Love Supreme",
+          "composer": "John Coltrane; lyrics by Kurt Elling, arr. Bob Mintzer",
+          "hue": "Orange",
+          "rgb": [
+            1,
+            0.5,
+            0
+          ],
+          "minutes": 7,
+          "players": "Thomas Graves, CSU-Pueblo Jazz Ensemble I",
+          "rig": [
+            "Ch2 Bass (E)",
+            "Ch3 Tenor sax, mic (T3)",
+            "Ch4 Guitar (E)",
+            "Ch5 Piano (E)"
+          ],
+          "note": "Visually, constellations will float in the air while a story about beginnings is unfolded through the improvised melodies of Coltrane backed by the live big band."
+        }
+      ]
+    }
+  ],
+  "key": [
+    {
+      "term": "Ch#",
+      "def": "Indicates which MIDI channel this specific mic’d instrument will be controlling."
+    },
+    {
+      "term": "(T#)",
+      "def": "Tracked instrument with Vive Tracker either attached to instrument, near it, or mounted on a mic stand."
+    },
+    {
+      "term": "(E)",
+      "def": "Environmental effects will be used without the need for a tracker but will still need a phantom-powered microphone to go through the MIDI conversion system."
+    }
+  ],
+  "versions": [
+    {
+      "date": "2019-03",
+      "label": "First image",
+      "fig": "fig10-first-image-2019",
+      "caption": "First Image of Portraits of Change, combining Mixed Reality technology with music. March, 2019"
+    },
+    {
+      "date": "2019-04-15",
+      "label": "Alpha 0.1.5",
+      "post": "devlog-2019-04-15",
+      "videoId": "3-ZnpXlRGYI"
+    },
+    {
+      "date": "2019-07-11",
+      "label": "Alpha 0.2.1 — test with Damion",
+      "post": "devlog-2019-07-11",
+      "videoId": "NMaVNASWMLU"
+    },
+    {
+      "date": "2019-08-10",
+      "label": "0.2.2 — booth demo",
+      "post": "performance-2019-08-10",
+      "videoId": "Znv5EWZoBo0"
+    },
+    {
+      "date": "2019-08-25",
+      "label": "0.2.3 — test with Noah",
+      "post": "devlog-2019-08-25",
+      "videoId": "Q6Wat4iVT-M"
+    },
+    {
+      "date": "2019-09-14",
+      "label": "What If… Festival of Innovation and Imagination",
+      "post": "devlog-2019-09-15",
+      "videoId": "VPJgtfEtFgQ"
+    },
+    {
+      "date": "2019-09-23",
+      "label": "0.2.4 — electric trumpet",
+      "post": "devlog-2019-09-23",
+      "videoId": "Lml8TpSYFUI"
+    },
+    {
+      "date": "2020-01-09",
+      "label": "0.2.5 — trumpet module",
+      "post": "devlog-2020-01-09",
+      "videoId": "IxDf7hlPQLw"
+    },
+    {
+      "date": "2020-02-05",
+      "label": "0.2.5 — multi-instrument",
+      "post": "devlog-2020-02-05",
+      "videoId": "FFIsxg-flIg"
+    },
+    {
+      "date": "2020-03-27",
+      "label": "Beta 0.5.1 — SteamVR and the Index",
+      "post": "devlog-2020-03-27",
+      "videoId": "C5lcmrWpCXE"
+    },
+    {
+      "date": "2020-04-27",
+      "label": "Beta 0.5.2 — HDRP",
+      "post": "devlog-2020-04-27",
+      "videoId": "RUBBKnUVU-s"
+    },
+    {
+      "date": "2021-04-12",
+      "label": "AR piano demonstration",
+      "post": "performance-2021-04-12",
+      "videoId": "xYRqNQzCxVM"
+    },
+    {
+      "date": "2021-04-15",
+      "label": "MIDI VFX gallery",
+      "post": "devlog-2021-04-15",
+      "videoId": "l-iUqews7Q0"
+    },
+    {
+      "date": "2021-05-15",
+      "label": "Trumpet test — Haydn",
+      "post": "devlog-2021-05-15",
+      "videoId": "jM_3Ma0daAA"
+    },
+    {
+      "date": "2021-09-06",
+      "label": "The mount",
+      "post": "devlog-2021-09-06"
+    },
+    {
+      "date": "2021-11-07",
+      "label": "Rehearsal",
+      "post": "devlog-2021-11-07"
+    },
+    {
+      "date": "2021-11-28",
+      "label": "The recital",
+      "post": "performance-2021-11-28",
+      "videoId": "HlHTue853-E"
+    },
+    {
+      "date": "2022-09-09",
+      "label": "Game dev meetup performance",
+      "post": "performance-2022-09-09"
+    }
+  ],
+  "archive": [
+    {
+      "repo": "portraits-gen1",
+      "years": "2018–2020",
+      "unity": "2018.3.12f1",
+      "line": "Alpha era — Leap Motion, the VR MIDI piano, the What If… Festival booth."
+    },
+    {
+      "repo": "portraits-gen2",
+      "years": "2020–2021",
+      "unity": "2019.4.24f1",
+      "line": "VFX Graph era — 213 VFX graphs, 74 authored scenes, SteamVR and ZED Mini passthrough."
+    },
+    {
+      "repo": "portraits-recital",
+      "years": "2021–2023",
+      "unity": "2019.4.31f1",
+      "line": "The Hoag Hall recital and the Booth 2.x builds. A rebuild, not a continuation."
+    }
+  ],
+  "nodes": [
+    [
+      255,
+      0,
+      0
+    ],
+    [
+      255,
+      128,
+      0
+    ],
+    [
+      255,
+      255,
+      0
+    ],
+    [
+      128,
+      255,
+      0
+    ],
+    [
+      0,
+      255,
+      0
+    ],
+    [
+      0,
+      255,
+      128
+    ],
+    [
+      0,
+      255,
+      255
+    ],
+    [
+      0,
+      128,
+      255
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      128,
+      0,
+      255
+    ],
+    [
+      255,
+      0,
+      255
+    ],
+    [
+      255,
+      0,
+      128
+    ]
+  ]
+}
