@@ -4,15 +4,34 @@ title: KARL
 permalink: /research/karl/
 ---
 {% from "github.njk" import githubButton %}
-{# Every sentence on this page is from Thomas's CIP proposal, verbatim. #}
+{# Every sentence on this page is from Thomas's CIP proposal, verbatim, in its own order and under its own headings. #}
+{% set h2 = "text-gray-500 uppercase tracking-wider text-sm mt-12 mb-4" %}
 <article class="py-16">
   <div class="max-w-3xl mx-auto">
-    <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-8" style="letter-spacing: 0.1em;">KARL</h1>
-    <div class="space-y-6 text-lg text-gray-300">
-      <p>KARL (Knowledge Assistant for Rights and Labor) an open-source AI system that retrieves contract articles with verifiable citations. It serves three UFCW Local-7 contracts, is AGPL-licensed and anti-surveillance.</p>
-      <p>KARL uses hybrid search, an LLM reranker, and deterministic lookup tables for high-stakes queries like wages, where it minimizes the stochastic-parrot nature of the language model. A deterministic parrot if you will.</p>
-      <p>How do you build AI infrastructure controlled by the people it serves?</p>
+    <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-4" style="letter-spacing: 0.1em;">KARL</h1>
+    <p class="text-lg text-gray-400">Minimizing Misinformation in the Workplace: Worker-Controlled AI Tools Augmenting Contract Literacy</p>
+
+    <h2 class="{{ h2 }}">Background</h2>
+    <div class="space-y-5 text-gray-300">
+      <p>When we got the new contract, nobody knew what it said. The pay rates were hard to find. The vacation changes were buried between red outlines. Management could frame it however they wanted because workers had few ways to check.</p>
+      <p>After the strike, I worked with Mike, a former aerospace engineer turned produce clerk, to build something about it. Between picking tomatoes and melons, I learned RAG architectures from him. We realized very few are building AI tools for workers.</p>
+      <p>Out of that came KARL (Knowledge Assistant for Rights and Labor) an open-source AI system that retrieves contract articles with verifiable citations. It serves three UFCW Local-7 contracts, is AGPL-licensed and anti-surveillance. The relationships I built on that picket line are why union leadership greenlit KARL’s pilot.</p>
     </div>
+
+    <h2 class="{{ h2 }}">Problem statement</h2>
+    <div class="space-y-5 text-gray-300">
+      <p>The workplace is an information environment, and contract literacy is information literacy with material consequences. Employers maintain legal departments, algorithmic scheduling, and HR analytics. Workers get a 70-page contract in the mail most never read. Whoever shapes the information environment shapes outcomes, whether workers exercise their rights or forfeit them by default.</p>
+      <p>The hypothesis is that management misinformation is adversarial, that managers deliberately mislead workers. But managers have been open to KARL, which suggests much of it is unintentional. They don’t know the contract any better than we do. The company just doesn’t invest in making contract knowledge accessible to anyone on the shop floor. But when a corporation builds algorithmic scheduling systems and doesn’t build a system to help its own managers enforce the contract, and when that gap consistently benefits the employer, the line between structural misinformation and strategic misinformation becomes a research question.</p>
+    </div>
+
+    <h2 class="{{ h2 }}">Project description</h2>
+    <div class="space-y-5 text-gray-300">
+      <p>KARL uses hybrid search, an LLM reranker, and deterministic lookup tables for high-stakes queries like wages, where it minimizes the stochastic-parrot nature of the language model. A deterministic parrot if you will.</p>
+      <p>Three research questions emerge: does KARL change steward confidence and accuracy? Where does human-in-the-loop mediation help and where does it create barriers? And what does cross-company comparison reveal about the nature of workplace misinformation? Is a manager’s wrong answer an honest mistake, a training failure, or a feature of a system that benefits from worker ignorance?</p>
+      <p>How do you build AI infrastructure controlled by the people it serves?</p>
+      <p>How do you make sure a worker-controlled AI tool doesn’t replicate the power dynamics it was built to fight?</p>
+    </div>
+
     <div class="mt-12 flex flex-wrap gap-4">
       <a href="https://karlstewardship.com/" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">karlstewardship.com</a>
       {{ githubButton("https://github.com/tgraves719/Knowledge-Assistant-Rights-Labor") }}

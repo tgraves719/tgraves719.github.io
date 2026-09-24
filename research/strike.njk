@@ -3,12 +3,11 @@ layout: base.njk
 title: The Safeway Strike
 permalink: /research/strike/
 ---
-{# Every sentence on this page is from Thomas's CIP proposal, verbatim, under its own headings. #}
+{# The one sentence pair here is from Thomas's CIP proposal, verbatim. #}
 {% set PL = strikePlaylist %}
 <article class="py-16">
   <div class="max-w-3xl mx-auto">
-    <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-4" style="letter-spacing: 0.1em;">The Safeway Strike</h1>
-    <p class="text-lg text-gray-400 mb-12">Minimizing Misinformation in the Workplace: Worker-Controlled AI Tools Augmenting Contract Literacy</p>
+    <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-12" style="letter-spacing: 0.1em;">The Safeway Strike</h1>
 
     {# The recordings. Titles, order and durations: _data/strikePlaylist.json (tools/import-strike-audio.py). #}
     <div id="songs" data-player data-artist="{{ PL.artist }}" data-album="Safeway Strike 2025" data-cover="{{ PL.cover }}"
@@ -58,28 +57,11 @@ permalink: /research/strike/
 
     <img src="/images/strike/picket-01.webp" alt="Inside the store, 2025" class="w-full h-auto rounded-xl mb-12">
 
-    <h2 class="text-gray-500 uppercase tracking-wider text-sm mb-4">Background</h2>
     <div class="md:flex md:gap-8 md:items-start mb-12">
-      <div class="md:flex-1 space-y-5 text-gray-300">
-        <p>I went on strike with my union at Safeway in 2025. I played music on the picket line where I connected with local leadership who walked with us, and used AI to make a video before the vote that went viral among workers.</p>
-        <p>When we got the new contract, nobody knew what it said. The pay rates were hard to find. The vacation changes were buried between red outlines. Management could frame it however they wanted because workers had few ways to check.</p>
-        <p>After the strike, I worked with Mike, a former aerospace engineer turned produce clerk, to build something about it. Between picking tomatoes and melons, I learned RAG architectures from him. We realized very few are building AI tools for workers.</p>
-        <p>Out of that came <a href="/research/karl/" class="underline decoration-gray-600 hover:decoration-white">KARL</a> (Knowledge Assistant for Rights and Labor) an open-source AI system that retrieves contract articles with verifiable citations. It serves three UFCW Local-7 contracts, is AGPL-licensed and anti-surveillance. The relationships I built on that picket line are why union leadership greenlit KARL’s pilot.</p>
-      </div>
+      <p class="md:flex-1 text-lg text-gray-300">I went on strike with my union at Safeway in 2025. I played music on the picket line where I connected with local leadership who walked with us, and used AI to make a video before the vote that went viral among workers.</p>
       <img src="/images/strike/picket-02.webp" alt="On the picket line with a speaker, 2025" class="mt-8 md:mt-0 md:w-56 shrink-0 h-auto rounded-xl">
     </div>
 
-    <h2 class="text-gray-500 uppercase tracking-wider text-sm mb-4">Problem statement</h2>
-    <div class="space-y-5 text-gray-300 mb-12">
-      <p>The workplace is an information environment, and contract literacy is information literacy with material consequences. Employers maintain legal departments, algorithmic scheduling, and HR analytics. Workers get a 70-page contract in the mail most never read. Whoever shapes the information environment shapes outcomes, whether workers exercise their rights or forfeit them by default.</p>
-      <p>The hypothesis is that management misinformation is adversarial, that managers deliberately mislead workers. But managers have been open to KARL, which suggests much of it is unintentional. They don’t know the contract any better than we do. The company just doesn’t invest in making contract knowledge accessible to anyone on the shop floor. But when a corporation builds algorithmic scheduling systems and doesn’t build a system to help its own managers enforce the contract, and when that gap consistently benefits the employer, the line between structural misinformation and strategic misinformation becomes a research question.</p>
-    </div>
-
-    <h2 class="text-gray-500 uppercase tracking-wider text-sm mb-4">Project description</h2>
-    <div class="space-y-5 text-gray-300 mb-12">
-      <p>Three research questions emerge: does KARL change steward confidence and accuracy? Where does human-in-the-loop mediation help and where does it create barriers? And what does cross-company comparison reveal about the nature of workplace misinformation? Is a manager’s wrong answer an honest mistake, a training failure, or a feature of a system that benefits from worker ignorance?</p>
-      <p>How do you make sure a worker-controlled AI tool doesn’t replicate the power dynamics it was built to fight?</p>
-    </div>
-
+    <a href="/research/karl/" class="sound-interactive interactive-rainbow inline-block px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">KARL</a>
   </div>
 </article>
