@@ -1,4 +1,5 @@
-// Playlist player for the Safeway Strike 2025 recordings.
+// The 12-Node player: a playlist (the Safeway Strike recordings) or a single
+// track (the KARL proposal as a song). Markup: _includes/player.njk.
 //
 // The bar is colored by 12-Node Theory: the analyser estimates which pitch classes
 // are sounding, and their node colors are mixed additively -- one note shows its
@@ -39,19 +40,19 @@ for (const root of document.querySelectorAll("[data-player]")) {
     i = (n + tracks.length) % tracks.length;
     const t = tracks[i];
     audio.src = t.src;
-    now.textContent = t.title;
+    if (now) now.textContent = t.title;
     time.textContent = `0:00 / ${fmt(t.seconds)}`;
     links.forEach((a, k) => a.toggleAttribute("aria-current", k === i));
     // keep the playing track in view inside the list, without scrolling the page
     const list = $("[data-list]"), li = links[i].parentElement;
-    if (li.offsetTop < list.scrollTop || li.offsetTop + li.offsetHeight > list.scrollTop + list.clientHeight) {
+    if (list && list.offsetParent && (li.offsetTop < list.scrollTop || li.offsetTop + li.offsetHeight > list.scrollTop + list.clientHeight)) {
       list.scrollTop = li.offsetTop - list.clientHeight / 2;
     }
     sizeCanvas(); g.clearRect(0, 0, canvas.width, canvas.height); lastX = null; seek.value = 0;
     if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: t.title, artist: root.dataset.artist, album: root.dataset.album,
-        artwork: [{ src: root.dataset.cover, sizes: "200x200", type: "image/jpeg" }],
+        artwork: root.dataset.cover ? [{ src: root.dataset.cover, sizes: "200x200", type: "image/jpeg" }] : [],
       });
     }
     if (autoplay) start();
@@ -123,8 +124,8 @@ for (const root of document.querySelectorAll("[data-player]")) {
   }
 
   play.addEventListener("click", () => (audio.paused ? start() : audio.pause()));
-  $("[data-prev]").addEventListener("click", () => load(audio.currentTime > 3 ? i : i - 1, true));
-  $("[data-next]").addEventListener("click", () => load(i + 1, true));
+  $("[data-prev]")?.addEventListener("click", () => load(audio.currentTime > 3 ? i : i - 1, true));
+  $("[data-next]")?.addEventListener("click", () => load(i + 1, true));
   links.forEach((a, k) => a.addEventListener("click", (e) => { e.preventDefault(); load(k, true); }));
   audio.addEventListener("play", () => root.toggleAttribute("data-playing", true));
   audio.addEventListener("pause", () => root.toggleAttribute("data-playing", false));
@@ -146,8 +147,9 @@ for (const root of document.querySelectorAll("[data-player]")) {
   if ("mediaSession" in navigator) {
     navigator.mediaSession.setActionHandler("play", start);
     navigator.mediaSession.setActionHandler("pause", () => audio.pause());
-    navigator.mediaSession.setActionHandler("previoustrack", () => load(i - 1, true));
-    navigator.mediaSession.setActionHandler("nexttrack", () => load(i + 1, true));
+    const many = tracks.length > 1;
+    navigator.mediaSession.setActionHandler("previoustrack", many ? () => load(i - 1, true) : null);
+    navigator.mediaSession.setActionHandler("nexttrack", many ? () => load(i + 1, true) : null);
   }
   root.classList.add("is-enhanced");
   load(0, false);

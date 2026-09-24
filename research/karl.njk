@@ -4,12 +4,15 @@ title: KARL
 permalink: /research/karl/
 ---
 {% from "github.njk" import githubButton %}
+{% from "player.njk" import player %}
 {# Every sentence on this page is from Thomas's CIP proposal, verbatim, in its own order and under its own headings. #}
 {% set h2 = "text-gray-500 uppercase tracking-wider text-sm mt-12 mb-4" %}
 <article class="py-16">
   <div class="max-w-3xl mx-auto">
     <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-4" style="letter-spacing: 0.1em;">KARL</h1>
     <p class="text-lg text-gray-400">Minimizing Misinformation in the Workplace: Worker-Controlled AI Tools Augmenting Contract Literacy</p>
+    {# The proposal as a song. The title above is the song's own, so the player carries none. #}
+    <div class="mt-8">{{ player({ id: "song", album: "KARL", tracks: [{ title: "Worker-Controlled AI Tools Augmenting Contract Literacy", file: "/audio/karl/worker-controlled-ai-tools-augmenting-contract-literacy.mp3", seconds: 775.8 }] }) }}</div>
 
     <h2 class="{{ h2 }}">Background</h2>
     <div class="space-y-5 text-gray-300">
