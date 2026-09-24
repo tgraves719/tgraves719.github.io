@@ -3,6 +3,7 @@ layout: base.njk
 title: KARL
 permalink: /research/karl/
 ---
+{% from "github.njk" import githubButton %}
 {# Every sentence on this page is from Thomas's CIP proposal, verbatim. #}
 <article class="py-16">
   <div class="max-w-3xl mx-auto">
@@ -14,7 +15,7 @@ permalink: /research/karl/
     </div>
     <div class="mt-12 flex flex-wrap gap-4">
       <a href="https://karlstewardship.com/" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">karlstewardship.com</a>
-      <a href="https://github.com/tgraves719/Knowledge-Assistant-Rights-Labor" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Repository</a>
+      {{ githubButton("https://github.com/tgraves719/Knowledge-Assistant-Rights-Labor") }}
       <a href="/research/strike/" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">The Safeway Strike</a>
     </div>
   </div>

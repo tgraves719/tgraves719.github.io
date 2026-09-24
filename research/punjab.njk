@@ -3,6 +3,7 @@ layout: base.njk
 title: Punjab Data Project
 permalink: /research/punjab/
 ---
+{% from "github.njk" import githubButton %}
 <article class="py-16">
   <div class="max-w-4xl mx-auto">
     <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-6" style="letter-spacing: 0.1em;">Punjab Data Project</h1>
@@ -20,7 +21,7 @@ permalink: /research/punjab/
 
     <div class="flex flex-wrap gap-4">
       <a href="https://tgraves719.github.io/Punjab-Data-Project/" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Explorer</a>
-      <a href="https://github.com/tgraves719/Punjab-Data-Project" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Repository</a>
+      {{ githubButton("https://github.com/tgraves719/Punjab-Data-Project") }}
     </div>
   </div>
 </article>
