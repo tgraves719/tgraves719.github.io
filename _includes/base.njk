@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ title }}{% if title %} - Thomas J Graves{% endif %}</title>
-  <meta name="description" content="{{ description or 'Thomas J Graves builds computational models of human practices — a jazz performance, a union contract, a colonial print register — and studies what the model does to the practice, and whom the resulting system serves.' }}">
+  <meta name="description" content="{{ description or 'i build computational models of human practices. what does the model do to the practice, and whom does the resulting system serve?' }}">
   <!-- Tailwind and fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     {#
@@ -1498,24 +1498,6 @@
         }
       };
 
-      // Blog post data - loaded from Eleventy
-      const BlogData = {
-        posts: [
-          {% for post in collections.all | reverse -%}
-          {%- if post.data.layout == "post.njk" -%}
-          {
-            title: {{ post.data.title | dump | safe }},
-            date: "{{ post.data.date | postDate }}",
-            url: "{{ post.url }}",
-            image: "{{ post.data.image }}",
-            videoId: "{{ post.data.videoId }}",
-            tags: {{ post.data.tags | dump | safe }},
-            content: {{ post.templateContent | dump | safe }}
-          },
-          {%- endif -%}
-          {%- endfor %}
-        ]
-      };
 
       // Simple Page Manager - just handles sound and basic interactions
       const PageManager = {
@@ -1534,51 +1516,8 @@
           }
 
           // Melody will be set when sound engine is ready and enabled
-
-          // Load blog content if on blog page
-          if (AppState.activePage === 'blog') {
-            this.loadBlogContent();
-          }
         },
 
-        loadBlogContent() {
-          const blogGrid = document.getElementById('blog-grid');
-          if (!blogGrid) return;
-
-          blogGrid.innerHTML = BlogData.posts.map(post => {
-            let imageUrl = 'images/pic01.jpg';
-            if (post.videoId && post.videoId !== '') {
-              imageUrl = `https://img.youtube.com/vi/${post.videoId}/maxresdefault.jpg`;
-            } else if (post.image && post.image !== '') {
-              imageUrl = post.image;
-            }
-
-            return `
-              <article class="bg-[var(--color-bg-card)] rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
-                <div class="relative">
-                  <img src="${imageUrl}" alt="${post.title}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
-                  ${post.videoId && post.videoId !== '' ? `
-                    <div class="absolute inset-0 flex items-center justify-center">
-                      <div class="bg-red-600 rounded-full p-3 shadow-lg">
-                        <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.841z"/>
-                        </svg>
-                      </div>
-                    </div>
-                  ` : ''}
-                </div>
-                <div class="p-6">
-                  <div class="flex flex-wrap gap-2 mb-3">
-                    ${post.data.tags ? post.data.tags.map(tag => `<span class="inline-block bg-[var(--color-secondary)] text-xs font-medium px-2.5 py-1 rounded-full">${tag}</span>`).join('') : ''}
-                  </div>
-                  <h3 class="text-xl font-bold text-white mb-2 group-hover:text-gray-300 transition-colors">${post.title}</h3>
-                  <p class="text-gray-500 text-sm mb-4">${post.date}</p>
-                  <a href="${post.url}" class="inline-block sound-interactive interactive-rainbow px-4 py-2 font-semibold text-sm uppercase tracking-wider rounded-lg transition-colors">Read More</a>
-                </div>
-              </article>
-            `;
-          }).join('');
-        }
       };
 
       // Setup event listeners - ensure sound engine is setup first.
@@ -1706,11 +1645,6 @@
 
             // Animate camera to new page position
             this.animateCameraForPage(newPageId);
-
-            // Load blog content if needed
-            if (AppState.activePage === 'blog') {
-              PageManager.loadBlogContent();
-            }
 
             // Reinitialize page-specific functionality
             this.initializePageSpecificScripts();

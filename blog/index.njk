@@ -3,13 +3,12 @@ layout: base.njk
 title: Blog
 ---
 <section class="py-16">
-  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-    <h1 class="text-3xl tracking-tight uppercase font-bold text-white" style="letter-spacing: 0.1em;">The Record</h1>
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
+    <h1 class="text-3xl tracking-tight uppercase font-bold text-white" style="letter-spacing: 0.1em;">From the Blog</h1>
     <button id="sortButton" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg transition-all" title="Sort posts by date">
       <span id="sortArrow">↓</span>
     </button>
   </div>
-  <p class="max-w-3xl text-gray-400 mb-12">Development logs, performances, announcements and early writing, 2019 onward — kept as it was written. The arguments are <a href="/essays/" class="text-gray-300 underline decoration-gray-600 hover:decoration-white">in the essays</a>.</p>
   <div id="blogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
     {% for post in collections.post %}
       <a href="{{ post.url }}" class="static-rainbow bg-[var(--color-bg-card)] rounded-xl flex flex-col transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-900/10">

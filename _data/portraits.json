@@ -1,5 +1,5 @@
 {
-  "_source": "Every quotation and figure below is taken verbatim from 'Portraits of Change: Mixed Reality Music Recital Research Portfolio' (Thomas Graves, 11/28/21, updated 2022). Hues, running minutes and stage-light RGB are Appendix B. MIDI assignments are Appendix B. Stage plots are Appendix C. Spelling is the source's own and is not corrected.",
+  "_source": "Quotations, captions, headings, ensemble names and figures: Portraits of Change Research Portfolio (Thomas Graves, 2021, updated 2022), verbatim. Version labels: his YouTube and post titles.",
   "performance": {
     "title": "Portraits of Change",
     "subtitle": "a Mixed Reality Music Recital",
@@ -8,12 +8,12 @@
     "lede": "Using these new technologies, we can present musical portraits painted in real-time with the live music driving every visual change.",
     "video": {
       "id": "HlHTue853-E",
-      "title": "Bitches Brew, recital, 28 November 2021"
+      "title": "Bitches Brew"
     }
   },
   "ensembles": [
     {
-      "name": "Trumpet and piano",
+      "name": "Haydn Concerto, Hindemith Sonata",
       "plot": "plot-trumpet-piano",
       "portraits": [
         {
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "name": "Brass quintet",
+      "name": "Brass Quintet",
       "plot": "plot-brass-quintet",
       "portraits": [
         {
@@ -136,7 +136,7 @@
       ]
     },
     {
-      "name": "Jazz combo",
+      "name": "Jazz Combo",
       "plot": "plot-jazz-combo",
       "intermissionBefore": 10,
       "portraits": [
@@ -225,7 +225,7 @@
       ]
     },
     {
-      "name": "Extended combo",
+      "name": "Extended Combo",
       "plot": "plot-extended-combo",
       "portraits": [
         {
@@ -250,13 +250,12 @@
             "Ch10 Drums (E)"
           ],
           "note": "With this song, we are telling the story of the origins of the universe. Why? Because what signifies chaos and searching for meaning more than cosmology!",
-          "videoId": "HlHTue853-E",
-          "rigNote": "Appendix B lists every instrument in this piece as environmental. The stage plot for the same piece marks the trumpet, bass, e-kit and bass clarinet as tracked. Both are reproduced as drawn."
+          "videoId": "HlHTue853-E"
         }
       ]
     },
     {
-      "name": "Jazz Ensemble I and voice",
+      "name": "Jazz I Big Band and Voice",
       "plot": "plot-big-band",
       "portraits": [
         {
@@ -298,12 +297,6 @@
   ],
   "versions": [
     {
-      "date": "2019-03",
-      "label": "First image",
-      "fig": "fig10-first-image-2019",
-      "caption": "First Image of Portraits of Change, combining Mixed Reality technology with music. March, 2019"
-    },
-    {
       "date": "2019-04-15",
       "label": "Alpha 0.1.5",
       "post": "devlog-2019-04-15",
@@ -311,95 +304,101 @@
     },
     {
       "date": "2019-07-11",
-      "label": "Alpha 0.2.1 — test with Damion",
+      "label": "Alpha 0.2.1- Test with Damion",
       "post": "devlog-2019-07-11",
       "videoId": "NMaVNASWMLU"
     },
     {
       "date": "2019-08-10",
-      "label": "0.2.2 — booth demo",
+      "label": "0.2.2 Booth Demo Trailer",
       "post": "performance-2019-08-10",
       "videoId": "Znv5EWZoBo0"
     },
     {
       "date": "2019-08-25",
-      "label": "0.2.3 — test with Noah",
+      "label": "0.2.3- Test with Noah",
       "post": "devlog-2019-08-25",
       "videoId": "Q6Wat4iVT-M"
     },
     {
       "date": "2019-09-14",
-      "label": "What If… Festival of Innovation and Imagination",
+      "label": "What If... Festival of Innovation and Imagination",
       "post": "devlog-2019-09-15",
       "videoId": "VPJgtfEtFgQ"
     },
     {
       "date": "2019-09-23",
-      "label": "0.2.4 — electric trumpet",
+      "label": "0.2.4 Electric Trumpet Test",
       "post": "devlog-2019-09-23",
       "videoId": "Lml8TpSYFUI"
     },
     {
       "date": "2020-01-09",
-      "label": "0.2.5 — trumpet module",
+      "label": "0.2.5-Trumpet Module Update",
       "post": "devlog-2020-01-09",
       "videoId": "IxDf7hlPQLw"
     },
     {
       "date": "2020-02-05",
-      "label": "0.2.5 — multi-instrument",
+      "label": "0.2.5 Multi Instrument Test",
       "post": "devlog-2020-02-05",
       "videoId": "FFIsxg-flIg"
     },
     {
+      "date": "2020-02-06",
+      "label": "Peak Arts Prize 2020 Proposal",
+      "post": "devlog-2020-02-06",
+      "videoId": "_1gPVE5BIjs"
+    },
+    {
       "date": "2020-03-27",
-      "label": "Beta 0.5.1 — SteamVR and the Index",
+      "label": "Beta 0.5.1 Preview",
       "post": "devlog-2020-03-27",
       "videoId": "C5lcmrWpCXE"
     },
     {
       "date": "2020-04-27",
-      "label": "Beta 0.5.2 — HDRP",
+      "label": "Beta 0.5.2 Preview- HDRP support added",
       "post": "devlog-2020-04-27",
       "videoId": "RUBBKnUVU-s"
     },
     {
       "date": "2021-04-12",
-      "label": "AR piano demonstration",
+      "label": "AR Piano Demonstration",
       "post": "performance-2021-04-12",
       "videoId": "xYRqNQzCxVM"
     },
     {
       "date": "2021-04-15",
-      "label": "MIDI VFX gallery",
+      "label": "MIDI VFX Gallery",
       "post": "devlog-2021-04-15",
       "videoId": "l-iUqews7Q0"
     },
     {
       "date": "2021-05-15",
-      "label": "Trumpet test — Haydn",
+      "label": "Trumpet Test with Thomas",
       "post": "devlog-2021-05-15",
       "videoId": "jM_3Ma0daAA"
     },
     {
       "date": "2021-09-06",
-      "label": "The mount",
+      "label": "The Mount",
       "post": "devlog-2021-09-06"
     },
     {
       "date": "2021-11-07",
-      "label": "Rehearsal",
+      "label": "Rehearsal with Bits",
       "post": "devlog-2021-11-07"
     },
     {
       "date": "2021-11-28",
-      "label": "The recital",
+      "label": "Bitches Brew in Mixed Reality",
       "post": "performance-2021-11-28",
       "videoId": "HlHTue853-E"
     },
     {
       "date": "2022-09-09",
-      "label": "Game dev meetup performance",
+      "label": "Game Dev Meetup MR Performance",
       "post": "performance-2022-09-09"
     }
   ],
@@ -407,20 +406,17 @@
     {
       "repo": "portraits-gen1",
       "years": "2018–2020",
-      "unity": "2018.3.12f1",
-      "line": "Alpha era — Leap Motion, the VR MIDI piano, the What If… Festival booth."
+      "unity": "2018.3.12f1"
     },
     {
       "repo": "portraits-gen2",
       "years": "2020–2021",
-      "unity": "2019.4.24f1",
-      "line": "VFX Graph era — 213 VFX graphs, 74 authored scenes, SteamVR and ZED Mini passthrough."
+      "unity": "2019.4.24f1"
     },
     {
       "repo": "portraits-recital",
       "years": "2021–2023",
-      "unity": "2019.4.31f1",
-      "line": "The Hoag Hall recital and the Booth 2.x builds. A rebuild, not a continuation."
+      "unity": "2019.4.31f1"
     }
   ],
   "nodes": [

@@ -15,6 +15,24 @@ has already caught something.
 
 ---
 
+## The first rule: his words, or no words
+
+Every sentence a reader sees on this site is Thomas's own, verbatim — from the 2021
+research portfolio, the CIP proposal, his original site, the recital program, his
+GitHub and video titles, or his own edits. Nothing written by a model stays. Where his
+words do not exist for something, the site shows data (names, dates, numbers, images)
+or nothing. Quotations are set as plain text — no quotation marks, no italics, no
+attribution lines — because on this site his words are the text, not a citation in
+someone else's.
+
+Labels (headings, buttons, status) are kept to a word or two, and prefer his own
+headings where he wrote them. Images must show the project they sit on; a card with no
+true image has no image.
+
+This is less-is-more taken to its limit, and it outranks everything below.
+
+---
+
 ## 1. Content dictates form
 
 The form of a page is not chosen and then filled. It is derived from what the page has to
@@ -23,14 +41,10 @@ on this site because the content is that effect.
 
 **What it means here**
 
-- The site says one question is asked in three places, so the structure *is* three places
-  — not a flat list of projects with the question in a paragraph above it.
+- The recital already had a form — a program walking the color wheel — so its page is that program.
 - The particle field and the audio engine are the *instrument*. They belong where the
   content is the instrument: the home page, the music page, the project pages for the
   audiovisual work. An argument does not get a particle field.
-- Every project record states what it **inherits** and what it **refuses**, because the
-  claim this work makes is that a system is defined by both. The data model carries that
-  claim; it is not a rhetorical flourish in a bio.
 
 **Where it caught something**
 
@@ -53,16 +67,14 @@ as what you keep.
 - One idea per block. If two sentences make the same point, the weaker one goes.
 - No section exists to prove effort. A project page that says everything says nothing,
   because the reader cannot tell what mattered.
-- Cards carry what a reader needs in order to decide whether to follow the link, and
-  stop. The full argument is one click away, and being one click away is not a failure.
-- Nothing is listed twice. If the strand heading says *The Archive*, the card underneath
-  it does not also say *archives*.
+- A card is an image, a title, years, a status, and at most one line in Thomas's words.
+- Nothing is listed twice.
 
 **Where it caught something**
 
 The home page said the same thing three ways: an abstract claim, a credentials line, and
-three cards. Thomas cut it to the claim and the question. The cards now carry the proof,
-and the question is the last thing read before the click.
+three cards. Thomas cut it to the claim and the question; the cards then went too, and the three
+phrases in his own sentence became the links.
 
 ---
 
@@ -77,8 +89,7 @@ either honest or not.
 - Alt text describes what is actually in the photograph. A caption that says *picket
   line* over a photograph of a store interior is a small lie, and small lies are how a
   portfolio stops being trustworthy.
-- A status is a field with a fixed vocabulary — *In progress*, *Preserved, not
-  maintained*, *Published*, *Next* — so a reader knows what they are looking at without
+- A status is a field with a fixed vocabulary — *In progress*, *Archived*, *Published*, *Next* — so a reader knows what they are looking at without
   being told a story about it.
 - Titles are named, not linked, until the thing they name can actually be opened.
 - No console narration. A reader who opens developer tools on this site finds it quiet.
@@ -103,9 +114,8 @@ walking once around the color wheel, five ensembles, a stage plot for each. Quot
 are verbatim from the 2021 research portfolio, misspellings included. Laying the data
 beside the drawings exposed two things the prose never said: the brass quintet had five
 players and four converters, so the trombone was never heard; and Appendix B and the
-stage plot disagree about which Bitches Brew instruments were tracked. The first is now
-on the page as a finding. The second is shown as a disagreement rather than silently
-resolved — the same rule the Punjab pipeline follows for the imperial register.
+stage plot disagree about which Bitches Brew instruments were tracked. Under the first
+rule neither is written up on the page: the stage plots are there, and they show it.
 
 ---
 
@@ -126,9 +136,8 @@ and cannot rewind it:
    carry it, because they may be the only seven read.
 2. **Say it once, in the open.** No claim that depends on the reader having already read
    another page. Every page states its own premise in its own words.
-3. **Repetition is structure.** The repeated shape — line, inherits, refuses, status — is
-   this site's rhyme scheme. It teaches the reader what to expect, which is what makes a
-   departure from it mean something.
+3. **Repetition is structure.** The same card shape on every project teaches the reader
+   what to expect.
 
 ---
 
@@ -136,7 +145,7 @@ and cannot rewind it:
 
 ### Voice is lowercase; the record is sentence case
 
-Where Thomas speaks as himself — the home page, About, the essays introduction, an
+Where Thomas speaks as himself — the home page, About, Music, the essay titles, an
 essay's own prose — the text is lowercase. Where the site documents work for someone
 who has to evaluate it — project cards, the research case studies, the blog, error
 pages — it is sentence case.

@@ -3,22 +3,9 @@ layout: base.njk
 title: Work
 ---
 {% from "cards.njk" import projectCard %}
-<section id="work-content" class="py-16">
-  <h1 class="text-3xl tracking-tight mb-4 uppercase font-bold text-white" style="letter-spacing: 0.1em;">Work</h1>
-  <p class="max-w-3xl text-lg text-gray-400 mb-16">One question asked in three places. Each project carries what it inherits, what it refuses, and where it actually stands — including the ones that are finished and are not coming back.</p>
-
-  {% for s in sites %}
-  <div class="mb-20">
-    <div class="pb-6 mb-8 border-b border-[var(--color-border)]">
-      <h2 class="text-2xl font-bold text-white uppercase tracking-wide">{{ s.title }}</h2>
-      <p class="text-gray-500 uppercase tracking-wider text-sm mt-1">{{ s.mode }}</p>
-      <p class="text-gray-400 mt-3 max-w-3xl">{{ s.line }}</p>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-2">
-      {% for p in projects %}
-        {% if p.site == s.id %}{{ projectCard(p) }}{% endif %}
-      {% endfor %}
-    </div>
+<section class="py-16">
+  <h1 class="text-3xl tracking-tight mb-12 uppercase font-bold text-white" style="letter-spacing: 0.1em;">Work</h1>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-2 items-start">
+    {% for p in projects %}{{ projectCard(p) }}{% endfor %}
   </div>
-  {% endfor %}
 </section>

@@ -1,17 +1,10 @@
 {#
-  One project card, rendered from a record in _data/projects.json.
-
-  Every consumer of this macro passes the whole record, so a card can only ever
-  show what the data says — including `status`, which is the field the old
-  four-card grid did not have and which is why it could claim four current
-  practices when two of them had been finished for years.
-
-  A project without an `href` is not a dead link: it renders as a card with no
-  anchor, and its outbound links (if any) still work.
+  A project card from _data/projects.json: image, title, years, status, and at
+  most one line -- in Thomas's own words or not at all.
 #}
 {% macro statusPill(status) %}
-  {% set label = { active: "In progress", preserved: "Preserved, not maintained", published: "Published", next: "Next", record: "Record" } %}
-  <span class="inline-block text-xs font-medium uppercase tracking-wider px-2.5 py-1 rounded-full border border-[var(--color-border)] text-gray-400">{{ label[status] or status }}</span>
+  {% set label = { active: "In progress", preserved: "Archived", published: "Published", next: "Next" } %}
+  {% if label[status] %}<span class="inline-block text-xs font-medium uppercase tracking-wider px-2.5 py-1 rounded-full border border-[var(--color-border)] text-gray-400">{{ label[status] }}</span>{% endif %}
 {% endmacro %}
 
 {% macro projectCard(p) %}
@@ -26,31 +19,8 @@
         <h3 class="text-lg font-semibold text-white uppercase tracking-wide">{{ p.title }}</h3>
         <span class="text-sm text-gray-500 whitespace-nowrap">{{ p.years }}</span>
       </div>
-      <p class="text-gray-400 mb-4">{{ p.line }}</p>
-
-      {# Inherits and refuses sit on the card, not in a lineage document.
-         A system described only by what it enables has not been designed. #}
-      <dl class="text-sm space-y-2 mb-4 border-l border-[var(--color-border)] pl-4">
-        <div>
-          <dt class="text-gray-500 uppercase tracking-wider text-xs">Inherits</dt>
-          <dd class="text-gray-400">{{ p.inherits }}</dd>
-        </div>
-        <div>
-          <dt class="text-gray-500 uppercase tracking-wider text-xs">Refuses</dt>
-          <dd class="text-gray-400">{{ p.refuses }}</dd>
-        </div>
-      </dl>
-
-      {#
-        Status only. The tags in projects.json repeated what the strand heading
-        above the grid already says -- "Archives" under "The Archive" -- and a
-        card that says everything says nothing, because the reader cannot tell
-        what mattered. The field stays in the data for when something needs to
-        filter on it.
-      #}
-      <div class="mt-auto">
-        {{ statusPill(p.status) }}
-      </div>
+      {% if p.line %}<p class="text-gray-400 mb-4">{{ p.line }}</p>{% endif %}
+      <div class="mt-auto">{{ statusPill(p.status) }}</div>
     </div>
   {% endset %}
 
