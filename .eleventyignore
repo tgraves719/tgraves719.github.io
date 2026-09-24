@@ -1,0 +1,6 @@
+# Repository documents, not pages.
+README.md
+PRINCIPLES.md
+# Vendored instruments are copied through untouched (see .eleventy.js); their
+# PROVENANCE.md files must not be rendered as pages.
+instruments/**

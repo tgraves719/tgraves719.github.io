@@ -3,6 +3,10 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("assets");
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy("files");
+  // Instruments are copied through untouched: an instrument's page is part of
+  // the instrument, so it keeps its own design rather than this site's layout.
+  // (Vendored builds -- see tools/vendor-wheel.mjs and each PROVENANCE.md.)
+  eleventyConfig.addPassthroughCopy("instruments");
 
   // Helper filter to format dates in a human readable way
   eleventyConfig.addFilter("postDate", (dateObj) => {

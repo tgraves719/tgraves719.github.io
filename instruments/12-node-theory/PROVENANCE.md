@@ -1,0 +1,12 @@
+# 12-Node Theory — vendored build
+
+Built from `unfaithfulcyborgs` at commit `7664433e609c49bb2ced4526d8a15a2c7f6874ba`,
+by `tools/vendor-wheel.mjs`, under the base path `/instruments/12-node-theory/`.
+
+Do not edit these files. Change the source in `unfaithfulcyborgs/src/wheel` (and
+`src/data`, `src/mark`), then re-run the script.
+
+One change is made to the built page: its back link, which read "← Threshold" and
+pointed at the Cyborgs front page, reads "← Thomas J Graves" and points at /work/.
+
+Files: index.html (built from wheel.html), assets/corner-BSJmn8ba.js, assets/field-BMTcuRgB.js, assets/figures-BD60Z9ol.js, assets/midi-6_simboS.js, assets/transport-Cupg1Bpr.js, assets/tuning-DWw9MJEu.js, assets/wheel-tPOqukPc.js.

@@ -1,5 +1,5 @@
 {
- "_source": "Fixed floor camera, Hoag Hall, 28 November 2021. The stage wall's colour sampled every 2 s, averaged to 10 s, brightness normalised so exposure does not read as hue. Camera white balance renders the programmed greens as cyan. Piece starts are the first sustained sound in the room recording, aligned to the camera.",
+ "_source": "Fixed floor camera, Hoag Hall, 28 November 2021. The stage wall's color sampled every 2 s, averaged to 10 s, brightness normalized so exposure does not read as hue. Camera white balance renders the programmed greens as cyan. Piece starts are the first sustained sound in the room recording, aligned to the camera.",
  "secondsPerStep": 10,
  "steps": 520,
  "minutes": 86.7,

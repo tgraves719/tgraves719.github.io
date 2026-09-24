@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>12-Node Theory</title>
+<meta name="description" content="A chromatic wheel where colour and pitch are one axis. Hear all seventeen interval figures, load your own MIDI, and watch what each step of analysis throws away." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /*
+   * Palette and type, from Portraits of Change (2019-2023).
+   *
+   * GROUND. Pure black, not the near-black this page used to sit on. The
+   * performance diagrams are black, and the wheel now composites its chords
+   * additively — light sums, and light only sums correctly against zero. A
+   * ground of #05060A is a ground with a little blue already added to it.
+   *
+   * NEUTRALS. Achromatic, every one. This is the only palette on earth that has
+   * earned its greys: twelve saturated hues whose complementary pairs average
+   * to neutral. Grey is not the absence of a decision here, it is the theory's
+   * own result, so the interface is built out of what the wheel produces.
+   *
+   * COLOUR. The twelve hues appear on the canvas and nowhere else — with one
+   * exception, below. An interface that borrows the palette competes with the
+   * figure it exists to explain.
+   *
+   * THE EXCEPTION. Node 1, orange, rules the one panel where the tool admits
+   * its answer depends on a choice it cannot make for you. One hue, one place,
+   * and it means something.
+   *
+   * TYPE. Portraits was set in Westmount (Greg Nicholls / Rook Design Supply,
+   * 2017) across five weights — an unusually high x-height geometric sans,
+   * x-height 559 against a cap height of 600. It is not free to redistribute as
+   * a webfont, so it does not ship here. Instrument Sans stands in for it and is
+   * used the way Westmount was used: one family, wide range of weight, caps and
+   * tracking doing the work that a second family would otherwise do. IBM Plex
+   * Mono carries every number and every set-theory label, because pitch classes
+   * are integers and integers should line up.
+   */
+  :root {
+    --void:#000000;
+    --ink:#FFFFFF;
+    --read:#B4B4B4;
+    --dim:#6A6A6A;
+    --faint:#3C3C3C;         /* rules and borders only, never type */
+    --quiet:#5E5E5E;         /* the quietest type is still type */
+    --rule:#1C1C1C;
+    --edge:#2B2B2B;
+    --flag:#FF8000;          /* node 1. contested readings, and nothing else */
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--void);color:var(--read);
+       font-family:"Instrument Sans",system-ui,-apple-system,sans-serif;
+       -webkit-font-smoothing:antialiased;line-height:1.6;font-size:15px}
+  a{color:var(--ink)}
+  .mono{font-family:var(--mono)}
+  button{font-family:inherit}
+  :focus-visible{outline:1px solid var(--ink);outline-offset:2px}
+
+  .shell{display:grid;grid-template-columns:minmax(0,1fr) 392px;min-height:100vh}
+  @media (max-width:980px){ .shell{grid-template-columns:1fr} }
+
+  /* ---------- stage ---------- */
+  .stage{position:relative;display:flex;flex-direction:column;padding:30px 30px 20px;gap:18px;
+         min-width:0;height:100vh;overflow:hidden}
+  @media (max-width:980px){ .stage{height:auto;overflow:visible} }
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+  /* The mark sits beside the title as identity. It may turn; the wheel below
+     it may not, and that distinction is the whole reason this is allowed. */
+  .ident{display:flex;align-items:center;gap:13px}
+  h1{font-size:1.32rem;margin:0;letter-spacing:.01em;text-transform:uppercase;
+     font-weight:700;color:var(--ink);line-height:1.1}
+  h1 small{display:block;font-family:var(--mono);font-weight:400;font-size:.52em;
+           letter-spacing:.24em;color:var(--dim);margin-top:9px;text-transform:uppercase}
+  .back{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+        color:var(--dim);text-decoration:none;padding-bottom:2px;border-bottom:1px solid transparent}
+  .back:hover{color:var(--ink);border-bottom-color:var(--edge)}
+
+  .canvaswrap{position:relative;flex:1 1 0;min-height:260px}
+  @media (max-width:980px){ .canvaswrap{min-height:min(92vw,480px)} }
+  canvas{width:100%;height:100%;display:block;touch-action:none}
+
+  .readout{border-top:1px solid var(--rule);padding-top:11px;display:flex;
+           flex-direction:column;gap:6px;height:3.5em;flex:0 0 auto;overflow:hidden}
+  #now{font-family:var(--mono);font-size:.8rem;letter-spacing:.05em;color:var(--read);
+       font-variant-numeric:tabular-nums}
+  .hint{font-family:var(--mono);font-size:.62rem;color:var(--quiet);letter-spacing:.14em;
+        text-transform:uppercase;margin:0}
+  #draw-layers{gap:14px 16px;margin-top:0}
+
+  /*
+   * ---------- chips ----------
+   * The box is gone. A bordered rectangle around every control was six hundred
+   * pixels of rule competing with a figure made of lines. What is left is the
+   * type, and one 2px rule under each — dark at rest, white when chosen. The
+   * state is legible at a glance and adds nothing to the drawing.
+   */
+  .chips{display:flex;gap:18px;flex-wrap:wrap}
+  #intervals{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 16px}
+  #intervals .chip{width:100%}
+  .dirrow{display:flex;align-items:center;gap:12px;margin-top:16px}
+  .dirrow .step{flex:0 0 auto;min-width:118px}
+  #figure-count{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;
+                color:var(--quiet);line-height:1.5}
+  .chip{background:transparent;border:0;border-bottom:2px solid var(--faint);
+        color:var(--read);cursor:pointer;padding:0 0 8px;text-align:left;
+        font-family:inherit;transition:border-color .18s,color .18s}
+  .chip b{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;
+          color:var(--dim);font-weight:500;transition:color .18s}
+  .chip span{display:block;font-size:.8rem;color:var(--read);font-weight:500;margin-top:3px}
+  .chip em{display:block;font-style:normal;font-size:.62rem;color:var(--dim);
+           font-family:var(--mono);margin-top:2px}
+  .chip:hover{border-bottom-color:var(--edge)}
+  .chip:hover b,.chip:hover span{color:var(--ink)}
+  .chip.on{border-bottom-color:var(--ink)}
+  .chip.on b{color:var(--ink)}
+  .chip.on span{color:var(--ink)}
+  .chip.on em{color:var(--read)}
+
+  .chips.tight{gap:14px}
+  #figures{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 16px}
+  #figures .chip{width:100%}
+  /* Smaller than the interval-class chips: naming is a setting, not the
+     argument, and it should not carry the same weight as the figure. */
+  #naming{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 14px}
+  .chip.nm{width:100%;padding-bottom:5px}
+  .chip.nm b{font-size:.55rem;letter-spacing:.1em}
+  .chip.nm span{font-family:var(--mono);font-size:.58rem;font-weight:400;margin-top:2px}
+  .chip.nm em{font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--quiet)}
+  .chip.nm.on em{color:var(--read)}
+
+  .chip.w,.chip.fig{padding-bottom:6px}
+  .chip.w b,.chip.fig b{font-size:.62rem;letter-spacing:.1em}
+  .chip.fig span{font-family:var(--mono);font-size:.66rem;font-weight:400}
+  .chip.fig em{font-size:.58rem;letter-spacing:.04em;color:var(--quiet)}
+  .chip.fig.on em{color:var(--read)}
+  .chip.w b{letter-spacing:.06em}
+
+  /* ---------- panel ---------- */
+  .panel{background:var(--void);border-left:1px solid var(--rule);padding:30px 28px 72px;
+         overflow-y:auto;max-height:100vh;position:sticky;top:0}
+  @media (max-width:980px){ .panel{position:static;max-height:none;border-left:none;
+                                   border-top:1px solid var(--rule)} }
+  .panel h2{font-size:.66rem;font-family:var(--mono);letter-spacing:.2em;text-transform:uppercase;
+            color:var(--dim);margin:0 0 14px;font-weight:500}
+  .panel section{margin-bottom:38px;padding-top:0}
+  .panel section + section{border-top:1px solid var(--rule);padding-top:30px}
+  .lead{font-size:.86rem;color:var(--read);margin:0 0 16px;line-height:1.62}
+  .lead em{font-style:italic;color:var(--ink)}
+  .sublabel{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+            color:var(--dim);margin:16px 0 8px}
+  .sublabel b{color:var(--ink);font-weight:500;text-transform:none;letter-spacing:.02em}
+
+  /* ---------- buttons ---------- */
+  .loaders{display:flex;gap:8px}
+  .filebtn,.wide,.step{display:inline-flex;align-items:center;justify-content:center;
+    background:transparent;border:1px solid var(--edge);border-radius:0;color:var(--read);
+    cursor:pointer;font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;
+    text-transform:uppercase;padding:11px 14px;transition:.18s}
+  .filebtn{flex:1}
+  .wide{width:100%}
+  .filebtn:hover,.wide:hover,.step:hover{background:var(--ink);color:var(--void);border-color:var(--ink)}
+  .steprow{display:flex;gap:6px;margin-top:6px}
+  .step{flex:0 0 auto;padding:10px 13px;letter-spacing:.1em}
+  .step.wide2{flex:1}
+  .band:disabled{opacity:1;color:var(--dim)}
+
+  #file-info{font-family:var(--mono);font-size:.66rem;color:var(--dim);white-space:pre-line;
+             line-height:1.7;margin:14px 0 0}
+  #file-info.err{color:var(--flag)}
+
+  /* ---------- transport ---------- */
+  #player.hidden,#audio-row.hidden,#range-sec.hidden{display:none}
+  .transport{margin-top:14px}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;background:transparent;
+                    height:18px;cursor:pointer;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--edge)}
+  input[type=range]::-moz-range-track{height:1px;background:var(--edge)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:9px;
+    border-radius:50%;background:var(--ink);margin-top:-4px}
+  input[type=range]::-moz-range-thumb{width:9px;height:9px;border:0;border-radius:50%;background:var(--ink)}
+  .times{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.64rem;
+         color:var(--dim);font-variant-numeric:tabular-nums;margin-top:2px}
+  .slider-row{margin-top:14px}
+  .slider-row label{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+                    text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+  .slider-row label b{color:var(--ink);font-weight:500}
+  .layers{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap}
+  .layers label{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:.62rem;
+                letter-spacing:.1em;text-transform:uppercase;color:var(--dim);cursor:pointer}
+  .layers input{accent-color:#FFFFFF;width:12px;height:12px}
+  .trackrow{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;
+            padding:7px 0;border-bottom:1px solid var(--rule);cursor:pointer}
+  .trackrow:last-child{border-bottom:0}
+  .trackrow input{accent-color:#FFFFFF;width:12px;height:12px}
+  .trackrow .nm{font-size:.78rem;color:var(--read);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .trackrow .meta{font-family:var(--mono);font-size:.58rem;color:var(--quiet);letter-spacing:.08em}
+
+  /* ---------- readouts ---------- */
+  #analysis,#range{margin-top:14px;font-size:.8rem;color:var(--read);line-height:1.6}
+  #analysis .row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;
+                 border-bottom:1px solid var(--rule)}
+  #analysis .row:last-of-type{border-bottom:0}
+  #analysis .row span{font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;color:var(--dim)}
+  #analysis .row b{color:var(--read);font-weight:500;font-family:var(--mono);font-size:.66rem;
+                   font-variant-numeric:tabular-nums}
+  #analysis .row.lead b{color:var(--ink)}
+  #analysis .row.second b{color:var(--read)}
+
+  /*
+   * A finding is a claim the tool is making. It gets a rule so it reads as
+   * quoted rather than narrated. The contested variant is the one place a hue
+   * enters the interface: orange, node 1, meaning the answer changed when the
+   * weighting changed and you are the one who has to choose.
+   */
+  .finding{margin-top:12px;color:var(--read);border-left:1px solid var(--edge);
+           padding-left:12px;font-size:.78rem;line-height:1.6}
+  .finding b{color:var(--ink);font-weight:500}
+  .finding.warn{color:var(--read);border-left-color:var(--flag)}
+  .finding.warn b{color:var(--flag)}
+  .finding.quiet{color:var(--dim);border-left-color:var(--rule)}
+  .finding em,#range .finding em{font-style:italic;color:var(--read)}
+  .synthnote{margin-top:16px;color:var(--dim);border-left:1px solid var(--rule);
+             padding-left:12px;font-size:.78rem;line-height:1.6}
+
+  /* ---------- harmony range ---------- */
+  .fpgroup{margin-bottom:18px}
+  .fphead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+          font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+          color:var(--dim);margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+  .fphead b{color:var(--ink);font-weight:500;letter-spacing:.04em;text-transform:none;
+            font-variant-numeric:tabular-nums}
+  .band{display:grid;grid-template-columns:28px 1fr 40px;align-items:center;gap:10px;
+        width:100%;background:transparent;border:0;padding:4px 0;cursor:pointer;
+        font-family:var(--mono);font-size:.6rem;color:var(--dim);text-align:left}
+  .band:hover .k{color:var(--ink)}
+  .band.on .k{color:var(--ink)}
+  .band.on .track{border-color:var(--edge)}
+  .band.dead{cursor:default}
+  .band .k{letter-spacing:.06em;transition:color .18s}
+  .band .track{height:7px;border-bottom:1px solid var(--rule);position:relative}
+  .band .fill{position:absolute;left:0;top:0;bottom:0;transition:width .3s}
+  .band .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--read)}
+  .band.top .v{color:var(--ink)}
+  .meanrow{display:flex;align-items:center;gap:13px;margin-top:6px}
+  .swatch{width:38px;height:38px;flex:0 0 auto}
+  .meanrow p{margin:0;font-size:.78rem;color:var(--dim);line-height:1.55}
+  .meanrow p b{color:var(--ink);font-weight:500}
+  .pinrow{display:flex;gap:6px;margin-top:16px}
+  #pins{margin-top:14px;display:flex;flex-direction:column;gap:14px}
+  .pin .nm{font-size:.76rem;color:var(--ink);display:block;margin-bottom:7px;font-weight:500;
+           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pin .mini{display:flex;gap:2px;align-items:flex-end;height:20px;margin-bottom:4px}
+  .pin .mini i{flex:1;display:block;min-height:1px}
+  .pin .cap{font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;color:var(--quiet);
+            display:block;margin-bottom:8px;text-transform:uppercase}
+
+  /* ---------- blend check ---------- */
+  #blend{font-family:var(--mono);font-size:.7rem;color:var(--dim);letter-spacing:.03em;
+         display:flex;gap:8px;align-items:center;font-variant-numeric:tabular-nums;
+         white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #blend:empty{display:none}
+  #blend .sw{flex:0 0 auto;width:10px;height:10px;transform:translateY(1px)}
+  #blend .ok{color:var(--ink);font-weight:500}
+  #blend .near{color:var(--read);font-weight:500}
+  #blend .no{color:var(--flag);font-weight:500}
+  #midi-info{font-size:.78rem;color:var(--dim);line-height:1.6;margin:12px 0 0}
+  #figure-count{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:var(--dim)}
+  #midi-info{display:block}
+
+  /* ---------- synthesizer ---------- */
+  .rootgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--rule);
+            border:1px solid var(--rule)}
+  .rootgrid button{background:var(--void);border:0;color:var(--dim);font-family:var(--mono);
+    font-size:.66rem;padding:9px 0;cursor:pointer;transition:.15s}
+  .rootgrid button:hover{color:var(--ink)}
+  .wavegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);
+            border:1px solid var(--rule)}
+  .wavegrid button{background:var(--void);border:0;color:var(--dim);padding:9px 0;cursor:pointer;
+    display:flex;justify-content:center;align-items:center;transition:.15s}
+  .wavegrid button:hover{color:var(--ink)}
+  .wavegrid button.on{background:var(--ink);color:var(--void)}
+  .wavegrid svg{width:22px;height:22px;pointer-events:none}
+  .synthrow{display:flex;gap:28px;align-items:flex-start;margin-top:18px}
+  .stepper{display:flex;align-items:center;gap:10px;border:1px solid var(--edge);padding:5px 9px}
+  .stepper button{background:transparent;border:0;color:var(--dim);cursor:pointer;
+    font-family:var(--mono);font-size:.8rem;line-height:1;padding:2px 5px}
+  .stepper button:hover{color:var(--ink)}
+  .stepper b{font-family:var(--mono);font-size:.72rem;color:var(--ink);font-weight:500;
+             min-width:12px;text-align:center;font-variant-numeric:tabular-nums}
+  .switch{position:relative;display:inline-flex;cursor:pointer;margin-top:3px}
+  .switch input{position:absolute;opacity:0;width:0;height:0}
+  .switch span{width:34px;height:16px;background:var(--void);border:1px solid var(--edge);
+    transition:.2s;display:block;position:relative}
+  .switch span::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;
+    background:var(--dim);transition:.2s}
+  .switch input:checked+span{border-color:var(--ink)}
+  .switch input:checked+span::after{transform:translateX(18px);background:var(--ink)}
+  .switch input:focus-visible+span{outline:1px solid var(--ink);outline-offset:2px}
+
+</style>
+  <script type="module" crossorigin src="/instruments/12-node-theory/assets/wheel-tPOqukPc.js"></script>
+  <link rel="modulepreload" crossorigin href="/instruments/12-node-theory/assets/field-BMTcuRgB.js">
+  <link rel="modulepreload" crossorigin href="/instruments/12-node-theory/assets/tuning-DWw9MJEu.js">
+  <link rel="modulepreload" crossorigin href="/instruments/12-node-theory/assets/figures-BD60Z9ol.js">
+  <link rel="modulepreload" crossorigin href="/instruments/12-node-theory/assets/midi-6_simboS.js">
+  <link rel="modulepreload" crossorigin href="/instruments/12-node-theory/assets/transport-Cupg1Bpr.js">
+  <link rel="modulepreload" crossorigin href="/instruments/12-node-theory/assets/corner-BSJmn8ba.js">
+</head>
+<body>
+<div class="shell">
+
+  <div class="stage">
+    <div class="head">
+      <div class="ident" id="ident"><h1>12-Node Theory</h1></div>
+      <a class="back" href="/work/">&larr; Thomas J Graves</a>
+    </div>
+
+    <div class="canvaswrap"><canvas id="wheel"></canvas></div>
+
+    <div class="readout">
+      <div id="now"></div>
+      <div id="blend"></div>
+    </div>
+    <p class="hint">A W S E D F T G Y H U J</p>
+  </div>
+
+  <aside class="panel">
+    <section>
+      <h2>Load a performance</h2>
+      <div class="loaders">
+        <label class="filebtn" title="Load a MIDI file. Load more to layer them from the same zero.">Load MIDI<input type="file" id="midi-file" accept=".mid,.midi,audio/midi" hidden></label>
+        <label class="filebtn">Load audio<input type="file" id="audio-file" accept="audio/*" hidden></label>
+      </div>
+      <p id="file-info"></p>
+
+      <p class="sublabel">View</p>
+      <button class="wide" id="helix" title="Fold the octaves together, or stack them">Wheel</button>
+
+      <p class="sublabel">Rings</p>
+      <button class="wide" id="rings" title="One wheel for everything, or one per track">Combined</button>
+
+      <p class="sublabel">Draw</p>
+      <div class="layers" id="draw-layers">
+        <label title="Note names around the wheel"><input type="checkbox" id="lay-names" checked> Labels</label>
+        <label title="The circle the twelve sit on"><input type="checkbox" id="lay-ring" checked> Ring</label>
+        <label title="Nodes that are not sounding"><input type="checkbox" id="lay-rest" checked> Idle</label>
+        <label title="Notes as they sound"><input type="checkbox" id="lay-solo" checked> Notes</label>
+        <label title="The inferred tonal weight of the current bar"><input type="checkbox" id="lay-form" checked> Form</label>
+        <label title="The melodic path, which fades"><input type="checkbox" id="lay-trail" checked> Path</label>
+      </div>
+
+      <div id="player" class="hidden">
+        <div class="transport">
+          <button class="wide" id="playpause">Play</button>
+          <div class="steprow">
+            <button class="step" id="step-back" title="Previous note">&#9664;|</button>
+            <button class="step" id="step-fwd" title="Next note">|&#9654;</button>
+            <button class="step wide2" id="snapshot" title="Save the wheel as a PNG">Snapshot</button>
+          </div>
+        </div>
+        <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Position" />
+        <div class="times"><span id="t-now">0:00</span><span id="t-end">0:00</span></div>
+
+        <p class="sublabel">Speed <b id="rate-val">1.00&times;</b></p>
+        <input type="range" id="rate" min="5" max="150" value="100" aria-label="Playback speed" />
+
+        <p class="sublabel">Tracks</p>
+        <div id="tracks"></div>
+
+        <div class="slider-row hidden" id="audio-row">
+          <label for="offset">Audio offset <b id="offset-val">0.00 s</b></label>
+          <input type="range" id="offset" min="-5000" max="5000" value="0" />
+          <label for="vol">Recording level</label>
+          <input type="range" id="vol" min="0" max="100" value="80" />
+        </div>
+
+        <p class="sublabel">Weighting</p>
+        <div class="chips tight" id="weighting"></div>
+  
+        <div id="analysis"></div>
+      </div>
+    </section>
+
+    <section id="range-sec" class="hidden">
+      <h2>Harmony range</h2>
+      <div id="range"></div>
+      <div class="pinrow">
+        <button class="step wide2" id="pin">Pin for comparison</button>
+        <button class="step" id="unpin" title="Clear pinned fingerprints">Clear</button>
+      </div>
+      <div id="pins"></div>
+    </section>
+
+    <section>
+
+    <section>
+      <h2>Chromatic synthesizer</h2>
+
+      <div class="chips" id="intervals"></div>
+      <div class="dirrow">
+        <button class="step wide2" id="dir" title="Walk the class the other way">Ascending</button>
+        <span id="figure-count"></span>
+      </div>
+
+      <p class="sublabel">Root note <b id="root-name">C</b></p>
+      <div id="roots" class="rootgrid"></div>
+
+      <p class="sublabel">Label</p>
+      <div class="chips tight" id="naming"></div>
+
+      <p class="sublabel">Waveform</p>
+      <div id="waves" class="wavegrid"></div>
+
+      <div class="synthrow">
+        <div>
+          <p class="sublabel">Start octave</p>
+          <div class="stepper">
+            <button id="oct-down" aria-label="Octave down">&minus;</button>
+            <b id="oct-val">4</b>
+            <button id="oct-up" aria-label="Octave up">+</button>
+          </div>
+        </div>
+        <div>
+          <p class="sublabel">Reverb</p>
+          <label class="switch"><input type="checkbox" id="reverb"><span></span></label>
+        </div>
+      </div>
+      <p class="sublabel">Live input</p>
+      <button class="wide" id="midi">Connect MIDI</button>
+      <span id="midi-info"></span>
+
+    </section>
+
+</aside>
+
+</div>
+</body>
+</html>

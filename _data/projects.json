@@ -78,7 +78,7 @@
     "years": "2018–2023",
     "status": "preserved",
     "line": "Twelve pieces played once around the color wheel, with live MIDI from acoustic instruments driving mixed-reality visuals. Hoag Hall, CSU-Pueblo, 28 November 2021.",
-    "inherits": "A recital about innovation in jazz, and a question about what a visualisation is for.",
+    "inherits": "A recital about innovation in jazz, and a question about what a visualization is for.",
     "refuses": "The assumption that one representation is the correct one.",
     "href": "/work/portraits-of-change/",
     "image": "/images/portraits/fig20-beta-headset.jpg",
@@ -107,6 +107,41 @@
     "links": []
   },
   {
+    "id": "12-node-theory",
+    "title": "12-Node Theory",
+    "site": "stage",
+    "years": "2019–",
+    "status": "active",
+    "line": "The chromatic wheel as an instrument, where color and pitch are one axis. Hear all seventeen interval figures, play it from a MIDI keyboard, load your own performance, and watch what each step of analysis throws away.",
+    "inherits": "The 2019 theory paper behind Portraits of Change: twelve colors and twelve pitch classes sharing one set of intervals.",
+    "refuses": "Shipping music. Load your own MIDI; nothing is uploaded and nothing is bundled.",
+    "href": "/instruments/12-node-theory/",
+    "image": "/images/instruments/12-node-theory.jpg",
+    "tags": [
+      "Music theory",
+      "Instrument",
+      "Web Audio"
+    ],
+    "links": []
+  },
+  {
+    "id": "modular-music-box",
+    "title": "The Modular Music Box",
+    "site": "stage",
+    "years": "2025",
+    "status": "preserved",
+    "line": "An audiovisual instrument for harmony and geometry. Generate notes from a scale, or build harmonies by stacking intervals.",
+    "inherits": "The twelve-node chromatic wheel, where color and interval carry the same arithmetic.",
+    "refuses": "Decorative color. A tritone comes out neutral because the arithmetic says it must.",
+    "href": "/work/musicbox/",
+    "image": "/images/pic05.jpg",
+    "tags": [
+      "Audiovisual",
+      "Web Audio"
+    ],
+    "links": []
+  },
+  {
     "id": "conductor-ar",
     "title": "ConductorAR",
     "site": "stage",
@@ -129,7 +164,7 @@
     "site": "stage",
     "years": "2020–2021",
     "status": "preserved",
-    "line": "A VR tool for practising standard conducting patterns in the space you conduct in, rather than from a diagram in a textbook.",
+    "line": "A VR tool for practicing standard conducting patterns in the space you conduct in, rather than from a diagram in a textbook.",
     "inherits": "Conservatory pedagogy that assumes an instructor in the room.",
     "refuses": "Grading the gesture. It shows the pattern; it does not score the student.",
     "href": "/work/conductvr/",
@@ -154,23 +189,6 @@
     "tags": [
       "XR",
       "Tool"
-    ],
-    "links": []
-  },
-  {
-    "id": "modular-music-box",
-    "title": "The Modular Music Box",
-    "site": "stage",
-    "years": "2025",
-    "status": "preserved",
-    "line": "An audiovisual instrument for harmony and geometry. Generate notes from a scale, or build harmonies by stacking intervals.",
-    "inherits": "The twelve-node chromatic wheel, where colour and interval carry the same arithmetic.",
-    "refuses": "Decorative colour. A tritone comes out neutral because the arithmetic says it must.",
-    "href": "/work/musicbox/",
-    "image": "/images/pic05.jpg",
-    "tags": [
-      "Audiovisual",
-      "Web Audio"
     ],
     "links": []
   },

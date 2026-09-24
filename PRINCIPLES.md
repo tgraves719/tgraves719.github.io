@@ -82,6 +82,10 @@ either honest or not.
   being told a story about it.
 - Titles are named, not linked, until the thing they name can actually be opened.
 - No console narration. A reader who opens developer tools on this site finds it quiet.
+- American spelling in the site's own copy — *color, labor, normalize* — because the
+  work is American and so is its reader; a union page that says *labour* reads as
+  written by someone else. Quotations keep their source's spelling, and a vendored
+  instrument keeps its own.
 
 **Where it caught something**
 
