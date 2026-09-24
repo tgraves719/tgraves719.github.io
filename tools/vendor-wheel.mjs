@@ -57,15 +57,16 @@ while (pending.length) {
   for (const m of js.matchAll(/["']\.\/([\w.-]+\.(?:js|css))["']/g)) pending.push("assets/" + m[1]);
 }
 
-// 4. The page's one outbound link says "Threshold" and points at "/". On this
-//    site "/" is the portfolio's front page and there is no threshold, so the
-//    link says where it actually goes.
+// 4. The page's one outbound link says "Threshold" and points at "/". Here it
+//    returns to the instrument's about page, and targets the top window: the
+//    instrument also runs embedded in that page, where a plain link would load
+//    the whole site inside the frame.
 const back = '<a class="back" href="/">&larr; Threshold</a>';
 if (!html.includes(back)) {
   console.error("The wheel's back link has changed; update step 4 of this script before vendoring.");
   process.exit(1);
 }
-html = html.replace(back, '<a class="back" href="/work/">&larr; Thomas J Graves</a>');
+html = html.replace(back, '<a class="back" href="/work/12-node-theory/" target="_top">&larr; Thomas J Graves</a>');
 
 // 5. Replace the vendored copy wholesale, so nothing stale survives.
 rmSync(dest, { recursive: true, force: true });
@@ -83,7 +84,8 @@ Do not edit these files. Change the source in \`unfaithfulcyborgs/src/wheel\` (a
 \`src/data\`, \`src/mark\`), then re-run the script.
 
 One change is made to the built page: its back link, which read "← Threshold" and
-pointed at the Cyborgs front page, reads "← Thomas J Graves" and points at /work/.
+pointed at the Cyborgs front page, reads "← Thomas J Graves", points at
+/work/12-node-theory/, and targets the top window (the page also runs embedded there).
 
 Files: index.html (built from wheel.html), ${[...need].sort().join(", ")}.
 `);

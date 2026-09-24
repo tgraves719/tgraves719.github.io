@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modular Music Box</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000; /* Black background */
+            color: #f3f4f6; /* Tailwind gray-100 */
+        }
+        canvas {
+            display: block;
+            background-color: #000000; /* Black background */
+            border-radius: 0.5rem;
+            cursor: crosshair;
+        }
+        .control-panel {
+            background-color: rgba(10, 10, 10, 0.8); /* Dark neutral glass background */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(55, 65, 81, 0.5); /* gray-700 with opacity */
+            position: relative; /* Needed for absolute positioning of the toggle button */
+        }
+        /* Custom styles for the minimalist range slider */
+        input[type="range"].minimal-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 2px; /* Thin white line for the track */
+            background: #ffffff; /* White track */
+            border-radius: 1px;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        input[type="range"].minimal-slider:hover {
+            opacity: 1;
+        }
+        input[type="range"].minimal-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 4px; /* Width of the vertical line thumb */
+            height: 28px; /* Height of the vertical line thumb */
+            background: #ffffff; /* White thumb */
+            cursor: pointer;
+            border-radius: 1px;
+        }
+        input[type="range"].minimal-slider::-moz-range-thumb {
+            width: 4px;
+            height: 28px;
+            background: #ffffff;
+            cursor: pointer;
+            border-radius: 1px;
+            border: none;
+        }
+        /* Custom style for the select dropdown */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.25em 1.25em;
+            padding-right: 2.5rem;
+        }
+        select option {
+            background-color: #111827;
+        }
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+            align-items: start; 
+        }
+        /* Style for the active state of the toggle buttons */
+        .toggle-btn.active {
+            background-color: #d1d5db; /* Tailwind gray-300 */
+            color: #000000;
+        }
+        /* Responsive adjustments for larger screens */
+        @media (min-width: 768px) { /* md breakpoint */
+            .control-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- Audio start overlay to handle browser autoplay policies -->
+    <div id="audio-start-overlay" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 transition-opacity duration-500">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Modular Music Box</h1>
+        <p class="text-gray-400 mb-8">Click below to start the audio engine.</p>
+        <button id="start-audio-btn" class="bg-white text-black font-semibold text-lg px-8 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+            Begin
+        </button>
+    </div>
+
+    <div class="w-full max-w-5xl mx-auto text-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Modular Music Box</h1>
+        <p class="text-gray-400 mb-6">An audiovisual instrument for exploring harmony and geometry.</p>
+    </div>
+    
+    <!-- Main control hub with new buttons and icons -->
+    <div class="w-full max-w-md mb-4 flex items-center justify-center gap-4">
+        <button id="synthesizerToggle" class="toggle-btn text-white border border-white rounded-lg px-4 py-2 text-sm hover:bg-white hover:text-black transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Synthesizer
+        </button>
+        <button id="identifierToggle" class="toggle-btn text-white border border-white rounded-lg px-4 py-2 text-sm hover:bg-white hover:text-black transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Identifier
+        </button>
+        <select id="presetSelector" class="flex-1 bg-transparent border border-white text-white text-sm rounded-lg focus:ring-white focus:border-white block w-full p-2 text-center"></select>
+    </div>
+    
+    <div id="app-body" class="w-full flex-grow flex flex-col items-center justify-center">
+        <div id="top-panel-slot" class="w-full max-w-6xl mb-4"></div>
+        <div id="middle-content" class="flex flex-row w-full justify-center items-center flex-grow">
+            <div id="left-column" class="hidden flex-col items-center mr-4">
+                <div id="left-panel-slot"></div>
+                <div id="left-slider-slot" class="w-full max-w-xs mt-8"></div>
+            </div>
+            <div id="canvas-and-sliders-wrapper" class="flex-grow flex flex-col items-center max-w-4xl w-full">
+                <canvas id="musicBoxCanvas" class="w-full aspect-square"></canvas>
+                <div id="bottom-slider-slot" class="w-full max-w-2xl mt-8">
+                    <!-- Sliders will start here -->
+                </div>
+            </div>
+            <div id="right-column" class="hidden flex-col items-center ml-4">
+                <div id="right-panel-slot"></div>
+                <div id="right-slider-slot" class="w-full max-w-xs mt-8"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- This is the synth panel that will be moved around the DOM -->
+    <div id="controls" class="control-panel w-full max-w-6xl p-3 md:p-4 rounded-lg hidden">
+        <button id="panelToggleRight" class="absolute text-white border border-white rounded-md p-0.5 hover:bg-white hover:text-black transition-colors">
+            <!-- SVG icon will be populated by JS -->
+        </button>
+        <button id="panelToggleLeft" class="absolute text-white border border-white rounded-md p-0.5 hover:bg-white hover:text-black transition-colors">
+            <!-- SVG icon will be populated by JS -->
+        </button>
+        <div class="control-grid">
+            
+            <div class="flex flex-col items-center space-y-2">
+                <label class="text-sm text-gray-300">Waveform</label>
+                <div id="waveTypeSelector" class="grid grid-cols-2 gap-1 p-1 bg-gray-900/50 rounded-lg"></div>
+            </div>
+
+            <div class="flex flex-col items-center space-y-2">
+                <label class="text-sm text-gray-300">Root Note</label>
+                <div id="keySelector" class="grid grid-cols-4 gap-1 p-1 bg-gray-900/50 rounded-lg"></div>
+            </div>
+            
+            <!-- Grouped Octave Controls -->
+            <div class="flex flex-col items-center space-y-4">
+                <div class="flex flex-col items-center space-y-2">
+                    <label class="text-sm text-gray-300">Start Octave</label>
+                    <div class="flex items-center justify-center gap-2 p-1 bg-gray-900/50 rounded-lg">
+                        <button id="octaveDown" class="px-2 py-0.5 rounded-md bg-gray-700 hover:bg-gray-600">-</button>
+                        <span id="startOctaveDisplay" class="text-base font-semibold w-8 text-center">4</span>
+                        <button id="octaveUp" class="px-2 py-0.5 rounded-md bg-gray-700 hover:bg-gray-600">+</button>
+                    </div>
+                </div>
+                <div id="numOctavesControls" class="flex flex-col items-center space-y-2">
+                    <label class="text-sm text-gray-300">Octaves</label>
+                    <div class="flex items-center justify-center gap-2 p-1 bg-gray-900/50 rounded-lg">
+                        <button id="numOctavesDown" class="px-2 py-0.5 rounded-md bg-gray-700 hover:bg-gray-600">-</button>
+                        <span id="numOctavesDisplay" class="text-base font-semibold w-8 text-center">2</span>
+                        <button id="numOctavesUp" class="px-2 py-0.5 rounded-md bg-gray-700 hover:bg-gray-600">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col items-center space-y-2">
+                 <label class="text-sm text-gray-300">Generator</label>
+                 <div id="generatorSelector" class="grid grid-cols-1 gap-1 p-1 bg-gray-900/50 rounded-lg"></div>
+            </div>
+            <div id="scaleControls" class="flex flex-col items-center space-y-2">
+                <label for="scaleSelector" class="text-sm text-gray-300">Scale</label>
+                <select id="scaleSelector" class="bg-transparent border border-white text-white text-xs rounded-lg focus:ring-white focus:border-white block w-full p-2"></select>
+            </div>
+            <div id="intervalControls" class="flex flex-col items-center space-y-2 hidden">
+                <label for="intervalSelector" class="text-sm text-gray-300">Interval</label>
+                <select id="intervalSelector" class="bg-transparent border border-white text-white text-xs rounded-lg focus:ring-white focus:border-white block w-full p-2"></select>
+                <div id="steps-slot-vertical" class="w-full"></div> 
+            </div>
+            <div id="stepsControls" class="flex flex-col items-center space-y-2 hidden">
+                <label id="stepsLabel" class="text-sm text-gray-300">Steps</label>
+                <div class="flex items-center justify-center gap-2 p-1 bg-gray-900/50 rounded-lg">
+                    <button id="stepsDown" class="px-2 py-0.5 rounded-md bg-gray-700 hover:bg-gray-600">-</button>
+                    <span id="stepsDisplay" class="text-base font-semibold w-8 text-center">11</span>
+                    <button id="stepsUp" class="px-2 py-0.5 rounded-md bg-gray-700 hover:bg-gray-600">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="w-full flex items-center justify-center flex-wrap gap-3 md:gap-6 mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-700">
+            <div class="flex flex-col items-center justify-center">
+                <label for="reverbToggle" class="text-sm text-gray-300 mb-2">Reverb</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="reverbToggle" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-400"></div>
+                </label>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+                <label for="glowToggle" class="text-sm text-gray-300 mb-2">Glow</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="glowToggle" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-400"></div>
+                </label>
+            </div>
+             <div class="flex flex-col items-center justify-center">
+                <label for="trailToggle" class="text-sm text-gray-300 mb-2">Trail</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="trailToggle" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-400"></div>
+                </label>
+            </div>
+             <div class="flex flex-col items-center justify-center">
+                <label for="sizeToggle" class="text-sm text-gray-300 mb-2">Size by Dist</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="sizeToggle" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-400"></div>
+                </label>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+                <label for="radiusToggle" class="text-sm text-gray-300 mb-2">Radius</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="radiusToggle" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-400"></div>
+                </label>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+                <label for="lineColorToggle" class="text-sm text-gray-300 mb-2">Line Color</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="lineColorToggle" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-400"></div>
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <!-- This container holds the sliders and will be moved around the DOM -->
+    <div id="horizontal-slider-container" class="w-full p-4 space-y-4"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const canvas = document.getElementById('musicBoxCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Overlay elements for starting audio context
+            const audioOverlay = document.getElementById('audio-start-overlay');
+            const startAudioBtn = document.getElementById('start-audio-btn');
+
+            const waveTypeSelectorContainer = document.getElementById('waveTypeSelector');
+            const keySelectorContainer = document.getElementById('keySelector');
+            const octaveDownBtn = document.getElementById('octaveDown');
+            const octaveUpBtn = document.getElementById('octaveUp');
+            const startOctaveDisplay = document.getElementById('startOctaveDisplay');
+            const generatorSelectorContainer = document.getElementById('generatorSelector');
+            const glowToggle = document.getElementById('glowToggle');
+            const trailToggle = document.getElementById('trailToggle');
+            const sizeToggle = document.getElementById('sizeToggle');
+            const radiusToggle = document.getElementById('radiusToggle');
+            const lineColorToggle = document.getElementById('lineColorToggle');
+            const reverbToggle = document.getElementById('reverbToggle');
+            const allControls = document.getElementById('controls');
+            const synthesizerToggle = document.getElementById('synthesizerToggle');
+            const presetSelector = document.getElementById('presetSelector');
+            const hSliderContainer = document.getElementById('horizontal-slider-container');
+            const topPanelSlot = document.getElementById('top-panel-slot');
+            const middleContent = document.getElementById('middle-content');
+
+            // New layout slots
+            const bottomSliderSlot = document.getElementById('bottom-slider-slot');
+            const rightColumn = document.getElementById('right-column');
+            const rightPanelSlot = document.getElementById('right-panel-slot');
+            const rightSliderSlot = document.getElementById('right-slider-slot');
+            const leftColumn = document.getElementById('left-column');
+            const leftPanelSlot = document.getElementById('left-panel-slot');
+            const leftSliderSlot = document.getElementById('left-slider-slot');
+
+            // Panel toggle buttons
+            const panelToggleRight = document.getElementById('panelToggleRight');
+            const panelToggleLeft = document.getElementById('panelToggleLeft');
+
+            // New Identifier button
+            const identifierToggle = document.getElementById('identifierToggle');
+
+            // New Octave Stepper elements
+            const numOctavesDownBtn = document.getElementById('numOctavesDown');
+            const numOctavesUpBtn = document.getElementById('numOctavesUp');
+            const numOctavesDisplay = document.getElementById('numOctavesDisplay');
+            const numOctavesControls = document.getElementById('numOctavesControls');
+
+            // New Steps Stepper elements
+            const stepsDownBtn = document.getElementById('stepsDown');
+            const stepsUpBtn = document.getElementById('stepsUp');
+            const stepsDisplay = document.getElementById('stepsDisplay');
+
+            // --- Contextual controls ---
+            const scaleControls = document.getElementById('scaleControls');
+            const intervalControls = document.getElementById('intervalControls');
+            const stepsControls = document.getElementById('stepsControls');
+            const stepsSlotVertical = document.getElementById('steps-slot-vertical');
+            const controlGrid = document.querySelector('.control-grid');
+            const stepsLabel = document.getElementById('stepsLabel');
+            // Contextual selectors
+            const scaleSelector = document.getElementById('scaleSelector');
+            const intervalSelector = document.getElementById('intervalSelector');
+            
+            // --- State & Config Variables ---
+            let animationId;
+            let audioInitialized = false;
+            let isGlowEnabled = true;
+            let isTrailEnabled = true;
+            let isSizeByDistanceEnabled = true;
+            let isRadiusMode = true;
+            let isLineColorEnabled = true;
+            let showChordId = false;
+            let masterSpeed = 0;
+            let triggerAngle = -Math.PI / 2;
+            let prevTriggerAngle = -Math.PI / 2;
+            let currentGeneratorMode = 'scale';
+            let currentKeyIndex = 0;
+            let startOctave = 4;
+            let currentScaleName = 'Major Pentatonic';
+            let numOctaves = 2;
+            let currentInterval = 7;
+            let numSteps = 11;
+            let numPoints = 10;
+            const points = [];
+            let hoveredPoint = null;
+            let currentChordInterpretations = [];
+            let isHoveringIdentifier = false;
+            let identifierBox = { x: 0, y: 0, w: 0, h: 0 };
+            let mousePos = { x: 0, y: 0 };
+            let volume = -17;
+            let panelPosition = 'top'; // 'top', 'right', 'left'
+            let isDraggingLine = false;
+
+            const arrowRightIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>`;
+            const arrowUpIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 11l7-7 7 7M12 4v18" /></svg>`;
+            const arrowLeftIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" /></svg>`;
+            
+            const allNoteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            
+            const scales = {
+                'Major Pentatonic': [0, 2, 4, 7, 9], 'Minor Pentatonic': [0, 3, 5, 7, 10], 'Ionian (Major)': [0, 2, 4, 5, 7, 9, 11],
+                'Dorian': [0, 2, 3, 5, 7, 9, 10], 'Phrygian': [0, 1, 3, 5, 7, 8, 10], 'Lydian': [0, 2, 4, 6, 7, 9, 11],
+                'Mixolydian': [0, 2, 4, 5, 7, 9, 10], 'Aeolian (Minor)': [0, 2, 3, 5, 7, 8, 10], 'Locrian': [0, 1, 3, 5, 6, 8, 10],
+                'Whole Tone': [0, 2, 4, 6, 8, 10], 'Chromatic': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            };
+            
+            const intervals = {
+                'Minor 2nd (IC1)': 1, 'Major 2nd (IC2)': 2, 'Minor 3rd (IC3)': 3, 'Major 3rd (IC4)': 4,
+                'Perfect 4th (IC5)': 5, 'Tritone (IC6)': 6, 'Perfect 5th (IC5)': 7, 'Minor 6th (IC4)': 8,
+                'Major 6th (IC3)': 9, 'Minor 7th (IC2)': 10, 'Major 7th (IC1)': 11
+            };
+            
+            const defaultPreset = {
+                name: 'Default',
+                generator: 'scale',
+                scale: 'Major Pentatonic',
+                key: 0,
+                startOctave: 4,
+                octaves: 2,
+                interval: 7,
+                steps: 11,
+                glow: true,
+                trail: true,
+                radius: true,
+                lineColor: true,
+                sizeByDistance: true,
+                reverb: false,
+            };
+
+            const presets = {
+                'default': defaultPreset,
+                'classicWhitney': {
+                    name: 'Classic Whitney',
+                    generator: 'scale',
+                    scale: 'Chromatic',
+                    key: 0,
+                    startOctave: 4,
+                    octaves: 4,
+                    interval: 7,
+                    steps: 11,
+                    glow: false,
+                    trail: false,
+                    radius: false,
+                    lineColor: false,
+                    sizeByDistance: true,
+                    reverb: false,
+                },
+                'custom': { name: 'Custom' }
+            };
+
+            const noteToChromaticIndex = {
+                'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4,
+                'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9, 
+                'A#': 10, 'Bb': 10, 'B': 11
+            };
+
+            const baseNodeColors = [
+                '#ff0000', '#ff8000', '#ffff00', '#80ff00', '#00ff00', '#00ff80',
+                '#00ffff', '#0080ff', '#0000ff', '#8000ff', '#ff00ff', '#ff0080'
+            ];
+
+            // --- Audio Setup (Tone.js) ---
+            const reverb = new Tone.Reverb({ decay: 4, wet: 0.2, preDelay: 0.1 });
+            const synth = new Tone.PolySynth(Tone.Synth, {
+                maxPolyphony: 32,
+                oscillator: { type: 'sine' },
+                envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 1 }
+            }).toDestination();
+            Tone.Master.volume.value = volume;
+
+            // --- Canvas and Drawing Setup ---
+            let width, height, center_x, center_y, max_radius;
+
+            function setupCanvas() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
+                ctx.scale(dpr, dpr);
+                width = canvas.clientWidth;
+                height = canvas.clientHeight;
+                center_x = width / 2;
+                center_y = height / 2;
+                max_radius = Math.min(width, height) * 0.45;
+                
+                // Scale existing points instead of re-initializing
+                if (points.length > 0) {
+                    const startRadius = max_radius * 0.2;
+                    const endRadius = max_radius * 0.95;
+                    const effectiveRadius = endRadius - startRadius;
+                    points.forEach((point, i) => {
+                        point.radius = startRadius + effectiveRadius * (i / (points.length - 1));
+                    });
+                }
+                
+                draw();
+            }
+
+            // --- Point Initialization ---
+            function initializePoints() {
+                points.length = 0;
+                let noteList = generateNoteList();
+                numPoints = noteList.length;
+
+                const startRadius = max_radius * 0.2; // Start further from the center
+                const endRadius = max_radius * 0.95; // End closer to the edge
+                const effectiveRadius = endRadius - startRadius;
+
+                for (let i = 0; i < numPoints; i++) {
+                    const startAngle = -Math.PI / 2;
+                    points.push({
+                        radius: startRadius + effectiveRadius * (i / (numPoints - 1)),
+                        speed: (i + 1) * (0.008 / numPoints),
+                        angle: startAngle,
+                        prevAngle: startAngle,
+                        note: noteList[i],
+                        color: '#ffffff', // Placeholder
+                        size: 8, // Placeholder
+                        isPlaying: false // Add state for sustain
+                    });
+                }
+                updatePointProperties();
+            }
+
+            function generateNoteList() {
+                let noteList = [];
+                if (currentGeneratorMode === 'scale') {
+                    const scaleIntervals = scales[currentScaleName];
+                    for (let oct = 0; oct < numOctaves; oct++) {
+                        for (const interval of scaleIntervals) {
+                            const totalSemitones = currentKeyIndex + interval;
+                            const noteIndex = totalSemitones % 12;
+                            noteList.push(allNoteNames[noteIndex] + (startOctave + oct));
+                        }
+                    }
+                } else if (currentGeneratorMode === 'intervalCell') {
+                    for (let oct = 0; oct < numOctaves; oct++) {
+                        const baseMidiNote = (startOctave + oct) * 12 + currentKeyIndex;
+                        for (let i = 0; i <= numSteps; i++) {
+                            const totalSemitones = baseMidiNote + (currentInterval * i);
+                            const noteIndex = totalSemitones % 12;
+                            const octaveNumber = Math.floor(totalSemitones / 12);
+                            noteList.push(allNoteNames[noteIndex] + octaveNumber);
+                        }
+                    }
+                } else { // 'intervalStack' mode
+                    for (let i = 0; i <= numSteps; i++) {
+                        const totalSemitones = currentKeyIndex + (currentInterval * i);
+                        const noteIndex = totalSemitones % 12;
+                        const octave = startOctave + Math.floor(totalSemitones / 12);
+                        noteList.push(allNoteNames[noteIndex] + octave);
+                    }
+                }
+                return noteList;
+            }
+
+
+            function updatePointProperties() {
+                const minSize = 4; // Increased minimum size
+                const maxSize = 14; // Increased maximum size
+                let noteList = generateNoteList();
+
+                points.forEach((point, i) => {
+                    if (i >= noteList.length) return; // Safeguard
+                    
+                    const note = noteList[i];
+                    point.note = note;
+                    const noteName = note.replace(/[0-9]/g, '');
+                    const chromaticIndex = noteToChromaticIndex[noteName];
+                    point.color = baseNodeColors[chromaticIndex % 12];
+
+                    if (isSizeByDistanceEnabled) {
+                        point.size = numPoints > 1 ? minSize + (maxSize - minSize) * (i / (numPoints - 1)) : (minSize + maxSize) / 2;
+                    } else {
+                        const noteOctave = parseInt(note.slice(-1), 10);
+                        const totalOctaves = 9; // Assuming max octave 8 + C at 9
+                        const pitchRatio = (noteToChromaticIndex[noteName] + (noteOctave * 12)) / (totalOctaves * 12);
+                        point.size = minSize + (maxSize - minSize) * pitchRatio;
+                    }
+                });
+            }
+
+
+            // --- Main Animation Loop ---
+            function animate() {
+                update();
+                draw();
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            function update() {
+                if (masterSpeed !== 0) {
+                    points.forEach(point => {
+                        point.angle += point.speed * masterSpeed;
+                    });
+                }
+                checkSustain();
+                if (showChordId) {
+                    analyzeChord();
+                }
+            }
+
+            function checkSustain() {
+                points.forEach(point => {
+                    const pointX = center_x + point.radius * Math.cos(point.angle);
+                    const pointY = center_y + point.radius * Math.sin(point.angle);
+                    const vecPoint = { x: pointX - center_x, y: pointY - center_y };
+                    const vecLine = { x: Math.cos(triggerAngle), y: Math.sin(triggerAngle) };
+                    const dot = vecPoint.x * vecLine.x + vecPoint.y * vecLine.y;
+                    let closestX, closestY;
+                    if (isRadiusMode) {
+                        const clampedDot = Math.max(0, dot);
+                        closestX = center_x + clampedDot * vecLine.x;
+                        closestY = center_y + clampedDot * vecLine.y;
+                    } else {
+                        closestX = center_x + dot * vecLine.x;
+                        closestY = center_y + dot * vecLine.y;
+                    }
+                    const distSq = (pointX - closestX)**2 + (pointY - closestY)**2;
+                    const isTouching = distSq < point.size**2;
+
+                    if (isTouching && !point.isPlaying) {
+                        if (audioInitialized) synth.triggerAttack(point.note);
+                        point.isPlaying = true;
+                    } else if (!isTouching && point.isPlaying) {
+                        if (audioInitialized) synth.triggerRelease(point.note);
+                        point.isPlaying = false;
+                    }
+                });
+            }
+
+            function draw() {
+                if (isTrailEnabled) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+                } else {
+                    ctx.fillStyle = '#000000';
+                }
+                ctx.fillRect(0, 0, width, height);
+                
+                const lineColor = isLineColorEnabled ? baseNodeColors[currentKeyIndex] : 'rgba(255, 255, 255, 0.8)';
+                if (isGlowEnabled) {
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = lineColor;
+                }
+                ctx.strokeStyle = lineColor;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                const lineRadius = max_radius; // Constrain line to circle radius
+                if (isRadiusMode) {
+                    ctx.moveTo(center_x, center_y);
+                    ctx.lineTo(center_x + Math.cos(triggerAngle) * lineRadius, center_y + Math.sin(triggerAngle) * lineRadius);
+                } else {
+                    ctx.moveTo(center_x + Math.cos(triggerAngle) * lineRadius, center_y + Math.sin(triggerAngle) * lineRadius);
+                    ctx.lineTo(center_x - Math.cos(triggerAngle) * lineRadius, center_y - Math.sin(triggerAngle) * lineRadius);
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                const brightness = (volume + 40) / 40; // Adjusted for new volume range
+                
+                points.forEach(point => {
+                    const x = center_x + point.radius * Math.cos(point.angle);
+                    const y = center_y + point.radius * Math.sin(point.angle);
+                    if (isGlowEnabled) {
+                        ctx.shadowBlur = 20;
+                        ctx.shadowColor = point.color;
+                    }
+                    
+                    // Convert hex to rgba to apply brightness
+                    const r = parseInt(point.color.slice(1, 3), 16);
+                    const g = parseInt(point.color.slice(3, 5), 16);
+                    const b = parseInt(point.color.slice(5, 7), 16);
+                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${brightness})`;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, point.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                });
+
+                // Draw note labels if Chord ID is active
+                if (showChordId) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.font = '12px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    points.forEach(point => {
+                        if (point.isPlaying) {
+                            const x = center_x + point.radius * Math.cos(point.angle);
+                            const y = center_y + point.radius * Math.sin(point.angle);
+                            ctx.fillText(point.note, x, y - point.size - 5);
+                        }
+                    });
+
+                    // Draw floating identifier
+                    const oppositeAngle = triggerAngle + Math.PI;
+                    const idX = center_x + (max_radius / 2) * Math.cos(oppositeAngle) + 15;
+                    const idY = center_y + (max_radius / 2) * Math.sin(oppositeAngle);
+                    
+                    const boxWidth = 240;
+                    const lineHeight = 18;
+                    const boxHeight = isHoveringIdentifier ? 10 + (currentChordInterpretations.length * lineHeight) : 50;
+                    identifierBox = { x: idX - 5, y: idY - 5, w: boxWidth, h: boxHeight };
+
+                    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                    ctx.fillRect(identifierBox.x, identifierBox.y, identifierBox.w, identifierBox.h);
+                    
+                    ctx.fillStyle = 'white';
+                    ctx.font = '14px monospace';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'top';
+
+                    if(isHoveringIdentifier && currentChordInterpretations.length > 0) {
+                        currentChordInterpretations.forEach((interp, index) => {
+                            ctx.fillText(`${index + 1}. ${interp.name} (${interp.confidence}%)`, idX, idY + (index * lineHeight));
+                        });
+                    } else if (currentChordInterpretations.length > 0) {
+                        ctx.fillText(`Set: ${currentChordInterpretations[0].pcs}`, idX, idY);
+                        ctx.fillText(`ID:  ${currentChordInterpretations[0].name}`, idX, idY + 20);
+                    } else {
+                        ctx.fillText(`Set: []`, idX, idY);
+                        ctx.fillText(`ID:  --`, idX, idY + 20);
+                    }
+                }
+
+                if (hoveredPoint && (!showChordId || (showChordId && !hoveredPoint.isPlaying))) {
+                    const x = center_x + hoveredPoint.radius * Math.cos(hoveredPoint.angle);
+                    const y = center_y + hoveredPoint.radius * Math.sin(hoveredPoint.angle);
+                    ctx.fillStyle = 'white';
+                    ctx.font = '14px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText(hoveredPoint.note, x, y - hoveredPoint.size - 5);
+                }
+            }
+
+            // --- Event Listeners ---
+            function handleStructuralChange() {
+                if(audioInitialized) synth.releaseAll();
+                initializePoints();
+                checkSustain(); // Check for newly triggered notes immediately
+                draw();
+            }
+
+            function handlePropertyChange() {
+                if(audioInitialized) {
+                    synth.releaseAll();
+                    // BUG FIX: Reset the isPlaying flag for all points after stopping them.
+                    points.forEach(p => p.isPlaying = false); 
+                }
+                updatePointProperties();
+                checkSustain(); // Immediately check for sustains after property change
+                draw();
+            }
+
+            async function oneTimeAudioInit() {
+                if (!audioInitialized) {
+                    try {
+                        await Tone.start();
+                        Tone.context.latencyHint = 'interactive';
+                        audioInitialized = true;
+                        console.log('Audio context started.');
+                        checkSustain();
+                        draw();
+                    } catch(e) {
+                        console.error("Could not start audio context: ", e);
+                    }
+                }
+            }
+            
+            // Replaced body listeners with a single button listener for the overlay
+            startAudioBtn.addEventListener('click', async () => {
+                await oneTimeAudioInit();
+                if (audioInitialized) {
+                    // Fade out the overlay
+                    audioOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        audioOverlay.classList.add('hidden');
+                    }, 500); // Corresponds to transition duration
+                } else {
+                    startAudioBtn.textContent = 'Audio Failed to Start';
+                    startAudioBtn.disabled = true;
+                }
+            });
+            
+            function getMousePos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                return { x, y };
+            }
+
+            function isNearLine(pos) {
+                const lineX1 = center_x + Math.cos(triggerAngle) * max_radius;
+                const lineY1 = center_y + Math.sin(triggerAngle) * max_radius;
+                const lineX2 = center_x - Math.cos(triggerAngle) * max_radius;
+                const lineY2 = center_y - Math.sin(triggerAngle) * max_radius;
+
+                const dx = lineX2 - lineX1;
+                const dy = lineY2 - lineY1;
+                const lenSq = dx*dx + dy*dy;
+                const t = ((pos.x - lineX1) * dx + (pos.y - lineY1) * dy) / lenSq;
+                const closestX = lineX1 + t * dx;
+                const closestY = lineY1 + t * dy;
+                const distSq = (pos.x - closestX)**2 + (pos.y - closestY)**2;
+                
+                return distSq < 25; // 5px tolerance
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                if (isNearLine(getMousePos(e))) {
+                    isDraggingLine = true;
+                }
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                isDraggingLine = false;
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                const pos = getMousePos(e);
+
+                // Always check for hovered points first
+                let foundPoint = false;
+                for (const point of points) {
+                    const x = center_x + point.radius * Math.cos(point.angle);
+                    const y = center_y + point.radius * Math.sin(point.angle);
+                    const distance = Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2));
+                    if (distance < point.size + 5) {
+                        hoveredPoint = point;
+                        foundPoint = true;
+                        break;
+                    }
+                }
+                if (!foundPoint) {
+                    hoveredPoint = null;
+                }
+                
+                if (isDraggingLine) {
+                    const dx = pos.x - center_x;
+                    const dy = pos.y - center_y;
+                    triggerAngle = Math.atan2(dy, dx);
+                    const degrees = (triggerAngle * 180 / Math.PI + 450) % 360;
+                    document.querySelectorAll('.angle-value').forEach(el => el.textContent = Math.round(degrees));
+                    document.querySelectorAll('[data-sync="angleSlider"]').forEach(el => el.value = degrees);
+                } else {
+                     if (isNearLine(pos)) {
+                        canvas.style.cursor = 'pointer';
+                    } else {
+                        canvas.style.cursor = 'crosshair';
+                    }
+                }
+            });
+
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                for (const point of points) {
+                    const x = center_x + point.radius * Math.cos(point.angle);
+                    const y = center_y + point.radius * Math.sin(point.angle);
+                    const distance = Math.sqrt(Math.pow(mouseX - x, 2) + Math.pow(mouseY - y, 2));
+                    if (distance < point.size) {
+                        if (audioInitialized) synth.triggerAttackRelease(point.note, '16n');
+                        break;
+                    }
+                }
+            });
+
+            canvas.addEventListener('mouseout', () => {
+                hoveredPoint = null;
+                isHoveringIdentifier = false;
+                isDraggingLine = false;
+            });
+
+            function syncAndHandle(handler) {
+                return (e) => {
+                    const value = e.target.value;
+                    document.querySelectorAll(`[data-sync='${e.target.dataset.sync}']`).forEach(el => el.value = value);
+                    handler(e);
+                }
+            }
+
+            const speedHandler = (e) => masterSpeed = parseFloat(e.target.value);
+            const angleHandler = (e) => {
+                const degrees = parseInt(e.target.value, 10);
+                document.querySelectorAll('.angle-value').forEach(el => el.textContent = degrees);
+                triggerAngle = (degrees - 90) * (Math.PI / 180);
+            };
+            const volumeHandler = (e) => {
+                volume = parseFloat(e.target.value);
+                Tone.Master.volume.value = volume;
+            };
+
+            reverbToggle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    synth.chain(reverb, Tone.Destination);
+                } else {
+                    synth.disconnect(reverb);
+                    synth.toDestination();
+                }
+                switchToCustom();
+            });
+            glowToggle.addEventListener('change', (e) => { isGlowEnabled = e.target.checked; draw(); switchToCustom(); });
+            trailToggle.addEventListener('change', (e) => { isTrailEnabled = e.target.checked; draw(); switchToCustom(); });
+            sizeToggle.addEventListener('change', (e) => { isSizeByDistanceEnabled = e.target.checked; handlePropertyChange(); switchToCustom(); });
+            radiusToggle.addEventListener('change', (e) => { isRadiusMode = e.target.checked; draw(); switchToCustom(); });
+            lineColorToggle.addEventListener('change', (e) => { isLineColorEnabled = e.target.checked; draw(); switchToCustom(); });
+            
+            // New listener for the Identifier button
+            identifierToggle.addEventListener('click', () => {
+                showChordId = !showChordId;
+                identifierToggle.classList.toggle('active');
+                draw();
+            });
+            
+            scaleSelector.addEventListener('change', (e) => { currentScaleName = e.target.value; handleStructuralChange(); switchToCustom(); });
+            intervalSelector.addEventListener('change', (e) => { currentInterval = parseInt(e.target.value, 10); handleStructuralChange(); switchToCustom(); });
+            
+            let resizeTimeout;
+            const debouncedSetupCanvas = () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(setupCanvas, 100);
+            }
+            window.addEventListener('resize', debouncedSetupCanvas);
+            
+            synthesizerToggle.addEventListener('click', () => {
+                allControls.classList.toggle('hidden');
+                synthesizerToggle.classList.toggle('active'); // Keep button active when panel is open
+                
+                if (!allControls.classList.contains('hidden')) {
+                    panelPosition = 'top'; // Default to top panel on open
+                }
+                updateLayout();
+            });
+            
+            function applyPreset(presetKey) {
+                if (presetKey === 'custom') return;
+                const preset = presets[presetKey];
+                
+                currentGeneratorMode = preset.generator;
+                updateActiveGeneratorButton();
+                
+                scaleSelector.value = preset.scale;
+                currentScaleName = preset.scale;
+                
+                currentKeyIndex = preset.key;
+                updateActiveKeyButton();
+
+                startOctave = preset.startOctave;
+                updateOctaveDisplay();
+
+                numOctaves = preset.octaves;
+                updateNumOctavesDisplay();
+                
+                glowToggle.checked = preset.glow;
+                isGlowEnabled = preset.glow;
+                
+                trailToggle.checked = preset.trail;
+                isTrailEnabled = preset.trail;
+
+                radiusToggle.checked = preset.radius;
+                isRadiusMode = preset.radius;
+
+                lineColorToggle.checked = preset.lineColor;
+                isLineColorEnabled = preset.lineColor;
+                
+                handleGeneratorChange();
+                handleStructuralChange();
+            }
+
+            presetSelector.addEventListener('change', (e) => {
+                applyPreset(e.target.value);
+            });
+
+            function switchToCustom() {
+                if (presetSelector.value !== 'custom') {
+                    presetSelector.value = 'custom';
+                }
+            }
+
+            // --- UI Population and Interaction ---
+            function populateWaveformSelector() {
+                const waveTypes = [
+                    { name: 'sine', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3 12.25c3.125-5.25 6.25-5.25 9.375 0s6.25 5.25 9.375 0" />' },
+                    { name: 'square', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3 12h6v-6h6v6h6" />' },
+                    { name: 'sawtooth', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3 18V6l18 12V6" />' },
+                    { name: 'triangle', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3 12l6-6l6 12l6-6" />' }
+                ];
+                waveTypeSelectorContainer.innerHTML = '';
+                waveTypes.forEach(wave => {
+                    const button = document.createElement('button');
+                    button.dataset.wave = wave.name;
+                    button.className = 'p-2.5 rounded-md transition-colors flex justify-center items-center';
+                    button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><title>${wave.name}</title>${wave.svg}</svg>`;
+                    button.addEventListener('click', () => {
+                        synth.set({ oscillator: { type: wave.name } });
+                        updateActiveWaveButton(wave.name);
+                        switchToCustom();
+                    });
+                    waveTypeSelectorContainer.appendChild(button);
+                });
+                updateActiveWaveButton('sine');
+            }
+
+            function updateActiveWaveButton(activeWave) {
+                waveTypeSelectorContainer.querySelectorAll('button').forEach(btn => {
+                    btn.classList.toggle('bg-gray-200', btn.dataset.wave === activeWave);
+                    btn.classList.toggle('text-black', btn.dataset.wave === activeWave);
+                    btn.classList.toggle('hover:bg-gray-700', btn.dataset.wave !== activeWave);
+                });
+            }
+
+            function populateKeySelector() {
+                keySelectorContainer.innerHTML = '';
+                allNoteNames.forEach((name, index) => {
+                    const button = document.createElement('button');
+                    button.dataset.keyIndex = index;
+                    button.textContent = name;
+                    button.className = 'p-2.5 rounded-md transition-colors text-xs font-semibold';
+                    button.addEventListener('click', () => {
+                        currentKeyIndex = index;
+                        updateActiveKeyButton();
+                        handlePropertyChange();
+                        draw(); // Redraw to update line color if active
+                        switchToCustom();
+                    });
+                    keySelectorContainer.appendChild(button);
+                });
+                updateActiveKeyButton();
+            }
+
+            function updateActiveKeyButton() {
+                keySelectorContainer.querySelectorAll('button').forEach(btn => {
+                    const index = parseInt(btn.dataset.keyIndex);
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                    btn.classList.remove('bg-gray-800');
+
+                    if (index === currentKeyIndex) {
+                        const color = baseNodeColors[index];
+                        btn.style.backgroundColor = color;
+                        // Check brightness for text color
+                        const r = parseInt(color.slice(1, 3), 16);
+                        const g = parseInt(color.slice(3, 5), 16);
+                        const b = parseInt(color.slice(5, 7), 16);
+                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                        btn.style.color = brightness > 128 ? 'black' : 'white';
+                    } else {
+                        btn.classList.add('bg-gray-800', 'hover:bg-gray-700');
+                    }
+                });
+            }
+
+            function setupOctaveStepper() {
+                octaveDownBtn.addEventListener('click', () => {
+                    if (startOctave > 0) {
+                        startOctave--;
+                        updateOctaveDisplay();
+                        handlePropertyChange();
+                        switchToCustom();
+                    }
+                });
+                octaveUpBtn.addEventListener('click', () => {
+                    if (startOctave < 8) {
+                        startOctave++;
+                        updateOctaveDisplay();
+                        handlePropertyChange();
+                        switchToCustom();
+                    }
+                });
+            }
+
+            function updateOctaveDisplay() {
+                startOctaveDisplay.textContent = startOctave;
+            }
+
+            function setupNumOctavesStepper() {
+                numOctavesDownBtn.addEventListener('click', () => {
+                    if (numOctaves > 1) {
+                        numOctaves--;
+                        updateNumOctavesDisplay();
+                        handleStructuralChange();
+                        switchToCustom();
+                    }
+                });
+                numOctavesUpBtn.addEventListener('click', () => {
+                    if (numOctaves < 8) {
+                        numOctaves++;
+                        updateNumOctavesDisplay();
+                        handleStructuralChange();
+                        switchToCustom();
+                    }
+                });
+            }
+
+            function updateNumOctavesDisplay() {
+                numOctavesDisplay.textContent = numOctaves;
+            }
+
+            function setupStepsStepper() {
+                stepsDownBtn.addEventListener('click', () => {
+                    if (numSteps > 1) {
+                        numSteps--;
+                        updateStepsDisplay();
+                        handleStructuralChange();
+                        switchToCustom();
+                    }
+                });
+                stepsUpBtn.addEventListener('click', () => {
+                    if (numSteps < 24) {
+                        numSteps++;
+                        updateStepsDisplay();
+                        handleStructuralChange();
+                        switchToCustom();
+                    }
+                });
+            }
+
+            function updateStepsDisplay() {
+                stepsDisplay.textContent = numSteps;
+            }
+
+            function populateGeneratorSelector() {
+                const generatorTypes = [
+                    { id: 'scale', name: 'Scale' },
+                    { id: 'intervalCell', name: 'Cell' },
+                    { id: 'intervalStack', name: 'Stack' }
+                ];
+                generatorSelectorContainer.innerHTML = '';
+                generatorTypes.forEach(type => {
+                    const button = document.createElement('button');
+                    button.dataset.generator = type.id;
+                    button.textContent = type.name;
+                    button.className = 'px-2 py-1.5 rounded-md transition-colors text-sm font-semibold';
+                    button.addEventListener('click', () => {
+                        currentGeneratorMode = type.id;
+                        updateActiveGeneratorButton();
+                        handleGeneratorChange();
+                        handleStructuralChange();
+                        switchToCustom();
+                    });
+                    generatorSelectorContainer.appendChild(button);
+                });
+                updateActiveGeneratorButton();
+            }
+
+            function updateActiveGeneratorButton() {
+                generatorSelectorContainer.querySelectorAll('button').forEach(btn => {
+                    btn.classList.toggle('bg-gray-200', btn.dataset.generator === currentGeneratorMode);
+                    btn.classList.toggle('text-black', btn.dataset.generator === currentGeneratorMode);
+                    btn.classList.toggle('hover:bg-gray-700', btn.dataset.generator !== currentGeneratorMode);
+                    btn.classList.toggle('bg-gray-800', btn.dataset.generator !== currentGeneratorMode);
+                });
+            }
+            
+            function handleGeneratorChange() {
+                const isScaleMode = currentGeneratorMode === 'scale';
+                const isCellMode = currentGeneratorMode === 'intervalCell';
+
+                if(isCellMode) {
+                    numSteps = 1;
+                    updateStepsDisplay();
+                    numOctaves = 3;
+                    updateNumOctavesDisplay();
+                }
+                
+                scaleControls.classList.toggle('hidden', !isScaleMode);
+                numOctavesControls.classList.toggle('hidden', !(isScaleMode || isCellMode));
+                intervalControls.classList.toggle('hidden', isScaleMode);
+                stepsControls.classList.toggle('hidden', isScaleMode);
+            }
+
+            function populateDropdowns() {
+                Object.keys(scales).forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    if (name === 'Major Pentatonic') option.selected = true;
+                    scaleSelector.appendChild(option);
+                });
+                
+                Object.entries(intervals).forEach(([name, value]) => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = name;
+                    if (value === 7) option.selected = true;
+                    intervalSelector.appendChild(option);
+                });
+
+                Object.keys(presets).forEach(key => {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = presets[key].name;
+                    presetSelector.appendChild(option);
+                });
+            }
+            
+            // --- Advanced Chord Analysis ---
+            const INTERVAL_NAMES = [
+                'Unison', 'Minor 2nd', 'Major 2nd', 'Minor 3rd', 'Major 3rd', 'Perfect 4th',
+                'Tritone', 'Perfect 5th', 'Minor 6th', 'Major 6th', 'Minor 7th', 'Major 7th'
+            ];
+
+            function analyzeChord() {
+                const playingNotes = points.filter(p => p.isPlaying);
+                const pitchClasses = [...new Set(playingNotes.map(p => noteToChromaticIndex[p.note.replace(/\d/g, '')]))].sort((a, b) => a - b);
+                
+                currentChordInterpretations = getChordInterpretations(playingNotes, pitchClasses);
+            }
+
+            function getChordInterpretations(playingNotes, pitchClasses) {
+                const pcsText = `[${pitchClasses.join(', ')}]`;
+                if (pitchClasses.length === 0) return [{ name: '--', pcs: pcsText, confidence: 100 }];
+                if (pitchClasses.length === 1) return [{ name: playingNotes[0].note, pcs: pcsText, confidence: 100 }];
+                if (pitchClasses.length === 2) {
+                    const interval = (pitchClasses[1] - pitchClasses[0] + 12) % 12;
+                    const inversion = (12 - interval) % 12;
+                    let name = 'Tritone';
+                    if (interval === 0) name = 'Unison / Octave';
+                    else if (interval !== 6) name = `${INTERVAL_NAMES[interval]} / ${INTERVAL_NAMES[inversion]}`;
+                    return [{ name, pcs: pcsText, confidence: 100 }];
+                }
+                if (pitchClasses.length >= 8) return [{ name: `${allNoteNames[currentKeyIndex]}(Everything but the kitchen sink)`, pcs: pcsText, confidence: 100 }];
+
+                const interpretations = [];
+                for (let i = 0; i < pitchClasses.length; i++) {
+                    const root = pitchClasses[i];
+                    const intervals = pitchClasses.map(pc => (pc - root + 12) % 12);
+                    const result = buildChordName(root, intervals);
+                    result.pcs = pcsText;
+                    interpretations.push(result);
+                }
+
+                return interpretations.sort((a, b) => b.score - a.score).slice(0, 3);
+            }
+
+            function buildChordName(root, intervals) {
+                const has = (interval) => intervals.includes(interval);
+                const rootName = allNoteNames[root];
+                let quality = '';
+                let extensions = [];
+                let score = 0;
+                let addOns = '';
+
+                // 1. Identify core quality (triad/seventh)
+                if (has(4) && has(7)) { // Major Triad
+                    quality = 'maj';
+                    score = 10;
+                    if (has(10)) { quality = ''; extensions.push('7'); } // Dominant 7th
+                    else if (has(11)) { quality = 'maj7'; }
+                } else if (has(3) && has(7)) { // Minor Triad
+                    quality = 'm';
+                    score = 10;
+                    if (has(10)) { quality = 'm7'; }
+                } else if (has(3) && has(6)) { // Diminished Triad
+                    quality = 'dim';
+                    score = 8;
+                    if (has(10)) { quality = 'm7b5'; } // Half-diminished
+                    else if (has(9)) { quality = 'dim7'; }
+                } else if (has(4) && has(8)) { // Augmented Triad
+                    quality = 'aug';
+                    score = 8;
+                } else if (has(7) && has(10) && !has(3) && !has(4)) { // Dominant 7th (no 3rd)
+                    quality = '7';
+                    addOns = '(no 3rd)';
+                    score = 9;
+                } else if (has(5) && has(7)) { // Sus4
+                    quality = 'sus4';
+                    score = 5;
+                } else if (has(2) && has(7)) { // Sus2
+                    quality = 'sus2';
+                    score = 5;
+                }
+
+                if (score === 0 && has(7)) { // Power chord
+                    quality = '5';
+                    score = 4;
+                }
+
+                if (score === 0) return { name: 'Complex Cluster', score: 1, confidence: 5 };
+
+                // 2. Identify extensions and alterations
+                const extensionMap = { 1: 'b9', 2: '9', 3: '#9', 5: '11', 6: '#11', 8: 'b13', 9: '13' };
+                for (const interval in extensionMap) {
+                    if (has(parseInt(interval))) {
+                        // Avoid adding redundant info (e.g., minor 3rd in a minor chord)
+                        if ((quality === 'm' || quality === 'm7') && interval === '3') continue;
+                        extensions.push(extensionMap[interval]);
+                    }
+                }
+                 if (!extensions.includes('13') && has(9)) extensions.push('6');
+
+
+                // 3. Assemble name
+                let name = rootName + quality;
+                const extensionOrder = ['6', '7', 'b9', '9', '#9', '11', '#11', 'b13', '13'];
+                extensions.sort((a,b) => extensionOrder.indexOf(a) - extensionOrder.indexOf(b));
+
+                if (extensions.length > 0) {
+                    if(quality.includes('7') || quality.includes('b5')) {
+                         name = rootName + quality + `(${extensions.filter(e => e !== '7' && e !== 'b5').join(',')})`;
+                    } else if (extensions.length === 1 && extensions[0].length <= 2) {
+                        name += extensions[0];
+                    } else {
+                        name += `(${extensions.join(',')})`;
+                    }
+                }
+                
+                name += addOns; // Add things like (no 3rd)
+
+                let finalScore = score + extensions.length;
+                if (root === currentKeyIndex) finalScore *= 1.2; // Bonus for being in key
+                const confidence = Math.round(Math.min(100, (finalScore / 15) * 100));
+
+                return { name, score: finalScore, confidence };
+            }
+
+            // --- App Initialization ---
+            function createSliders() {
+                const sliderConfigs = [
+                    { id: 'speedSlider', label: 'Control', min: -5, max: 5, step: 0.1, value: 0, handler: speedHandler },
+                    { id: 'angleSlider', label: 'Line Angle', min: 0, max: 720, step: 1, value: 0, handler: angleHandler, hasValue: true },
+                    { id: 'volumeSlider', label: 'Volume / Brightness', min: -40, max: 0, step: 0.5, value: -17, handler: volumeHandler }
+                ];
+
+                sliderConfigs.forEach(config => {
+                    const hDiv = document.createElement('div');
+                    hDiv.innerHTML = `<label for="${config.id}H" class="text-sm text-center block text-gray-300 mb-3">${config.label} ${config.hasValue ? `(<span class="angle-value">0</span>°)` : ''}</label>
+                                        <input type="range" id="${config.id}H" data-sync="${config.id}" min="${config.min}" max="${config.max}" step="${config.step}" value="${config.value}" class="w-full minimal-slider">`;
+                    hSliderContainer.appendChild(hDiv);
+                    document.getElementById(`${config.id}H`).addEventListener('input', syncAndHandle(config.handler));
+                });
+            }
+            
+            panelToggleRight.addEventListener('click', () => {
+                panelPosition = panelPosition === 'top' ? 'right' : 'top';
+                updateLayout();
+            });
+
+            panelToggleLeft.addEventListener('click', () => {
+                panelPosition = panelPosition === 'top' ? 'left' : 'top';
+                updateLayout();
+            });
+
+            function updateLayout() {
+                // Handle panel visibility and position
+                const panelIsVisible = !allControls.classList.contains('hidden');
+                
+                // Hide all columns and buttons initially
+                rightColumn.classList.add('hidden');
+                leftColumn.classList.add('hidden');
+                panelToggleLeft.classList.add('hidden');
+                panelToggleRight.classList.add('hidden');
+                
+                if (panelIsVisible) {
+                    switch (panelPosition) {
+                        case 'left':
+                            leftPanelSlot.appendChild(allControls);
+                            leftSliderSlot.appendChild(hSliderContainer);
+                            leftColumn.classList.remove('hidden');
+                            middleContent.classList.remove('items-center');
+                            middleContent.classList.add('items-start');
+                            panelToggleLeft.classList.remove('hidden');
+                            panelToggleLeft.innerHTML = arrowUpIcon;
+                            panelToggleLeft.classList.remove('bottom-4', 'left-4', 'right-4');
+                            panelToggleLeft.classList.add('top-4', 'left-4');
+                            controlGrid.appendChild(stepsControls);
+                            break;
+                        case 'right':
+                            rightPanelSlot.appendChild(allControls);
+                            rightSliderSlot.appendChild(hSliderContainer);
+                            rightColumn.classList.remove('hidden');
+                            middleContent.classList.remove('items-center');
+                            middleContent.classList.add('items-start');
+                            panelToggleRight.classList.remove('hidden');
+                            panelToggleRight.innerHTML = arrowUpIcon;
+                            panelToggleRight.classList.remove('bottom-4', 'right-4');
+                            panelToggleRight.classList.add('top-4', 'right-4');
+                            controlGrid.appendChild(stepsControls);
+                            break;
+                        case 'top':
+                        default:
+                            topPanelSlot.appendChild(allControls);
+                            bottomSliderSlot.appendChild(hSliderContainer);
+                            middleContent.classList.remove('items-start');
+                            middleContent.classList.add('items-center');
+                            panelToggleLeft.classList.remove('hidden');
+                            panelToggleRight.classList.remove('hidden');
+                            panelToggleLeft.innerHTML = arrowLeftIcon;
+                            panelToggleRight.innerHTML = arrowRightIcon;
+                            panelToggleLeft.classList.remove('top-4', 'right-4');
+                            panelToggleLeft.classList.add('bottom-4', 'left-4');
+                            panelToggleRight.classList.remove('top-4', 'right-4');
+                            panelToggleRight.classList.add('bottom-4', 'right-4');
+                            stepsSlotVertical.appendChild(stepsControls);
+                            break;
+                    }
+                }
+                debouncedSetupCanvas();
+            }
+
+            // --- Final Setup Calls ---
+            populateWaveformSelector();
+            populateKeySelector();
+            setupOctaveStepper();
+            setupNumOctavesStepper(); // Initialize the new stepper
+            setupStepsStepper(); // Initialize the new steps stepper
+            populateGeneratorSelector();
+            populateDropdowns();
+            createSliders();
+            bottomSliderSlot.appendChild(hSliderContainer); // Initial placement
+            
+            setupCanvas();
+            applyPreset('default'); // Load default settings on start
+            
+            updateOctaveDisplay();
+            updateNumOctavesDisplay(); // Set initial display for new stepper
+            updateStepsDisplay(); // Set initial display for steps stepper
+            handleGeneratorChange();
+            
+            animate();
+            panelToggleRight.innerHTML = arrowRightIcon; // Set initial icon
+            panelToggleLeft.innerHTML = arrowLeftIcon; // Set initial icon
+        });
+    </script>
+</body>
+</html>
