@@ -1,11 +1,10 @@
 ---
-layout: base.njk
-title: Research
+permalink: /research/index.html
+eleventyExcludeFromCollections: true
 ---
-{% from "cards.njk" import projectCard %}
-<section class="py-16">
-  <h1 class="text-3xl tracking-tight mb-12 uppercase font-bold text-white" style="letter-spacing: 0.1em;">Research</h1>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-2">
-    {% for p in projects %}{% if p.id in ["punjab", "karl", "strike"] %}{{ projectCard(p) }}{% endif %}{% endfor %}
-  </div>
-</section>
+<!doctype html>
+<meta charset="utf-8">
+<title>Work - Thomas J Graves</title>
+<link rel="canonical" href="/work/">
+<meta http-equiv="refresh" content="0; url=/work/">
+<a href="/work/">Work</a>
