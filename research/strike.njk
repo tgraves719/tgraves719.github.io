@@ -4,11 +4,57 @@ title: The Safeway Strike
 permalink: /research/strike/
 ---
 {# Every sentence on this page is from Thomas's CIP proposal, verbatim, under its own headings. #}
-{% set songs = ["Buy One, Break One (Deal With It)", "Check Your Receipt", "Clock In, Clock Out (Riot Mix)", "drive up n flow", "Eight Dollars an Hour", "Listen Up, Albertsons!", "Milk for the Monarchy", "Obey the Law (Safeway Strike Version)", "Safeway Strike 2025", "Safeway Strike Playlist Introduction", "Safeway Strike Song", "Scan Me Like You Mean It", "Strike Song", "Taste of Suffering", "Thank You for your Support!", "The Ant March", "This Little Wage of Mine", "“Under 60” (Strike DJ Anthem)"] %}
+{% set PL = strikePlaylist %}
 <article class="py-16">
   <div class="max-w-3xl mx-auto">
     <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-4" style="letter-spacing: 0.1em;">The Safeway Strike</h1>
     <p class="text-lg text-gray-400 mb-12">Minimizing Misinformation in the Workplace: Worker-Controlled AI Tools Augmenting Contract Literacy</p>
+
+    {# The recordings. Titles, order and durations: _data/strikePlaylist.json (tools/import-strike-audio.py). #}
+    <div id="songs" data-player data-artist="{{ PL.artist }}" data-album="Safeway Strike 2025" data-cover="{{ PL.cover }}"
+         class="strike-player mb-12 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5 scroll-mt-28" style="--c: rgb(255,255,255); --glow: 0;">
+      <div class="flex items-center gap-5">
+        <img src="{{ PL.cover }}" alt="Safeway Strike 2025" width="96" height="96" class="w-20 h-20 sm:w-24 sm:h-24 rounded-lg shrink-0">
+        <div class="min-w-0 flex-1">
+          <p data-now class="text-white font-semibold truncate">{{ PL.tracks[0].title }}</p>
+          <p class="text-gray-500 text-sm">{{ PL.artist }}</p>
+          <div class="player-controls mt-3 flex items-center gap-2">
+            <button type="button" data-prev aria-label="Previous" class="p-2 text-gray-400 hover:text-white"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+            <button type="button" data-play aria-label="Play or pause" class="play w-12 h-12 rounded-full flex items-center justify-center text-black">
+              <svg class="icon-play w-5 h-5 ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>
+              <svg class="icon-pause w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+            </button>
+            <button type="button" data-next aria-label="Next" class="p-2 text-gray-400 hover:text-white"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+            <span data-time class="ml-auto font-mono text-xs text-gray-500 whitespace-nowrap">0:00</span>
+          </div>
+        </div>
+      </div>
+      <div class="player-bar relative mt-5 h-3 rounded-full bg-black/70 overflow-hidden">
+        <canvas data-paint class="absolute inset-0 w-full h-full"></canvas>
+        <span data-head class="head absolute top-0 bottom-0 w-1 -ml-0.5 rounded-full" style="left: 0"></span>
+        <input data-seek type="range" min="0" max="1000" value="0" aria-label="Seek" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+      </div>
+      <ol data-list class="relative mt-5 max-h-80 overflow-y-auto pr-1 text-sm">
+        {% for t in PL.tracks %}
+        <li><a href="{{ t.file }}" data-track data-title="{{ t.title }}" data-seconds="{{ t.seconds }}" class="track flex items-baseline gap-3 py-1.5 px-2 rounded text-gray-300 hover:bg-white/5">
+          <span class="num w-6 text-right font-mono text-xs text-gray-600">{{ loop.index }}</span><span class="flex-1 truncate">{{ t.title }}</span><span class="font-mono text-xs text-gray-600">{{ t.seconds | mmss }}</span></a></li>
+        {% endfor %}
+      </ol>
+      <audio preload="none"></audio>
+    </div>
+    <style>
+      .strike-player .play { background: var(--c); box-shadow: 0 0 calc(var(--glow) * 28px) var(--c); transition: background .15s linear; }
+      .strike-player .icon-pause, .strike-player[data-playing] .icon-play { display: none; }
+      .strike-player[data-playing] .icon-pause { display: block; }
+      .strike-player .head { background: #fff; box-shadow: 0 0 calc(var(--glow) * 14px) var(--c); }
+      .strike-player .track[aria-current] { color: #fff; background: rgba(255,255,255,.04); }
+      .strike-player .track[aria-current] .num { color: var(--c); }
+      .strike-player:not(.is-enhanced) .player-controls, .strike-player:not(.is-enhanced) .player-bar { display: none; }
+      .strike-player ol { scrollbar-width: thin; scrollbar-color: #3f3f46 transparent; }
+      .strike-player ol::-webkit-scrollbar { width: 6px; }
+      .strike-player ol::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
+    </style>
+    <script type="module" src="/assets/js/strike-player.js"></script>
 
     <img src="/images/strike/picket-01.webp" alt="Inside the store, 2025" class="w-full h-auto rounded-xl mb-12">
 
@@ -35,9 +81,5 @@ permalink: /research/strike/
       <p>How do you make sure a worker-controlled AI tool doesn’t replicate the power dynamics it was built to fight?</p>
     </div>
 
-    <h2 class="text-gray-500 uppercase tracking-wider text-sm mb-4">Songs</h2>
-    <ul class="text-gray-300 columns-1 sm:columns-2 gap-8 space-y-1">
-      {% for s in songs %}<li>{{ s }}</li>{% endfor %}
-    </ul>
   </div>
 </article>

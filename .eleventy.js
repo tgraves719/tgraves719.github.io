@@ -3,6 +3,12 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("assets");
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy("files");
+  eleventyConfig.addPassthroughCopy("audio");
+  // 120 MB of recordings: the dev server must not watch them or hold them in
+  // memory (it ran out of heap doing both), so it copies passthrough files like
+  // the production build does and ignores changes to them.
+  eleventyConfig.watchIgnores.add("audio/**");
+  eleventyConfig.setServerPassthroughCopyBehavior("copy");
   // Instruments are copied through untouched: an instrument's page is part of
   // the instrument, so it keeps its own design rather than this site's layout.
   // (Vendored builds -- see tools/vendor-wheel.mjs and each PROVENANCE.md.)
@@ -70,6 +76,9 @@ module.exports = function(eleventyConfig) {
     const hit = posts.find((p) => p.page && p.page.fileSlug === slug);
     return hit ? hit.url : "";
   });
+
+  // Seconds as m:ss (track lengths).
+  eleventyConfig.addFilter("mmss", (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`);
 
   // Narrow to one contentType (e.g. "devlog").
   eleventyConfig.addFilter("byType", (posts, contentType) => {

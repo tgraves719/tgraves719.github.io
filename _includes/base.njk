@@ -1601,6 +1601,16 @@
 
             if (!newMainContent) throw new Error('Invalid page structure');
 
+            // Swapping <main> keeps the old <head> and never runs scripts in the new
+            // content. A page with its own scripts (the playlist, the video embeds),
+            // or one that needs a different set of libraries (the particle field
+            // loads only on instrument pages), is loaded normally instead.
+            const flag = [...doc.querySelectorAll('script')].map((x) => x.textContent).join(' ').match(/HAS_INSTRUMENT = (true|false)/);
+            if (newMainContent.querySelector('script') || (flag && (flag[1] === 'true') !== !!window.HAS_INSTRUMENT)) {
+              window.location.href = url;
+              return;
+            }
+
             // Update page title and URL
             document.title = newTitle;
             if (pushState) {
@@ -1687,6 +1697,14 @@
 
             // Don't intercept if ctrl/cmd/shift clicked (user wants new tab)
             if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+
+            // Leave a click alone if a page already handled it (the playlist's
+            // track links), if it opens elsewhere or downloads, or if it is not a
+            // page of this site at all. Those used to be fetched whole as text --
+            // a 6 MB track, a 23 MB PDF -- then fail and load a second time.
+            if (e.defaultPrevented || link.target || link.hasAttribute('download')) return;
+            const path = href.split(/[?#]/)[0];
+            if (!(path.endsWith('/') || path.endsWith('.html')) || path.startsWith('/instruments/')) return;
 
             e.preventDefault();
             this.navigateToPage(href);
