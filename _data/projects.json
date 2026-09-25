@@ -107,12 +107,12 @@
   {
     "id": "virtual-music-stand",
     "title": "The Virtual Music Stand",
-    "years": "2019–",
+    "years": "2019",
     "status": "preserved",
     "href": "/work/musicstand/",
     "image": null,
     "links": [],
-    "line": "A cross-platform PDF reader for sheet music, evolving from HoloLens 2 to Quest 3 for the next generation of XR devices."
+    "line": "A PDF reader for sheet music on HoloLens 2."
   },
   {
     "id": "beyond-binary",
