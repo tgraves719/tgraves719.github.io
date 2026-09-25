@@ -86,15 +86,6 @@
     "line": "An audiovisual instrument for exploring harmony and geometry. Generate notes from scales, or build harmonies by stacking musical intervals."
   },
   {
-    "id": "conductor-ar",
-    "title": "ConductorAR",
-    "years": "2024–",
-    "status": "active",
-    "href": null,
-    "image": null,
-    "links": []
-  },
-  {
     "id": "conductvr",
     "title": "ConductVR",
     "years": "2020–2021",
