@@ -4,9 +4,10 @@ title: The Virtual Music Stand
 project: "musicstand"
 instrument: true
 ---
+{% from "video.njk" import video, videoScript %}
 
 <div class="w-full">
-  <img src="/images/pic06.jpg" alt="Virtual Music Stand Banner" class="w-full h-auto rounded-xl mb-12">
+  <div class="mb-12">{{ video("UoVAPxiZuHk", "Reading sheet music and accessing music workouts in AR with MRTK", "aspect-video", "maxresdefault") }}</div>
 
   <div class="text-center mb-12">
     <h1 class="text-4xl tracking-tight uppercase font-bold text-white" style="letter-spacing: 0.1em;">The Virtual Music Stand</h1>
@@ -56,3 +57,5 @@ instrument: true
     <a href="/work/" class="interactive-rainbow inline-block px-6 py-3 rounded-md font-semibold uppercase tracking-wider">&larr; Back</a>
   </div>
 </div>
+
+{{ videoScript() }}
