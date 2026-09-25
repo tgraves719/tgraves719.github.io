@@ -5,6 +5,7 @@ project: "musicstand"
 instrument: true
 ---
 {% from "video.njk" import video, videoScript %}
+{% from "github.njk" import githubButton %}
 
 <div class="w-full">
   <div class="mb-12">{{ video("UoVAPxiZuHk", "Reading sheet music and accessing music workouts in AR with MRTK", "aspect-video", "maxresdefault") }}</div>
@@ -15,12 +16,7 @@ instrument: true
   </div>
 
   <div class="flex justify-center mb-16">
-    <a href="#" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg transition-all bg-[var(--color-bg-card)] border-3 border-transparent hover:bg-gray-800">
-      <svg class="h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11.25v1.5M12 9.75v4.5M15 11.25v1.5M4.5 20.25h15A2.25 2.25 0 0021.75 18V6A2.25 2.25 0 0019.5 3.75h-15A2.25 2.25 0 002.25 6v12A2.25 2.25 0 004.5 20.25z" />
-      </svg>
-      <span>Coming Soon</span>
-    </a>
+    {{ githubButton("https://github.com/tgraves719/the-graves-method") }}
   </div>
 
   <div class="max-w-4xl mx-auto text-gray-300">
