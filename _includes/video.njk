@@ -20,22 +20,9 @@
 </a>
 {% endmacro %}
 
-{% macro videoScript() %}
-<script>
-  document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a.yt-lite');
-    if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
-    e.preventDefault();
-    var f = document.createElement('iframe');
-    f.src = 'https://www.youtube-nocookie.com/embed/' + a.dataset.yt + '?autoplay=1&rel=0';
-    f.title = a.dataset.ytTitle || 'Video';
-    f.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
-    f.allowFullscreen = true;
-    f.className = 'absolute inset-0 w-full h-full';
-    var box = document.createElement('div');
-    box.className = a.className.replace('yt-lite', '').replace('group', '');
-    box.appendChild(f);
-    a.replaceWith(box);
-  });
-</script>
-{% endmacro %}
+{#
+  The click that swaps in the player is handled once for the whole site, in
+  base.njk, so it works on pages the site swaps in without a reload. This macro
+  stays so pages that call it need no change; it emits nothing.
+#}
+{% macro videoScript() %}{% endmacro %}

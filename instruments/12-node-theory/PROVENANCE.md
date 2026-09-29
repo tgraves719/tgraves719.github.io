@@ -11,3 +11,6 @@ pointed at the Cyborgs front page, reads "← Thomas J Graves", points at
 /work/12-node-theory/, and targets the top window (the page also runs embedded there).
 
 Files: index.html (built from wheel.html), assets/corner-BSJmn8ba.js, assets/field-BMTcuRgB.js, assets/figures-BD60Z9ol.js, assets/midi-6_simboS.js, assets/transport-Cupg1Bpr.js, assets/tuning-DWw9MJEu.js, assets/wheel-tPOqukPc.js.
+
+The site's audio guard (`/assets/js/audio-guard.js`) is added as the first script in
+the page's head, so the site's mute reaches the instrument when it runs in a frame.

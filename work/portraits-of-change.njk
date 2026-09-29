@@ -47,7 +47,7 @@ description: "Portraits of Change: a Mixed Reality Music Recital. Hoag Hall, CSU
       <p class="{{ says }}">As the songs progress, the main song color will move around the chromatic color wheel throughout the performance.</p>
 
       <figure class="my-10">
-        <svg viewBox="0 0 {{ W.steps }} 24" preserveAspectRatio="none" class="block w-full h-10 rounded" role="img" aria-label="Stage wall color across the recital">
+        <svg viewBox="0 0 {{ W.steps }} 24" preserveAspectRatio="none" class="block w-full h-10 rounded" role="img" aria-label="Headset view color across the recital">
           {%- for r in W.runs %}<rect x="{{ r.x }}" y="0" width="{{ r.w + 0.3 }}" height="24" fill="{{ r.c }}"/>{% endfor -%}
         </svg>
         <div class="relative h-7 text-xs font-mono">
@@ -57,7 +57,7 @@ description: "Portraits of Change: a Mixed Reality Music Recital. Hoag Hall, CSU
           {% set gapMid = ((W.pieces[5].start + 4.0 + W.pieces[6].start) / 2) %}
           <span class="absolute top-2 -translate-x-1/2 text-gray-600 italic font-sans" style="left: {{ (gapMid * 6 / W.steps * 100) | round(2) }}%;">intermission</span>
         </div>
-        <figcaption class="text-gray-500 text-sm mt-1">Stage wall, recital camera, every ten seconds.</figcaption>
+        <figcaption class="text-gray-500 text-sm mt-1">Headset view, every ten seconds.</figcaption>
       </figure>
 
       <dl class="grid sm:grid-cols-3 gap-4 text-sm mb-14">

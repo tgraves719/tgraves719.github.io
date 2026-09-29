@@ -42,9 +42,11 @@ on this site because the content is that effect.
 **What it means here**
 
 - The recital already had a form — a program walking the color wheel — so its page is that program.
-- The particle field and the audio engine are the *instrument*. They belong where the
-  content is the instrument: the home page, the music page, the project pages for the
-  audiovisual work. An argument does not get a particle field.
+- The particle field and the audio engine are the *instrument*. Until September 2026 they
+  loaded only where the content was the instrument. Thomas then made the whole site one
+  instrument: music a visitor starts plays on across every page, the field listens to it
+  everywhere, and one mute governs every source (`assets/js/site-audio.js`). The rule
+  that survives: nothing sounds that the visitor did not start.
 
 **Where it caught something**
 

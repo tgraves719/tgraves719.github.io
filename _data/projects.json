@@ -2,8 +2,8 @@
   {
     "id": "punjab",
     "title": "Punjab Data Project",
-    "years": "2025–",
-    "status": "published",
+    "years": "2026–",
+    "status": "active",
     "href": "/research/punjab/",
     "image": "/images/cards/punjab-register-1910.jpg",
     "links": [
@@ -61,19 +61,20 @@
     "id": "ictus",
     "title": "ICTUS",
     "years": "2026–",
-    "status": "active",
+    "status": "soon",
     "href": null,
     "image": "/images/cards/ictus.jpg",
-    "links": []
+    "links": [],
+    "line": "for Conductor, Magic, and the Unison of Will"
   },
   {
     "id": "12-node-theory",
     "title": "12-Node Theory",
     "years": "2019–",
-    "status": "active",
     "href": "/work/12-node-theory/",
     "image": "/images/instruments/12-node-theory.jpg",
-    "links": []
+    "links": [],
+    "line": "An audiovisual geometric music analysis tool"
   },
   {
     "id": "modular-music-box",
@@ -91,7 +92,7 @@
     "years": "2020–2021",
     "status": "preserved",
     "href": "/work/conductvr/",
-    "image": "/images/pic26.jpg",
+    "image": "/images/cards/baton.jpg",
     "links": [],
     "line": "An educational VR application designed to teach and practice standard conducting patterns in an immersive, interactive environment."
   },
@@ -101,14 +102,14 @@
     "years": "2019",
     "status": "preserved",
     "href": "/work/musicstand/",
-    "image": null,
+    "image": "/images/cards/music-folder.jpg",
     "links": [],
     "line": "A PDF reader for sheet music on HoloLens 2."
   },
   {
     "id": "beyond-binary",
     "title": "Beyond Binary",
-    "years": "2019–2024",
+    "years": "2024",
     "href": "/work/beyond-binary/",
     "image": "/images/cards/beyond-binary.jpg",
     "links": [],

@@ -68,6 +68,10 @@ if (!html.includes(back)) {
 }
 html = html.replace(back, '<a class="back" href="/work/12-node-theory/" target="_top">&larr; Thomas J Graves</a>');
 
+// 4b. The site's audio guard runs first, so the site's mute reaches the wheel in its frame.
+html = html.replace(/<meta charset="utf-8" \/>/i, (m) => `${m}
+<script src="/assets/js/audio-guard.js"></script>`);
+
 // 5. Replace the vendored copy wholesale, so nothing stale survives.
 rmSync(dest, { recursive: true, force: true });
 mkdirSync(join(dest, "assets"), { recursive: true });
@@ -86,6 +90,9 @@ Do not edit these files. Change the source in \`unfaithfulcyborgs/src/wheel\` (a
 One change is made to the built page: its back link, which read "← Threshold" and
 pointed at the Cyborgs front page, reads "← Thomas J Graves", points at
 /work/12-node-theory/, and targets the top window (the page also runs embedded there).
+
+The site's audio guard (\`/assets/js/audio-guard.js\`) is added as the first script in
+the page's head, so the site's mute reaches the instrument when it runs in a frame.
 
 Files: index.html (built from wheel.html), ${[...need].sort().join(", ")}.
 `);

@@ -11,9 +11,11 @@ permalink: /research/strike/
     <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-12" style="letter-spacing: 0.1em;">The Safeway Strike</h1>
 
     {# The recordings. Titles, order and durations: _data/strikePlaylist.json (tools/import-strike-audio.py). #}
-    <div class="mb-12">{{ player({ id: "songs", tracks: PL.tracks, artist: PL.artist, album: "Safeway Strike 2025", cover: PL.cover }) }}</div>
+    <div class="mb-3">{{ player({ id: "songs", tracks: PL.tracks, artist: PL.artist, album: "Safeway Strike 2025", cover: PL.cover }) }}</div>
 
-    <figure class="-mt-6 mb-12 px-1">
+    <p class="text-gray-500 text-sm px-1 mb-8">Generated with Suno 4.5.</p>
+
+    <figure class="mb-12 px-1">
       <blockquote class="text-lg text-gray-300">“Playlist is a hit in Denver.”</blockquote>
       <figcaption class="text-gray-500 text-sm mt-1">James Heath, union organizer, July 4, 2025</figcaption>
     </figure>

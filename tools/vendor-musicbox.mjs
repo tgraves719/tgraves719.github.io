@@ -6,7 +6,7 @@
 //   node tools/vendor-musicbox.mjs
 
 import { execFileSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,10 +23,17 @@ const commit = git("rev-parse", "HEAD");
 const dirty = git("status", "--porcelain", "--", "index.html");
 
 mkdirSync(dest, { recursive: true });
-copyFileSync(join(source, "index.html"), join(dest, "index.html"));
+// The site's audio guard runs first, so the site's mute reaches the box in its frame.
+const html = readFileSync(join(source, "index.html"), "utf8")
+  .replace(/<meta charset="utf-8">/i, (m) => `${m}
+<script src="/assets/js/audio-guard.js"></script>`);
+writeFileSync(join(dest, "index.html"), html);
 writeFileSync(join(dest, "PROVENANCE.md"), `# The Modular Music Box — vendored copy
 
 Copied from \`modular-music-box\` at commit \`${commit}\`${dirty ? " **with uncommitted changes**" : ""}
 by \`tools/vendor-musicbox.mjs\`. Do not edit here; change the source and re-run.
+
+The site's audio guard (\`/assets/js/audio-guard.js\`) is added as the first script in
+the page's head, so the site's mute reaches the instrument when it runs in a frame.
 `);
 console.log(`Vendored the Modular Music Box from ${commit.slice(0, 7)}${dirty ? " (dirty)" : ""}`);

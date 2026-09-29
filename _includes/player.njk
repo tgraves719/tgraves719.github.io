@@ -1,20 +1,27 @@
 {#
   The 12-Node player (assets/js/player.js, assets/css/player.css).
 
-  pl = { id, tracks: [{ title, file, seconds }], artist?, album?, cover? }
+  pl = { id, tracks: [{ title, file, seconds, image? }], artist?, album?, cover?, mark? }
+
+  mark: an image used as a shape in the corner of the page, behind the text, filled with the
+  sounding color and lit by the loudness.
 
   With several tracks: cover, title, skip buttons and a track list. With one: just
   the play button, the painting bar and the time -- the page around it already says
   what it is. Either way, without JavaScript every track is a plain link to its file.
+
+  The sound belongs to the site (assets/js/site-audio.js, loaded by base.njk with
+  player.js), so a song keeps playing across pages; this markup is a view of it.
 #}
 {% macro player(pl) %}
 {% set single = pl.tracks | length == 1 %}
 <link rel="stylesheet" href="/assets/css/player.css">
 <div id="{{ pl.id }}" data-player data-artist="{{ pl.artist or '' }}" data-album="{{ pl.album or '' }}" data-cover="{{ pl.cover or '' }}"
      class="player{% if single %} player--single{% endif %} bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5 scroll-mt-28" style="--c: rgb(255,255,255); --glow: 0;">
+  {% if pl.mark %}<div class="player-mark" style="--mark: url('{{ pl.mark }}');" aria-hidden="true"><span></span></div>{% endif %}
   {% if not single %}
   <div class="flex items-center gap-5">
-    {% if pl.cover %}<img src="{{ pl.cover }}" alt="{{ pl.album }}" width="96" height="96" class="w-20 h-20 sm:w-24 sm:h-24 rounded-lg shrink-0">{% endif %}
+    {% if pl.cover %}<img data-cover src="{{ pl.tracks[0].image or pl.cover }}" alt="{{ pl.album }}" width="96" height="96" class="w-20 h-20 sm:w-24 sm:h-24 rounded-lg shrink-0">{% endif %}
     <div class="min-w-0 flex-1">
       <p data-now class="text-white font-semibold truncate">{{ pl.tracks[0].title }}</p>
       {% if pl.artist %}<p class="text-gray-500 text-sm">{{ pl.artist }}</p>{% endif %}
@@ -54,11 +61,9 @@
 
   <ol data-list class="player-list relative mt-5 max-h-80 overflow-y-auto pr-1 text-sm">
     {% for t in pl.tracks %}
-    <li><a href="{{ t.file }}" data-track data-title="{{ t.title }}" data-seconds="{{ t.seconds }}" class="track flex items-baseline gap-3 py-1.5 px-2 rounded text-gray-300 hover:bg-white/5">
+    <li><a href="{{ t.file }}" data-track data-title="{{ t.title }}" data-seconds="{{ t.seconds }}"{% if t.image %} data-image="{{ t.image }}"{% endif %} class="track flex items-baseline gap-3 py-1.5 px-2 rounded text-gray-300 hover:bg-white/5">
       <span class="num w-6 text-right font-mono text-xs text-gray-600">{{ loop.index }}</span><span class="flex-1 truncate">{{ t.title }}</span><span class="font-mono text-xs text-gray-600">{{ t.seconds | mmss }}</span></a></li>
     {% endfor %}
   </ol>
-  <audio preload="none"></audio>
 </div>
-<script type="module" src="/assets/js/player.js"></script>
 {% endmacro %}

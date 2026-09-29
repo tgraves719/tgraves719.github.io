@@ -3,7 +3,7 @@
   most one line -- in Thomas's own words or not at all.
 #}
 {% macro statusPill(status) %}
-  {% set label = { active: "In progress", preserved: "Archived", published: "Published", next: "Next" } %}
+  {% set label = { active: "In progress", preserved: "Archived", published: "Published", next: "Next", soon: "Coming soon" } %}
   {% if label[status] %}<span class="inline-block text-xs font-medium uppercase tracking-wider px-2.5 py-1 rounded-full border border-[var(--color-border)] text-gray-400">{{ label[status] }}</span>{% endif %}
 {% endmacro %}
 

@@ -18,6 +18,7 @@ from pathlib import Path
 SRC = Path(sys.argv[1] if len(sys.argv) > 1 else "D:/Music/Safeway Strike 2025")
 SITE = Path(__file__).resolve().parent.parent
 DEST = SITE / "audio" / "safeway-strike-2025"
+ART = SITE / "images" / "strike" / "tracks"   # each track's own cover, from its tags
 FF = os.environ.get("FFMPEG") or shutil.which("ffmpeg") or r"C:/Program Files/Virtual Desktop Streamer/ffmpeg.exe"
 
 def probe(f):
@@ -34,7 +35,9 @@ def slug(t):
     return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", t.lower())).strip("-")
 
 shutil.rmtree(DEST, ignore_errors=True)   # a clean copy: nothing stale survives
+shutil.rmtree(ART, ignore_errors=True)
 DEST.mkdir(parents=True, exist_ok=True)
+ART.mkdir(parents=True, exist_ok=True)
 seen, tracks, artists = {}, [], set()
 # originals before their " (1)" copies, so a duplicate keeps its real name
 copy = re.compile(r" \(\d+\)$")
@@ -52,7 +55,11 @@ for f in sorted(SRC.glob("*.mp3"), key=lambda f: (copy.sub("", f.stem), bool(cop
     while (DEST / out).exists() and out in {Path(t["file"]).name for t in tracks}:
         out = f"{slug(title)}-{n}.mp3"; n += 1
     shutil.copyfile(f, DEST / out)
-    tracks.append({"title": title, "file": f"/audio/safeway-strike-2025/{out}", "seconds": round(seconds, 1)})
+    track = {"title": title, "file": f"/audio/safeway-strike-2025/{out}", "seconds": round(seconds, 1)}
+    art = ART / (Path(out).stem + ".jpg")
+    subprocess.run([FF, "-loglevel", "error", "-y", "-i", str(f), "-an", "-map", "0:v:0", "-c", "copy", str(art)], capture_output=True)
+    if art.exists() and art.stat().st_size: track["image"] = f"/images/strike/tracks/{art.name}"
+    tracks.append(track)
 
 key = lambda t: (0 if "introduction" in t["title"].lower() else 1, re.sub(r"^[^\w]+", "", t["title"]).lower())
 tracks.sort(key=key)
