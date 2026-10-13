@@ -360,14 +360,6 @@
     </div>
   </div>
 
-  <div id="no-vr-modal" class="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center text-center hidden">
-    <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-8 max-w-sm mx-4">
-      <h3 class="text-2xl font-bold text-white mb-4 uppercase tracking-wide">No VR Detected</h3>
-      <p class="text-gray-400 mb-6">This experience is designed for WebXR-compatible VR or AR headsets. Please try again on a supported device.</p>
-      <button id="close-no-vr-modal" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Close</button>
-    </div>
-  </div>
-
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <!-- Header -->
     <header class="py-6 sticky top-0 z-50 bg-[#0A0A0A]">
@@ -1264,8 +1256,6 @@
         initRealityEngineButton() {
           // Reality Engine Button with Loading System - only initialize if button exists
           const realityEngineBtn = document.getElementById('reality-engine-btn');
-          const noVrModal = document.getElementById('no-vr-modal');
-          const closeNoVrModalBtn = document.getElementById('close-no-vr-modal');
 
           if (realityEngineBtn) {
             // Remove any existing event listeners to prevent duplicates
@@ -1311,58 +1301,6 @@
               newRealityEngineBtn.addEventListener('mousemove', (e) => InteractiveEffects.onMouseMove(e));
             }
 
-            newRealityEngineBtn.addEventListener('click', async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              // INSTANT visual feedback - start loading animation immediately
-              const loadingPromise = LoadingSystem.showFullLoading('Initializing Reality Engine...');
-
-              // PARALLEL execution - all these happen while animation runs
-              const pagePreloadPromise = fetch('/work/');
-
-              const webxrCheckPromise = (async () => {
-                try {
-                  if (navigator.xr && await navigator.xr.isSessionSupported('immersive-vr')) {
-                    window.DEBUG && console.log('✅ WebXR VR session supported');
-                    return { hasVR: true };
-                  } else {
-                    window.DEBUG && console.log('❌ WebXR not supported');
-                    return { hasVR: false };
-                  }
-                } catch (error) {
-                  console.error('WebXR check failed:', error);
-                  return { hasVR: false };
-                }
-              })();
-
-              // Wait for all parallel operations to complete
-              const [loadingResult, pageResult, webxrResult] = await Promise.all([
-                loadingPromise,
-                pagePreloadPromise,
-                webxrCheckPromise
-              ]);
-
-              // Navigate immediately after loading animation completes
-              if (webxrResult.hasVR) {
-                window.location.href = '/work/';
-              } else {
-                if (noVrModal) {
-                  noVrModal.classList.remove('hidden');
-                }
-              }
-            });
-          }
-
-          // Close VR Modal
-          if (closeNoVrModalBtn && noVrModal) {
-            // Remove existing event listener and add new one
-            const newCloseBtn = closeNoVrModalBtn.cloneNode(true);
-            closeNoVrModalBtn.parentNode.replaceChild(newCloseBtn, closeNoVrModalBtn);
-
-            newCloseBtn.addEventListener('click', () => {
-              noVrModal.classList.add('hidden');
-            });
           }
         },
 
