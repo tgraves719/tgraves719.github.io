@@ -1,0 +1,43 @@
+{#
+  A project card from _data/projects.json: image, title, years, status, and at
+  most one line -- in Thomas's own words or not at all.
+#}
+{% macro statusPill(status) %}
+  {% set label = { active: "In progress", preserved: "Archived", published: "Published", next: "Next", soon: "Coming soon" } %}
+  {% if label[status] %}<span class="inline-block text-xs font-medium uppercase tracking-wider px-2.5 py-1 rounded-full border border-[var(--color-border)] text-gray-400">{{ label[status] }}</span>{% endif %}
+{% endmacro %}
+
+{% macro projectCard(p) %}
+  {% set inner %}
+    {% if p.image %}
+    <div class="m-3 overflow-hidden rounded-xl aspect-video">
+      <img src="{{ p.image }}" alt="{{ p.title }}" class="w-full h-full object-cover">
+    </div>
+    {% endif %}
+    <div class="p-6 flex-grow flex flex-col">
+      <div class="flex items-baseline justify-between gap-3 mb-2">
+        <h3 class="text-lg font-semibold text-white uppercase tracking-wide">{{ p.title }}</h3>
+        <span class="text-sm text-gray-500 whitespace-nowrap">{{ p.years }}</span>
+      </div>
+      {% if p.line %}<p class="text-gray-400 mb-4">{{ p.line }}</p>{% endif %}
+      <div class="mt-auto">{{ statusPill(p.status) }}</div>
+    </div>
+  {% endset %}
+
+  {% if p.href %}
+  <a href="{{ p.href }}" class="card static-rainbow bg-[var(--color-bg-card)] rounded-xl flex flex-col group transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-900/10">
+    {{ inner | safe }}
+  </a>
+  {% else %}
+  <div class="card static-rainbow bg-[var(--color-bg-card)] rounded-xl flex flex-col">
+    {{ inner | safe }}
+    {% if p.links | length %}
+    <div class="px-6 pb-6 flex flex-wrap gap-3">
+      {% for l in p.links %}
+      <a href="{{ l.url }}" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow text-sm uppercase tracking-wider px-4 py-2 rounded-md">{{ l.label }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+{% endmacro %}

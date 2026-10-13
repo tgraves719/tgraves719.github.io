@@ -1,0 +1,69 @@
+{#
+  The 12-Node player (assets/js/player.js, assets/css/player.css).
+
+  pl = { id, tracks: [{ title, file, seconds, image? }], artist?, album?, cover?, mark? }
+
+  mark: an image used as a shape in the corner of the page, behind the text, filled with the
+  sounding color and lit by the loudness.
+
+  With several tracks: cover, title, skip buttons and a track list. With one: just
+  the play button, the painting bar and the time -- the page around it already says
+  what it is. Either way, without JavaScript every track is a plain link to its file.
+
+  The sound belongs to the site (assets/js/site-audio.js, loaded by base.njk with
+  player.js), so a song keeps playing across pages; this markup is a view of it.
+#}
+{% macro player(pl) %}
+{% set single = pl.tracks | length == 1 %}
+<link rel="stylesheet" href="/assets/css/player.css">
+<div id="{{ pl.id }}" data-player data-artist="{{ pl.artist or '' }}" data-album="{{ pl.album or '' }}" data-cover="{{ pl.cover or '' }}"
+     class="player{% if single %} player--single{% endif %} bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-5 scroll-mt-28" style="--c: rgb(255,255,255); --glow: 0;">
+  {% if pl.mark %}<div class="player-mark" style="--mark: url('{{ pl.mark }}');" aria-hidden="true"><span></span></div>{% endif %}
+  {% if not single %}
+  <div class="flex items-center gap-5">
+    {% if pl.cover %}<img data-cover src="{{ pl.tracks[0].image or pl.cover }}" alt="{{ pl.album }}" width="96" height="96" class="w-20 h-20 sm:w-24 sm:h-24 rounded-lg shrink-0">{% endif %}
+    <div class="min-w-0 flex-1">
+      <p data-now class="text-white font-semibold truncate">{{ pl.tracks[0].title }}</p>
+      {% if pl.artist %}<p class="text-gray-500 text-sm">{{ pl.artist }}</p>{% endif %}
+      <div class="player-controls mt-3 flex items-center gap-2">
+        <button type="button" data-prev aria-label="Previous" class="p-2 text-gray-400 hover:text-white"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+        <button type="button" data-play aria-label="Play or pause" class="play w-12 h-12 rounded-full flex items-center justify-center text-black">
+          <svg class="icon-play w-5 h-5 ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>
+          <svg class="icon-pause w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+        </button>
+        <button type="button" data-next aria-label="Next" class="p-2 text-gray-400 hover:text-white"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+        <span data-time class="ml-auto font-mono text-xs text-gray-500 whitespace-nowrap">0:00</span>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="player-controls flex items-center gap-4">
+    <button type="button" data-play aria-label="Play or pause" class="play w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-black">
+      <svg class="icon-play w-5 h-5 ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>
+      <svg class="icon-pause w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+    </button>
+    <div class="player-bar relative flex-1 h-3 rounded-full bg-black/70 overflow-hidden">
+      <canvas data-paint class="absolute inset-0 w-full h-full"></canvas>
+      <span data-head class="head absolute top-0 bottom-0 w-1 -ml-0.5 rounded-full" style="left: 0"></span>
+      <input data-seek type="range" min="0" max="1000" value="0" aria-label="Seek" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+    </div>
+    <span data-time class="font-mono text-xs text-gray-500 whitespace-nowrap">0:00</span>
+  </div>
+  {% endif %}
+
+  {% if not single %}
+  <div class="player-bar relative mt-5 h-3 rounded-full bg-black/70 overflow-hidden">
+    <canvas data-paint class="absolute inset-0 w-full h-full"></canvas>
+    <span data-head class="head absolute top-0 bottom-0 w-1 -ml-0.5 rounded-full" style="left: 0"></span>
+    <input data-seek type="range" min="0" max="1000" value="0" aria-label="Seek" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+  </div>
+  {% endif %}
+
+  <ol data-list class="player-list relative mt-5 max-h-80 overflow-y-auto pr-1 text-sm">
+    {% for t in pl.tracks %}
+    <li><a href="{{ t.file }}" data-track data-title="{{ t.title }}" data-seconds="{{ t.seconds }}"{% if t.image %} data-image="{{ t.image }}"{% endif %} class="track flex items-baseline gap-3 py-1.5 px-2 rounded text-gray-300 hover:bg-white/5">
+      <span class="num w-6 text-right font-mono text-xs text-gray-600">{{ loop.index }}</span><span class="flex-1 truncate">{{ t.title }}</span><span class="font-mono text-xs text-gray-600">{{ t.seconds | mmss }}</span></a></li>
+    {% endfor %}
+  </ol>
+</div>
+{% endmacro %}

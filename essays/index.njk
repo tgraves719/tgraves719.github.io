@@ -1,0 +1,26 @@
+---
+layout: base.njk
+title: Essays
+permalink: /essays/
+---
+<section class="py-16 max-w-3xl">
+  <h1 class="text-3xl tracking-tight mb-12 uppercase font-bold text-white" style="letter-spacing: 0.1em;">Essays</h1>
+
+  {% if collections.essay | length %}
+  <ul class="space-y-6 mb-16">
+    {% for e in collections.essay %}
+    <li><a href="{{ e.url }}" class="text-xl text-white hover:underline">{{ e.data.title }}</a>
+      <span class="text-gray-500 text-sm ml-2">{{ e.date | postDate }}{% if e.data.videoId %} · video{% endif %}</span></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {# Working titles in Thomas's own words, in his order. #}
+  <ol class="space-y-4">
+    {% for title, status in [["dialectics of jazz: against a universal music language", "In progress"], ["defense against the dark arts", "Next"]] %}
+    <li class="flex items-baseline gap-4"><span class="text-xl text-gray-300">{{ title }}</span><span class="text-gray-500 uppercase tracking-wider text-xs">{{ status }}</span></li>
+    {% endfor %}
+  </ol>
+
+  <p class="mt-16"><a href="/blog/" class="text-gray-400 uppercase tracking-wider text-sm hover:text-white">Blog →</a></p>
+</section>

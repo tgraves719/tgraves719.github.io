@@ -39,7 +39,7 @@ layout: base.njk
     // Set generic back text
     backLink.textContent = '← Back';
     
-    console.log('✅ Back button configured to use browser history');
+    window.DEBUG && console.log('✅ Back button configured to use browser history');
   }
   
   // Run immediately and also on DOMContentLoaded

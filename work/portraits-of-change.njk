@@ -1,92 +1,214 @@
 ---
 layout: base.njk
 title: Portraits of Change
+instrument: true
+description: "Portraits of Change: a Mixed Reality Music Recital. Hoag Hall, CSU-Pueblo, 28 November 2021."
 ---
+{#
+  Thomas's words only. Every sentence, heading and caption is from the 2021
+  research portfolio (_data/portraits.json), verbatim; the rest is data.
+#}
+{% from "video.njk" import video, videoScript %}
+{% set P = portraits %}
+{% set W = recitalWall %}
+{% macro rgb(c) %}rgb({{ (c[0]*255) | round }}, {{ (c[1]*255) | round }}, {{ (c[2]*255) | round }}){% endmacro %}
+{% macro fig(name, caption="", cls="", alt="") %}
+<figure class="{{ cls }}">
+  <a href="/images/portraits/{{ name }}.jpg" target="_blank" rel="noopener"><img src="/images/portraits/{{ name }}.jpg" alt="{{ caption or alt or name }}" loading="lazy" class="w-full h-auto rounded-lg border border-[var(--color-border)]"></a>
+  {% if caption %}<figcaption class="text-gray-500 text-sm mt-2">{{ caption }}</figcaption>{% endif %}
+</figure>
+{% endmacro %}
+{% macro h2(id, text) %}<h2 id="{{ id }}" class="text-2xl font-bold text-white uppercase tracking-wide mb-6 scroll-mt-28">{{ text }}</h2>{% endmacro %}
+{% macro h3(text) %}<h3 class="text-lg font-bold text-white uppercase tracking-wide mt-14 mb-4">{{ text }}</h3>{% endmacro %}
+{% set says = "text-gray-300 my-5" %}
 
-<div class="w-full">
-  <img src="/images/pic27.jpg" alt="Portraits of Change Banner" class="w-full h-auto rounded-xl mb-12">
-  
-  <div class="text-center mb-12">
-    <h1 class="text-4xl tracking-tight uppercase font-bold text-white" style="letter-spacing: 0.1em;">Portraits of Change</h1>
-    <p class="mt-4 text-lg text-gray-400">Live Music in Mixed Reality</p>
-  </div>
+<article class="py-16">
 
-  <div class="max-w-4xl mx-auto">
-    <h2 class="text-2xl font-bold text-white mb-4 uppercase tracking-wide">The Vision</h2>
-    <p class="text-gray-400 mb-12">Portraits of Change bends reality and creates impossible visual wonders driven through harmonic information captured in real-time. Utilizing Mixed Reality and MIDI technologies, we contribute towards the innovative heritage of live music performance by introducing a new medium of live music visualization.</p>
-    
-    <div class="flex justify-center gap-4 mb-16">
-      <button id="toggle-devlog-btn" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg transition-all bg-[var(--color-bg-card)] border-3 border-transparent hover:bg-gray-800">View Development Log</button>
-      <button id="toggle-collaborators-btn" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg transition-all bg-[var(--color-bg-card)] border-3 border-transparent hover:bg-gray-800">View Collaborators</button>
+  <header class="max-w-4xl mx-auto mb-20">
+    <h1 class="text-4xl sm:text-5xl tracking-tight uppercase font-bold text-white" style="letter-spacing: 0.08em;">{{ P.performance.title }}</h1>
+    <p class="text-xl text-gray-300 mt-3">{{ P.performance.subtitle }}</p>
+    <p class="text-gray-500 mt-2">{{ P.performance.venue }} · {{ P.performance.date }}</p>
+    <p class="{{ says }} mt-8">{{ P.performance.lede }}</p>
+    <div id="recording" class="mt-10">
+      {{ video(P.performance.video.id, P.performance.video.title, "aspect-video", "maxresdefault") }}
+      <p class="text-gray-500 text-sm mt-2">{{ P.performance.video.title }}</p>
+    </div>
+    <nav class="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm uppercase tracking-wider" aria-label="On this page">
+      {% for id, text in [["program","Program"],["setup","Hoag Hall Setup"],["theory","12-Node Theory"],["logs","Developer Logs"],["archive","Archive"]] %}
+      <a href="#{{ id }}" class="text-gray-400 hover:text-white">{{ text }}</a>
+      {% endfor %}
+    </nav>
+  </header>
+
+  {# ---------------------------------------------------------------- Program #}
+  <section class="max-w-6xl mx-auto mb-28">
+    <div class="max-w-4xl mx-auto">
+      {{ h2("program", "Program") }}
+      <p class="{{ says }}">As the songs progress, the main song color will move around the chromatic color wheel throughout the performance.</p>
+
+      <figure class="my-10">
+        <svg viewBox="0 0 {{ W.steps }} 24" preserveAspectRatio="none" class="block w-full h-10 rounded" role="img" aria-label="Headset view color across the recital">
+          {%- for r in W.runs %}<rect x="{{ r.x }}" y="0" width="{{ r.w + 0.3 }}" height="24" fill="{{ r.c }}"/>{% endfor -%}
+        </svg>
+        <div class="relative h-7 text-xs font-mono">
+          {% for p in W.pieces %}
+          <a href="#portrait-{{ p.n }}" title="{{ p.name }}" class="absolute top-0 -translate-x-1/2 flex flex-col items-center text-gray-400 hover:text-white" style="left: {{ (p.start * 6 / W.steps * 100) | round(2) }}%;"><span class="w-px h-2 bg-gray-500"></span>{{ p.n }}</a>
+          {% endfor %}
+          {% set gapMid = ((W.pieces[5].start + 4.0 + W.pieces[6].start) / 2) %}
+          <span class="absolute top-2 -translate-x-1/2 text-gray-600 italic font-sans" style="left: {{ (gapMid * 6 / W.steps * 100) | round(2) }}%;">intermission</span>
+        </div>
+        <figcaption class="text-gray-500 text-sm mt-1">Headset view, every ten seconds.</figcaption>
+      </figure>
+
+      <dl class="grid sm:grid-cols-3 gap-4 text-sm mb-14">
+        {% for k in P.key %}
+        <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg p-4">
+          <dt class="font-mono text-white mb-1">{{ k.term }}</dt>
+          <dd class="text-gray-400">{{ k.def }}</dd>
+        </div>
+        {% endfor %}
+      </dl>
     </div>
 
-    <div id="core-concepts-section" class="mb-16 pt-16 border-t border-[var(--color-border)]">
-      <h2 class="text-2xl font-bold text-white mb-8 uppercase tracking-wide text-center">Core Concepts</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] p-6 rounded-lg">
-          <h3 class="font-bold text-lg uppercase tracking-wide text-white mb-2">Mixed Reality</h3>
-          <p class="text-gray-400 text-sm">Using VR and AR, we can transport the audience inside the music. If a TV is a window, VR is climbing through it. We create immersive 3D experiences that respond directly to the live performance.</p>
-        </div>
-        <div class="bg-[var(--color-bg-card)] border border-[var(--color-border)] p-6 rounded-lg">
-          <h3 class="font-bold text-lg uppercase tracking-wide text-white mb-2">Music Technology</h3>
-          <p class="text-gray-400 text-sm">MIDI (Musical Instrument Digital Interface) is the bridge between the physical and virtual worlds. We use it to capture data from acoustic and electronic instruments, which then drives the visual effects in real-time.</p>
-        </div>
+    {% for e in P.ensembles %}
+      {% if e.intermissionBefore %}
+      <div class="max-w-4xl mx-auto my-12 flex items-center gap-4 text-gray-500 uppercase tracking-wider text-sm">
+        <span class="flex-1 border-t border-[var(--color-border)]"></span>Intermission · {{ e.intermissionBefore }} min<span class="flex-1 border-t border-[var(--color-border)]"></span>
       </div>
-    </div>
-    
-    <!-- Development Log Section (Initially Hidden) -->
-    <div id="devlog-section" class="hidden">
-      <div class="mb-16 pt-16 border-t border-[var(--color-border)]">
-        <h2 class="text-2xl font-bold text-white mb-8 uppercase tracking-wide text-center">Development Journey</h2>
-        <div id="devlog-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <!-- Devlog entries will be populated by JavaScript -->
+      {% endif %}
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-14">
+        <div class="lg:col-span-3 min-w-0">
+          <h3 class="text-gray-500 uppercase tracking-wider text-sm mb-6">{{ e.name }}</h3>
+          <ol class="space-y-10">
+            {% for p in e.portraits %}
+            <li id="portrait-{{ p.n }}" class="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-4 scroll-mt-28">
+              {% set lum = p.rgb[0] * 0.2126 + p.rgb[1] * 0.7152 + p.rgb[2] * 0.0722 %}
+              <span class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold {{ 'text-black' if lum > 0.4 else 'text-white' }}" style="background: {{ rgb(p.rgb) }};" aria-hidden="true">{{ p.n }}</span>
+              <div>
+                <p class="text-white font-semibold">{{ p.title }}</p>
+                <p class="text-gray-400 text-sm">{{ p.composer }}</p>
+                <div class="mt-3 flex items-center gap-3">
+                  <span class="flex-1 min-w-0"><span class="block h-2 rounded-full" style="width: {{ p.minutes * 10 }}%; background: {{ rgb(p.rgb) }};"></span></span>
+                  <span class="w-40 shrink-0 text-gray-500 text-xs uppercase tracking-wider whitespace-nowrap">{{ p.hue }} · {{ p.minutes }} min</span>
+                </div>
+                <p class="text-gray-500 text-sm mt-3">{{ p.players }}</p>
+                <p class="mt-2 flex flex-wrap gap-2">{% for r in p.rig %}<span class="font-mono text-xs text-gray-300 border border-[var(--color-border)] rounded px-2 py-0.5">{{ r }}</span>{% endfor %}</p>
+                {% if p.note %}<p class="text-gray-400 text-sm mt-4">{{ p.note }}</p>{% endif %}
+                {% if p.videoId and p.videoId == P.performance.video.id %}
+                  <p class="mt-4 text-sm"><a href="#recording" class="text-gray-400 hover:text-white">▶ ↑</a></p>
+                {% elif p.videoId %}
+                  <div class="mt-5 max-w-xl">{{ video(p.videoId, p.title) }}</div>
+                {% endif %}
+              </div>
+            </li>
+            {% endfor %}
+          </ol>
         </div>
+        <div class="lg:col-span-2 min-w-0">{{ fig(e.plot, "", "lg:sticky lg:top-28", e.name + " stage plot") }}</div>
       </div>
+    {% endfor %}
+  </section>
+
+  {# ---------------------------------------------------------------- Hoag Hall Setup #}
+  <section class="max-w-4xl mx-auto mb-28">
+    {{ h2("setup", "Hoag Hall Setup") }}
+    <div class="grid md:grid-cols-2 gap-6 mb-10">
+      {{ fig("plot-hardware", "", "", "Hoag Hall hardware setup") }}
+      {{ fig("hoag-hall-stage", "", "", "Hoag Hall stage") }}
     </div>
-
-    <!-- Collaborators Section (Initially Hidden) -->
-    <div id="collaborators-section" class="hidden">
-      <div class="mb-16 pt-16 border-t border-[var(--color-border)]">
-        <h2 class="text-2xl font-bold text-white mb-8 uppercase tracking-wide text-center">Collaborators</h2>
-        <p class="text-center text-gray-400 mb-12">Portraits of Change isn't just about me. It is about the musicians we play with, the technology experts we reach out to, and of course the audience and our wonderful supporters.</p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div>
-            <h3 class="text-xl font-bold text-white mb-6 uppercase tracking-wide">Session Musicians</h3>
-            <div class="space-y-3 text-gray-300">
-              <p>Ivan Acurio</p>
-              <p>Jordan Barney</p>
-              <p>D.J. Henson</p>
-              <p>Damion Kudel</p>
-              <p>Michael Manzanares</p>
-              <p>Gerad Ortiz</p>
-              <p>Noah Suazo</p>
-            </div>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-white mb-6 uppercase tracking-wide">Technology Collaborators</h3>
-            <div class="space-y-3 text-gray-300">
-              <p>Sean Mansell - <a href="https://twitter.com/arknano" target="_blank" class="text-indigo-400 hover:underline">Twitter</a></p>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-16 pt-12 border-t border-[var(--color-border)]">
-          <h3 class="text-xl font-bold text-white mb-6 uppercase tracking-wide text-center">Special Thanks</h3>
-          <div class="text-center text-gray-400 space-y-3">
-            <p>Al Eberhardt</p>
-            <p>David Artley</p>
-            <p>Ryan Van Gilder</p>
-            <p>The CSU Pueblo Jazz Ensemble I</p>
-            <p>What If... Festival of Innovation and Imagination</p>
-          </div>
-        </div>
-      </div>
+    {{ fig("fig22-signal-diagram", "Fig 22. Hardware and software diagram. MIDI and instrument tracking combined for MR music performance.", "mb-10") }}
+    <div class="grid md:grid-cols-2 gap-6">
+      {{ fig("fig05-trumpet-tracker-mic", "Fig 5. Trumpet which has two data inputs for MIDI and for spatial tracking. The vive tracker keeps track of the instrument’s position relative to the world and the condenser mic is fed to the audio-to-midi conversion hardware.") }}
+      {{ fig("fig03-midi-pedalboard", "Fig 3. On-stage MIDI interface for audio-to-midi conversion and the main way the desktop PC receives musical information.") }}
     </div>
-  </div>
+    <p class="{{ says }} mt-8">If multiple inputs are given, the output is an approximation or is a missed note entirely. The lag is not an issue, since the lag from the computer software and hardware also have up to 20ms of latency from photon to eye of the AR display and sound naturally travels slower than sight.</p>
+    <p class="{{ says }}">The G2M does have its limits, only supporting monophonic input and also can only be used with four MIDI channels.</p>
+    <div class="grid sm:grid-cols-3 gap-4 mt-12">
+      {{ fig("fig18-mount-design", "Fig 18. A new mount was designed to make use of the magnets at the front of the headset.") }}
+      {{ fig("fig19-mount-printed", "Fig 19. The mount was printed in nylon with Multi Jet Fusion printing technology, from the Colorado Springs company ResinFoundry.") }}
+      {{ fig("fig20-beta-headset", "Fig 20. The beta headset. 2021") }}
+    </div>
+  </section>
 
-  <div class="mt-16 mb-8">
-    <a href="/work/" class="interactive-rainbow inline-block px-6 py-3 rounded-md font-semibold uppercase tracking-wider">&larr; Back</a>
-  </div>
-</div>
+  {# ---------------------------------------------------------------- 12-Node Theory #}
+  <section class="max-w-4xl mx-auto mb-28">
+    {{ h2("theory", "12-Node Theory") }}
+    <p class="{{ says }}">Because we perceive color in 3 bands, we need to build our color wheel into thirds. This is truly an arbitrary cut into the color spectrum, and the only reason RGB was chosen is due to the RGB color model that all virtual devices use to generate light.</p>
+    <p class="{{ says }}">When all interval vectors are built off of a tonic with any arbitrary color or note, it will reveal a color pattern and intervallic relationships that are present in all 12 permutations. This concept is defined as “12-Node Theory” which combines set theory, music theory, and color theory to find aesthetic or interesting intervallic relationships to build contrast, harmony, and dissonance.</p>
 
+    <ol class="grid grid-cols-6 sm:grid-cols-12 gap-2 my-10" aria-label="The twelve nodes and their RGB values">
+      {% for c in P.nodes %}
+      <li class="text-center">
+        <span class="block aspect-square rounded-full" style="background: rgb({{ c[0] }}, {{ c[1] }}, {{ c[2] }});"></span>
+        <span class="block text-white text-sm mt-1">{{ loop.index0 }}</span>
+        <span class="block font-mono text-[10px] leading-tight text-gray-500">{{ c[0] }}<br>{{ c[1] }}<br>{{ c[2] }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+
+    <div class="grid sm:grid-cols-2 gap-6 mb-6">
+      {{ fig("theory-12-nodes", "Fig 7. Color wheel and chromatic music wheel are combined. The set theory method of denoting numbers 0-11 will be used to understand geometric intervallic relationships") }}
+      {{ fig("theory-icv6-tritone", "Fig 17. Tritones, or complimentary colors.") }}
+      {{ fig("theory-additive", "Fig 10. Additive primary colors are 4 half steps away from each other") }}
+      {{ fig("theory-subtractive", "Fig 11. Subtractive primary colors are at the inverse of additive primary colors.") }}
+    </div>
+    <p class="{{ says }}">Tri-tones, being the only equally proportionate vector, shows the exact color opposite of the tonic node.</p>
+    <p class="my-10"><a href="/work/12-node-theory/#play" class="sound-interactive interactive-rainbow inline-block px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Play 12-Node Theory</a></p>
+
+    {{ h3("Giant Steps Analysis") }}
+    <p class="{{ says }}">Giant Steps shifts between 3 tonics, and when zeroed, are presented as 0-4-8. This shows a triangular relationship on a chromatic wheel.</p>
+    <div class="grid sm:grid-cols-2 gap-6 mb-6">
+      {{ fig("theory-giant-steps", "Fig 18. Chord analysis of Giant Steps following the change in tonic by following the 2-5-1 chord structure.") }}
+      {{ fig("theory-coltrane-triangle", "Fig 19. Visual representation of the tonic movement on a color/music wheel.") }}
+    </div>
+    <p class="{{ says }}">Can using color theory give us ideas on how to improvise?</p>
+    <p class="{{ says }}">This hexatonic relationship constructs one of the two whole-tone scales, which is prominently used in improvisation over Giant Steps.</p>
+
+    {{ h3("Conclusion") }}
+    <p class="{{ says }}">Connecting contrast between visual and aural mediums is fundamentally abstract. However, there are intervallic relationships shared between color and music such as inverse and perpendicular relationships that do correspond to contrast. These concepts are proven through basic geometric relationships that do have a correspondence with subtractive-additive light and the harmonic series in music. In any application of audiovisual experiences, the audience’s emotion is what will ultimately connect what they see and hear with what they experience, and the cultural associations with certain sounds and sights will be much stronger in creating specific moods than purely mathematical or geometric associations.</p>
+  </section>
+
+  {# ---------------------------------------------------------------- Developer Logs #}
+  <section class="max-w-4xl mx-auto mb-28">
+    {{ h2("logs", "Developer Logs") }}
+    <p class="{{ says }}">Portraits of Change has been conceptualized, researched and developed since January of 2019. What started as a recital that focused on past innovations in jazz led to exploring new ways of visualizing music.</p>
+    <div class="grid sm:grid-cols-3 gap-4 my-10">
+      {{ fig("fig10-first-image-2019", "Fig 10. First Image of Portraits of Change, combining Mixed Reality technology with music. March, 2019") }}
+      {{ fig("fig34-first-color-test-2019", "Fig 34. From an early test vid in 2019, this was the first time the color theory was implemented in musical performance in real-time. Damion Kudel plays this test, with a VR side-by-side with the real world. Jul 2019") }}
+      {{ fig("fig35-liv-overlay-2019", "Fig 35. Using Liv software, we demonstrated an AR overlay with our MIDI color system for the first time. Aug 2019") }}
+      {{ fig("fig37-green-screen-2020", "Fig 37. A mixed reality scene with a green screen and a new trumpet mic to lessen impact on performance sound. Jan 2020") }}
+      {{ fig("fig38-creager-2021", "Fig 38. A test with Greg Creager and a student watching him perform in AR. April 2021") }}
+      {{ fig("fig33-ar-occlusion-2021", "Fig 33. This is the view through an AR device of the mixed reality music scene with full occlusion of real/virtual objects. May 2021") }}
+    </div>
+    <ol class="border-l border-[var(--color-border)]">
+      {% for v in P.versions %}
+      {% set href = collections.post | postUrl(v.post) %}
+      <li class="pl-6 py-2 relative">
+        <span class="absolute -left-[5px] top-4 w-2.5 h-2.5 rounded-full bg-gray-600"></span>
+        <span class="font-mono text-gray-500 text-sm mr-3">{{ v.date }}</span>
+        {% if href %}<a href="{{ href }}" class="text-gray-200 hover:text-white underline decoration-gray-700 hover:decoration-white">{{ v.label }}</a>{% else %}<span class="text-gray-200">{{ v.label }}</span>{% endif %}
+        {% if v.videoId %}<span class="text-gray-600 text-xs ml-2" aria-hidden="true">▶</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  {# ---------------------------------------------------------------- Archive #}
+  <section class="max-w-4xl mx-auto mb-28">
+    {{ h2("archive", "Archive") }}
+    <ul class="space-y-2 mb-10 font-mono text-sm">
+      {% for a in P.archive %}<li><span class="text-white">{{ a.repo }}</span> <span class="text-gray-500">{{ a.years }} · Unity {{ a.unity }}</span></li>{% endfor %}
+    </ul>
+    <a href="/files/portraits-of-change-research-portfolio-2022.pdf" class="sound-interactive interactive-rainbow inline-block px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Research Portfolio (PDF)</a>
+  </section>
+
+  {# ---------------------------------------------------------------- Acknowledgements #}
+  <section class="max-w-4xl mx-auto">
+    {{ h2("acknowledgements", "Acknowledgements") }}
+    <p class="{{ says }}">To the musicians who performed in the project past and present, thank you for taking a chance to see music differently with me.</p>
+    <p class="text-gray-400 text-sm my-6 leading-relaxed">Thomas Graves, Trumpet · Carol Wilson, piano · Tony Szajowski, piano · Jordan Barney, bass · Jay Martinez, bass · Michael Manzanares, drums · Ivan Acurio, trumpet · Ray Beltran, horn · Tyler Perea, tuba · Richard Platt, trombone · DJ Henson, woodwinds · Connor Thomas, saxophone · Thaddeus Zimmerman, guitar · CSU-Pueblo Jazz Ensemble I</p>
+    <p class="{{ says }}">I would also like to thank game designer Sean Mansell and all the developers and software experts who have helped me along the way. Special thanks to Unity developer and VJ Keijiro Takahashi, whose open-source projects made Portraits of Change possible.</p>
+  </section>
+
+</article>
+{{ videoScript() }}

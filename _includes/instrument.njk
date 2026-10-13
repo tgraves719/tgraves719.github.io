@@ -1,0 +1,35 @@
+---
+layout: base.njk
+---
+{#
+  An instrument's page: Thomas's words, then the instrument itself, running.
+  Front matter: `tool` (the hosted instrument's URL), optional `timeline`
+  (a key in _data, a list of {year, who, work}), optional `timelineTitle`.
+#}
+<article class="py-16">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-8" style="letter-spacing: 0.1em;">{{ title }}</h1>
+    <div class="text-lg text-gray-300 space-y-5 [&_h2]:text-gray-500 [&_h2]:uppercase [&_h2]:tracking-wider [&_h2]:text-sm [&_h2]:mt-12 [&_a]:underline [&_a]:decoration-gray-600 hover:[&_a]:decoration-white">
+      {{ content | safe }}
+    </div>
+
+    {% if timeline %}
+    <h2 class="text-gray-500 uppercase tracking-wider text-sm mt-14 mb-4">{{ timelineTitle }}</h2>
+    <ol class="border-l border-[var(--color-border)]">
+      {% for t in timeline %}
+      <li class="pl-6 py-1.5 relative">
+        <span class="absolute -left-[5px] top-3.5 w-2.5 h-2.5 rounded-full {{ 'bg-white' if t.mine else 'bg-gray-600' }}"></span>
+        <span class="font-mono text-gray-500 text-sm mr-3">{{ t.year }}</span>
+        <span class="text-gray-400">{{ t.who }}</span>{% if t.work %}<span class="text-gray-600"> · </span><span class="text-gray-200">{% if t.href %}<a href="{{ t.href }}" class="hover:underline">{{ t.work }}</a>{% else %}{{ t.work }}{% endif %}</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+    {% endif %}
+  </div>
+
+  <section id="play" class="mt-16 scroll-mt-24">
+    <iframe src="{{ tool }}" title="{{ title }}" allow="midi; autoplay; fullscreen" loading="lazy"
+            class="block w-full h-[85vh] min-h-[560px] rounded-xl border border-[var(--color-border)] bg-black"></iframe>
+    <p class="mt-3 text-right"><a href="{{ tool }}" target="_blank" rel="noopener" class="text-gray-500 hover:text-white uppercase tracking-wider text-xs">Full screen ↗</a></p>
+  </section>
+</article>

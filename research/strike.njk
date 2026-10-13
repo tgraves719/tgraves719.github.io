@@ -1,0 +1,41 @@
+---
+layout: base.njk
+title: The Safeway Strike
+permalink: /research/strike/
+---
+{# Thomas's paragraph is from his CIP proposal, verbatim; the line under the playlist is James Heath's, shared with Thomas's say-so. #}
+{% from "player.njk" import player %}
+{% set PL = strikePlaylist %}
+<article class="py-16">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-4xl tracking-tight uppercase font-bold text-white mb-12" style="letter-spacing: 0.1em;">The Safeway Strike</h1>
+
+    {# The recordings. Titles, order and durations: _data/strikePlaylist.json (tools/import-strike-audio.py). #}
+    <div class="mb-3">{{ player({ id: "songs", tracks: PL.tracks, artist: PL.artist, album: "Safeway Strike 2025", cover: PL.cover }) }}</div>
+
+    <p class="text-gray-500 text-sm px-1 mb-8">Generated with Suno 4.5.</p>
+
+    <figure class="mb-12 px-1">
+      <blockquote class="text-lg text-gray-300">“Playlist is a hit in Denver.”</blockquote>
+      <figcaption class="text-gray-500 text-sm mt-1">James Heath, union organizer, July 4, 2025</figcaption>
+    </figure>
+
+    <img src="/images/strike/picket-01.webp" alt="Inside the store, 2025" class="w-full h-auto rounded-xl mb-12">
+
+    <p class="text-lg text-gray-300 mb-10">I went on strike with my union at Safeway in 2025. I played music on the picket line where I connected with local leadership who walked with us, and used AI to make a video before the vote that went viral among workers.</p>
+
+    <div class="flex flex-col sm:flex-row gap-6 items-start mb-12">
+      {# The video from the paragraph above. Loads when scrolled near; the link below is the fallback when Facebook's player is blocked. #}
+      <iframe src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1531481214495004%2F&show_text=true&width=267&t=0"
+              title="The video before the vote, on Facebook" width="267" height="591" loading="lazy"
+              class="shrink-0 rounded-xl bg-black" style="border:none;overflow:hidden" scrolling="no"
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
+      <img src="/images/strike/picket-02.webp" alt="On the picket line with a speaker, 2025" class="w-full sm:w-56 h-auto rounded-xl">
+    </div>
+
+    <div class="flex flex-wrap gap-4">
+      <a href="https://www.facebook.com/reel/1531481214495004/" target="_blank" rel="noopener" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">Facebook</a>
+      <a href="/research/karl/" class="sound-interactive interactive-rainbow px-6 py-3 font-semibold uppercase tracking-wider rounded-lg">KARL</a>
+    </div>
+  </div>
+</article>

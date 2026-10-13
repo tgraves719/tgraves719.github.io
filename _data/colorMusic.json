@@ -1,0 +1,19 @@
+[
+  { "year": "1704", "who": "Isaac Newton", "work": "Opticks" },
+  { "year": "1725", "who": "Louis-Bertrand Castel", "work": "Ocular harpsichord" },
+  { "year": "1893", "who": "Alexander Wallace Rimington", "work": "Colour-organ" },
+  { "year": "1910", "who": "Alexander Scriabin", "work": "Prometheus: The Poem of Fire" },
+  { "year": "1922", "who": "Thomas Wilfred", "work": "Clavilux" },
+  { "year": "1934", "who": "Mary Ellen Bute", "work": "Rhythm in Light" },
+  { "year": "1938", "who": "Oskar Fischinger", "work": "An Optical Poem" },
+  { "year": "1961", "who": "John Whitney", "work": "Catalog" },
+  { "year": "1971", "who": "Norman McLaren", "work": "Synchromy" },
+  { "year": "1975", "who": "John Whitney", "work": "Arabesque" },
+  { "year": "1980", "who": "John Whitney", "work": "Digital Harmony: On the Complementarity of Music and Visual Art" },
+  { "year": "2004", "who": "Katherine Lubar", "work": "Color Intervals" },
+  { "year": "2013", "who": "Stephen E. Palmer et al.", "work": "Music–color associations are mediated by emotion" },
+  { "year": "2019", "who": "Thomas Graves", "work": "12-Node Theory", "mine": true },
+  { "year": "2021", "who": "Thomas Graves", "work": "Portraits of Change", "href": "/work/portraits-of-change/", "mine": true },
+  { "year": "2025", "who": "Thomas Graves", "work": "The Modular Music Box", "href": "/work/musicbox/", "mine": true },
+  { "year": "2026", "who": "Thomas Graves", "work": "12-Node Theory, the instrument", "href": "#play", "mine": true }
+]

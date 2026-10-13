@@ -1,0 +1,118 @@
+[
+  {
+    "id": "punjab",
+    "title": "Punjab Data Project",
+    "years": "2026–",
+    "status": "active",
+    "href": "/research/punjab/",
+    "image": "/images/cards/punjab-register-1910.jpg",
+    "links": [
+      {
+        "label": "Live explorer",
+        "url": "https://tgraves719.github.io/Punjab-Data-Project/"
+      },
+      {
+        "label": "Repository",
+        "url": "https://github.com/tgraves719/Punjab-Data-Project"
+      }
+    ],
+    "line": "A computational sociological analysis of British Punjab through the imperial print register, 1867–1942."
+  },
+  {
+    "id": "karl",
+    "title": "KARL",
+    "years": "2025–",
+    "status": "active",
+    "href": "/research/karl/",
+    "image": "/images/cards/karl.jpg",
+    "links": [
+      {
+        "label": "For stewards",
+        "url": "https://karlstewardship.com/"
+      },
+      {
+        "label": "Repository",
+        "url": "https://github.com/tgraves719/Knowledge-Assistant-Rights-Labor"
+      }
+    ],
+    "line": "An open-source AI system that retrieves contract articles with verifiable citations."
+  },
+  {
+    "id": "strike",
+    "title": "The Safeway Strike",
+    "years": "2025",
+    "status": "record",
+    "href": "/research/strike/",
+    "image": "/images/strike/picket-01.webp",
+    "links": [],
+    "line": "I went on strike with my union at Safeway in 2025."
+  },
+  {
+    "id": "portraits-of-change",
+    "title": "Portraits of Change",
+    "years": "2018–2023",
+    "status": "preserved",
+    "href": "/work/portraits-of-change/",
+    "image": "/images/portraits/fig20-beta-headset.jpg",
+    "links": [],
+    "line": "A music-technology project that bends reality, creating visual wonders driven by harmonic information captured from live music in real-time."
+  },
+  {
+    "id": "ictus",
+    "title": "ICTUS",
+    "years": "2026–",
+    "status": "soon",
+    "href": null,
+    "image": "/images/cards/ictus.jpg",
+    "links": [],
+    "line": "for Conductor, Magic, and the Unison of Will"
+  },
+  {
+    "id": "12-node-theory",
+    "title": "12-Node Theory",
+    "years": "2019–",
+    "href": "/work/12-node-theory/",
+    "image": "/images/instruments/12-node-theory.jpg",
+    "links": [],
+    "line": "An audiovisual geometric music analysis tool"
+  },
+  {
+    "id": "modular-music-box",
+    "title": "The Modular Music Box",
+    "years": "2025",
+    "status": "preserved",
+    "href": "/work/musicbox/",
+    "image": "/images/pic05.jpg",
+    "links": [],
+    "line": "An audiovisual instrument for exploring harmony and geometry. Generate notes from scales, or build harmonies by stacking musical intervals."
+  },
+  {
+    "id": "conductvr",
+    "title": "ConductVR",
+    "years": "2020–2021",
+    "status": "preserved",
+    "href": "/work/conductvr/",
+    "image": "/images/cards/baton.jpg",
+    "links": [],
+    "line": "An educational VR application designed to teach and practice standard conducting patterns in an immersive, interactive environment."
+  },
+  {
+    "id": "virtual-music-stand",
+    "title": "The Virtual Music Stand",
+    "years": "2019",
+    "status": "preserved",
+    "href": "/work/musicstand/",
+    "image": "/images/cards/music-folder.jpg",
+    "links": [],
+    "line": "A PDF reader for sheet music on HoloLens 2."
+  },
+  {
+    "id": "beyond-binary",
+    "title": "Beyond Binary",
+    "years": "2024",
+    "href": "/work/beyond-binary/",
+    "image": "/images/cards/beyond-binary.jpg",
+    "links": [],
+    "line": "Beyond Binary is an AI generated VR musical about the consequences of the AI race, confronting military pressure, economic incentives, and global competition to build \"Artificial-Super-Intelligence\"."
+  }
+]
